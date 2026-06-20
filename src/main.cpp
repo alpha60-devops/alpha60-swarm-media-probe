@@ -58,13 +58,14 @@ get_directory_size_mb(const fs::path& path)
   if (!fs::is_directory(target))
     throw std::runtime_error("Path is not a directory: " + target.string());
 
+  // Recursively iterate, following directory symlinks
   std::uintmax_t total_bytes = 0;
   std::unordered_set<fs::path> unique_files;  // stores canonical paths
-
-  // Recursively iterate, following directory symlinks (optional, but safe)
-  for (const auto& entry : fs::recursive_directory_iterator(target, fs::directory_options::follow_directory_symlink))
+  auto fsopts = fs::directory_options::follow_directory_symlink;
+  for (const auto& entry : fs::recursive_directory_iterator(target, fsopts))
     {
-      if (!fs::is_regular_file(entry.status()))   // check actual file type, not symlink
+      // Check actual file type, not symlink
+      if (!fs::is_regular_file(entry.status()))
 	continue;
 
       fs::path canonical_path;

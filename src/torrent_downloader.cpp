@@ -258,6 +258,110 @@ log_suspect(const std::string odir)
 }
 
 
+/// Timeout loop for the downloader, active downloading until exit.
+void
+media_downloader::just_a_bit(lt::session& sesh, lt::torrent_handle& handle,
+			     const time_limits& tlimits,
+			     const lt::file_index_t p_index, const double p_mb,
+			     const double target_mb)
+{
+  using namespace std;
+
+  // Start timeout loop...
+  // Ends if:
+  /// 1: enough downloaded to make sized_file
+  /// 2: timeout
+  auto start_time = chrono::steady_clock::now();
+  auto last_status_time = start_time;
+
+  auto to_seconds = [](auto duration)
+  { return std::chrono::duration_cast<std::chrono::seconds>(duration); };
+
+  int64_t last_downloaded = 0;
+  auto last_rate_time = start_time;
+  double current_rate_bps = 0.0;
+  while (true)
+    {
+      // Start clock.
+      auto now = chrono::steady_clock::now();
+
+      // Check for timeout.
+      uint timeout_xtra(1);
+      auto elapsed = to_seconds(now - start_time).count();
+      if (elapsed > tlimits.maximum * timeout_xtra)
+	{
+	  // Extend once.
+	  // Heuristic to continue if probablity for completion is high.
+	  bool almostp((to_mb(last_downloaded) / target_mb) >= 0.5);
+	  if (almostp && timeout_xtra == 1)
+	    {
+	      timeout_xtra = 2;
+	      cout << "timeout extended" << endl;
+	    }
+	  else
+	    {
+	      uint timeoutstotal = tlimits.maximum * timeout_xtra;
+	      cerr << "timeout after " << timeoutstotal << " seconds" << endl;
+	      break;
+	    }
+	}
+
+      // Get status.
+      auto status = handle.status();
+
+      // Check if the download has reached the target size and time.
+      // status.total_payload_download
+      // status.all_time_download
+      const double tdownloaded_mb = to_mb(status.total_done);
+
+      // Ask the torrent handle for the download progress of ALL files
+      std::vector<std::int64_t> file_progress;
+      handle.file_progress(file_progress);
+      std::int64_t fdownloaded = file_progress[p_index];
+      auto fdownloaded_mb = fdownloaded ? to_mb(fdownloaded) : 0;
+      if (elapsed >= tlimits.minimum && fdownloaded_mb >= target_mb)
+	break;
+
+      // Check if stalled.
+      if (elapsed > tlimits.unresponsive && status.download_rate == 0)
+	break;
+
+      // Calculate current download rate
+      double rate_elapsed = to_seconds(now - last_rate_time).count();
+      if (rate_elapsed >= 5 && status.total_payload_download > 0)
+	{
+	  double delta_bytes = status.total_payload_download - last_downloaded;
+	  current_rate_bps = delta_bytes / rate_elapsed;
+	  last_downloaded = status.total_payload_download;
+	  last_rate_time = now;
+	}
+
+      // Show progress every n second interval.
+      const auto status_interval = 5;
+      auto status_elapsed = to_seconds(now - last_status_time).count();
+      if (status_elapsed >= status_interval)
+	{
+	  double rate_kbps = current_rate_bps / 1024.0;
+	  cout << fixed << setprecision(2);
+	  cout << "  Peers: " << status.num_peers
+	       << " | Downloaded: " << tdownloaded_mb << " MB / "
+	       << p_mb << " MB"
+	       << " | Speed: " << rate_kbps << " KB/s";
+
+	  cout << endl;
+	  last_status_time = now;
+	}
+
+      // Force a flush periodically
+      if (elapsed % 5 == 0 && elapsed > 0)
+	handle.force_reannounce();
+
+      drain_alerts(sesh);
+      this_thread::sleep_for(chrono::seconds(1));
+    }
+}
+
+
 /// Download a minimum-sized chunk of the largest media file.
 /// So that ffmpeg, mediainfo, and others can be used to determine the
 /// frame rate, frame size, audio and subtitles.
@@ -352,100 +456,9 @@ media_downloader::almost_nothing(const std::string& ifile,
 	}
       cout << "  ...metadata received." << endl;
 
-      // Start timeout loop...
-      // Ends if:
-      /// 1: enough downloaded to make sized_file
-      /// 2: timeout
-      auto start_time = chrono::steady_clock::now();
-      auto last_status_time = start_time;
-
-      auto to_seconds = [](auto duration)
-      { return std::chrono::duration_cast<std::chrono::seconds>(duration); };
-
       //// XXXX make all of this restartable if written bytes are not enough.
       //// fail: verification failed (4327) in
-
-      int64_t last_downloaded = 0;
-      auto last_rate_time = start_time;
-      double current_rate_bps = 0.0;
-      while (true)
-	{
-	  // Start clock.
-	  auto now = chrono::steady_clock::now();
-
-	  // Check for timeout.
-	  uint timeout_xtra(1);
-	  auto elapsed = to_seconds(now - start_time).count();
-	  if (elapsed > timeout_seconds * timeout_xtra)
-	    {
-	      // Extend once.
-	      // Heuristic to continue if probablity for completion is high.
-	      bool almostp((to_mb(last_downloaded) / target_mb) >= 0.5);
-	      if (almostp && timeout_xtra == 1)
-		{
-		  timeout_xtra = 2;
-		  cout << "timeout extended" << endl;
-		}
-	      else
-		{
-		  cerr << "timeout after " << timeout_seconds << " seconds" << endl;
-		  break;
-		}
-	    }
-
-	  // Get status.
-	  auto status = handle.status();
-
-	  // Check if the download has reached the target size and time.
-	  // status.total_payload_download
-	  // status.all_time_download
-	  const double tdownloaded_mb = to_mb(status.total_done);
-
-	  // Ask the torrent handle for the download progress of ALL files
-	  std::vector<std::int64_t> file_progress;
-	  handle.file_progress(file_progress);
-	  std::int64_t fdownloaded = file_progress[largest_file_index];
-	  auto fdownloaded_mb = fdownloaded ? to_mb(fdownloaded) : 0;
-	  if (elapsed >= minimum_seconds && fdownloaded_mb >= target_mb)
-	    break;
-
-	  // Check if stalled.
-	  if (elapsed > unresponsive_seconds && status.download_rate == 0)
-	    break;
-
-	  // Calculate current download rate
-	  double rate_elapsed = to_seconds(now - last_rate_time).count();
-	  if (rate_elapsed >= 5 && status.total_payload_download > 0)
-	    {
-	      double delta_bytes = status.total_payload_download - last_downloaded;
-	      current_rate_bps = delta_bytes / rate_elapsed;
-	      last_downloaded = status.total_payload_download;
-	      last_rate_time = now;
-	    }
-
-	  // Show progress every n second interval.
-	  const auto status_interval = 5;
-	  auto status_elapsed = to_seconds(now - last_status_time).count();
-	  if (status_elapsed >= status_interval)
-	    {
-	      double rate_kbps = current_rate_bps / 1024.0;
-	      cout << fixed << setprecision(2);
-	      cout << "  Peers: " << status.num_peers
-		   << " | Downloaded: " << tdownloaded_mb << " MB / "
-		   << max_mb << " MB"
-		   << " | Speed: " << rate_kbps << " KB/s";
-
-	      cout << endl;
-	      last_status_time = now;
-	    }
-
-	  // Force a flush periodically
-	  if (elapsed % 5 == 0 && elapsed > 0)
-	    handle.force_reannounce();
-
-	  drain_alerts(sesh);
-	  this_thread::sleep_for(chrono::seconds(1));
-	}
+      just_a_bit(sesh, handle, dtlimits, largest_file_index, max_mb, target_mb);
 
       // Tear down.
       // Pause session, flush data, remove torrent.

@@ -247,12 +247,13 @@ verify_data_on_disk(const fs::path& file_path,
 
 
 /// Log if no peers, no downloads to file.
+/// Output log is intended to be filesystem adjacent to download.cache
 std::ofstream&
-log_suspect()
+log_suspect(const std::string odir)
 {
   const std::string ofname("download.suspect-or-no-peers.log");
   const std::ios_base::openmode ofm = std::ios_base::out | std::ios_base::app;
-  static std::ofstream ofsus(ofname, ofm);
+  static std::ofstream ofsus(odir + "/" + ofname, ofm);
   return ofsus;
 }
 
@@ -269,7 +270,7 @@ log_suspect()
 /// @param output_dir result files
 /// @param fsuffix the suffix used on the minimal media file, default ".sized"
 std::optional<fs::path>
-media_downloader::download_minimal(const std::string& ifile,
+media_downloader::almost_nothing(const std::string& ifile,
 				   const std::string& output_dir,
 				   const std::int64_t bytes_to_download,
 				   const int timeout_seconds,
@@ -502,7 +503,7 @@ media_downloader::download_minimal(const std::string& ifile,
 	}
       catch (std::exception& e)
 	{
-	  cout << "download_minimal:: exception thrown during tear down ";
+	  cout << "almost_nothing:: exception thrown during tear down ";
 	  cout << endl;
 	  cout << e.what();
 	  cout << endl;
@@ -518,7 +519,7 @@ media_downloader::download_minimal(const std::string& ifile,
     }
   catch (const exception& e)
     {
-      cerr << "download_minimal: error, exception thrown " << e.what() << endl;
+      cerr << "almost_nothing: error, exception thrown " << e.what() << endl;
       return ret;
     }
 
@@ -563,7 +564,9 @@ media_downloader::download_minimal(const std::string& ifile,
     {
       if (ff_size == 0)
 	{
-	  ofstream& ofno = log_suspect();
+	  // Log in working directory.
+	  fs::path ppath = fs::path(output_dir).parent_path();
+	  ofstream& ofno = log_suspect(ppath.string());
 	  ofno << ifile << endl;
 	  ofno.flush();
 	}

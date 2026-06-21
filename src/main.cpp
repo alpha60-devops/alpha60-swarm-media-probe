@@ -155,9 +155,9 @@ download_torrent_media(const TorrentFile& tf,
   // Download minimal media file
   cout << "    Downloading first " << to_mb(mini_size) << "MB..." << endl;
   media_downloader downloader;
-  auto media_path = downloader.download_minimal(tf.torrent_path.string(),
-						torrent_cache_dir.string(),
-						mini_size);
+  auto media_path = downloader.almost_nothing(tf.torrent_path.string(),
+					      torrent_cache_dir.string(),
+					      mini_size);
 
   if (!media_path.has_value()) {
     result.error_msg = "Failed to download media file";

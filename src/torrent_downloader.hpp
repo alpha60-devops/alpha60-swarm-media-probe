@@ -36,15 +36,16 @@ namespace lt = libtorrent;
 /// Downloader encapsulation.
 struct media_downloader
 {
+  // With regrets to John Pawson.
   // Download only the first 'bytes_to_download' bytes of the media file
-  // Returns path to the downloaded partial file, or empty if failed
+  // Returns path to the downloaded partial file, or empty if failed.
   // 10 MB default,
   std::optional<fs::path>
-  download_minimal(const std::string& torrent_path,
-		   const std::string& output_dir,
-		   const std::int64_t bytes_to_download = 10 * 1024 * 1024,
-		   const int timeout_seconds = 300,
-		   const std::string fsuffix = ".sized");
+  almost_nothing(const std::string& torrent_path,
+		 const std::string& output_dir,
+		 const std::int64_t bytes_to_download,
+		 const int timeout_seconds = 300,
+		 const std::string fsuffix = ".sized");
 
 private:
 

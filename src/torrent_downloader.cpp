@@ -361,6 +361,9 @@ media_downloader::download_minimal(const std::string& ifile,
       auto to_seconds = [](auto duration)
       { return std::chrono::duration_cast<std::chrono::seconds>(duration); };
 
+      //// XXXX make all of this restartable if written bytes are not enough.
+      //// fail: verification failed (4327) in
+
       int64_t last_downloaded = 0;
       auto last_rate_time = start_time;
       double current_rate_bps = 0.0;
@@ -447,13 +450,15 @@ media_downloader::download_minimal(const std::string& ifile,
       // Pause session, flush data, remove torrent.
       try
 	{
+	  const uint max_wait(10);
+
 	  // Pause torrent.
 	  // Disable auto_managed so the session doesn't restart it
 	  handle.auto_managed(false);
 	  handle.pause();
 
 	  // Wait for it to actually stop
-	  for (int attempt = 0; attempt < 10; ++attempt)
+	  for (int attempt = 0; attempt < max_wait; ++attempt)
 	    {
 	      auto status = handle.status();
 	      if (status.paused)
@@ -471,7 +476,6 @@ media_downloader::download_minimal(const std::string& ifile,
 	  handle.save_resume_data(lt::torrent_handle::save_info_dict);
 
 	  // Session shutdown handled later.
-	  const uint max_wait(10);
 	  double downloaded = handle.status().total_done;
 	  if (downloaded != 0)
 	    {
@@ -494,6 +498,7 @@ media_downloader::download_minimal(const std::string& ifile,
 	      cout << i << ", ";
 	      removedp = drain_alerts(sesh, handle);
 	    }
+	  cout << endl;
 	}
       catch (std::exception& e)
 	{

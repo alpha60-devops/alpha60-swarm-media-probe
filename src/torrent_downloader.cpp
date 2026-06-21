@@ -52,6 +52,10 @@ make_settings_pack()
   // This requires libtorrent version >= 2.0.6
   settings.set_int(settings_pack::disk_io_write_mode, settings_pack::write_through);
 
+  // 16MB cache (16KiB blocks * 1024)
+  // Set cache settings to trigger flushes with desired minimum file size.
+  settings.set_int(settings_pack::cache_size, 1024);
+
   // Setup alerts.
   using namespace lt::alert_category;
   auto pack_cat(error | storage | status | tracker | dht);
@@ -366,11 +370,23 @@ media_downloader::download_minimal(const std::string& ifile,
 	  auto now = chrono::steady_clock::now();
 
 	  // Check for timeout.
+	  uint timeout_xtra(1);
 	  auto elapsed = to_seconds(now - start_time).count();
-	  if (elapsed > timeout_seconds)
+	  if (elapsed > timeout_seconds * timeout_xtra)
 	    {
-	      cerr << "timeout after " << timeout_seconds << " seconds" << endl;
-	      break;
+	      // Extend once.
+	      // Heuristic to continue if probablity for completion is high.
+	      bool almostp((to_mb(last_downloaded) / target_mb) >= 0.5);
+	      if (almostp && timeout_xtra == 1)
+		{
+		  timeout_xtra = 2;
+		  cout << "timeout extended" << endl;
+		}
+	      else
+		{
+		  cerr << "timeout after " << timeout_seconds << " seconds" << endl;
+		  break;
+		}
 	    }
 
 	  // Get status.
@@ -379,8 +395,14 @@ media_downloader::download_minimal(const std::string& ifile,
 	  // Check if the download has reached the target size and time.
 	  // status.total_payload_download
 	  // status.all_time_download
-	  const double downloaded_mb = to_mb(status.total_done);
-	  if (elapsed >= minimum_seconds && downloaded_mb >= target_mb)
+	  const double tdownloaded_mb = to_mb(status.total_done);
+
+	  // Ask the torrent handle for the download progress of ALL files
+	  std::vector<std::int64_t> file_progress;
+	  handle.file_progress(file_progress);
+	  std::int64_t fdownloaded = file_progress[largest_file_index];
+	  auto fdownloaded_mb = fdownloaded ? to_mb(fdownloaded) : 0;
+	  if (elapsed >= minimum_seconds && fdownloaded_mb >= target_mb)
 	    break;
 
 	  // Check if stalled.
@@ -405,7 +427,7 @@ media_downloader::download_minimal(const std::string& ifile,
 	      double rate_kbps = current_rate_bps / 1024.0;
 	      cout << fixed << setprecision(2);
 	      cout << "  Peers: " << status.num_peers
-		   << " | Downloaded: " << downloaded_mb << " MB / "
+		   << " | Downloaded: " << tdownloaded_mb << " MB / "
 		   << max_mb << " MB"
 		   << " | Speed: " << rate_kbps << " KB/s";
 
@@ -425,10 +447,27 @@ media_downloader::download_minimal(const std::string& ifile,
       // Pause session, flush data, remove torrent.
       try
 	{
+	  // Pause torrent.
+	  // Disable auto_managed so the session doesn't restart it
+	  handle.auto_managed(false);
 	  handle.pause();
-	  handle.flush_cache();
 
+	  // Wait for it to actually stop
+	  for (int attempt = 0; attempt < 10; ++attempt)
+	    {
+	      auto status = handle.status();
+	      if (status.paused)
+		{
+		  cout << "paused " << to_string(attempt) << endl;
+		  break;
+		}
+	      std::this_thread::sleep_for(chrono::seconds(1));
+	      drain_alerts(sesh);
+	    }
+
+	  // Flush
 	  // Request resume data (this also forces dirty blocks to disk)
+	  handle.flush_cache();
 	  handle.save_resume_data(lt::torrent_handle::save_info_dict);
 
 	  // Session shutdown handled later.

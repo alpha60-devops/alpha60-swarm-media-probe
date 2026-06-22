@@ -84,19 +84,14 @@ media_downloader::drain_alerts(lt::session& sesh, lt::torrent_handle& handle)
 {
   // Wait for up to 1 second for a libtorrent alert
   bool ret(false);
+  uint flushed(0);
   lt::alert const* a = sesh.wait_for_alert(lt::seconds(1));
   if (a != nullptr)
     {
       std::vector<lt::alert*> alerts;
       sesh.pop_alerts(&alerts);
-
       for (lt::alert* alert : alerts)
 	{
-#if 0
-	  if (auto at = lt::alert_cast<lt::add_torrent_alert>(alert))
-	    handle = at->handle;
-#endif
-
 	  if (lt::alert_cast<lt::torrent_removed_alert>(alert))
 	    {
 	      std::cout << "torrent removed " << std::endl;
@@ -119,20 +114,27 @@ media_downloader::drain_alerts(lt::session& sesh, lt::torrent_handle& handle)
 
 	  if (lt::alert_cast<lt::cache_flushed_alert>(alert))
 	    {
-	      std::cout << "cache flushed " << std::endl;
+	      std::cout << "cache flushed ";
+	      flushed++;
 	    }
 
-	  if (lt::alert_cast<lt::save_resume_data_alert>(a))
+	  if (lt::alert_cast<lt::save_resume_data_alert>(alert))
 	     {
-	       std::cout << "save resume " << std::endl;
+	       std::cout << "save resume ";
+	       flushed++;
+	     }
+
+	  if (lt::alert_cast<lt::save_resume_data_failed_alert>(alert))
+	     {
+	       std::cout << "save resume failed: " << alert->message();
 	     }
 	}
     }
-  return ret;
+  return ret ? true : flushed == 2;
 }
 
 /// Copy the first N bytes from source file to destination file
-static bool
+bool
 copy_first_n_bytes(const fs::path& source, const fs::path& destination,
 		   const std::int64_t num_bytes)
 {
@@ -205,7 +207,7 @@ copy_first_n_bytes(const fs::path& source, const fs::path& destination,
 /// @param min_size    minimum required file size (bytes)
 /// @param bytes_to_check number of bytes to read from start (default 1024)
 /// @return true if file exists, size >= min_size, and first bytes_to_check are non-zero
-static bool
+bool
 verify_data_on_disk(const fs::path& file_path,
 		    const std::uint64_t min_size,
 		    const std::size_t bytes_to_check = 1024)
@@ -251,9 +253,11 @@ verify_data_on_disk(const fs::path& file_path,
 std::ofstream&
 log_suspect(const std::string odir)
 {
-  const std::string ofname("download.suspect-or-no-peers.log");
+  const std::string fname("download.suspect-or-no-peers.log");
+  const std::string ofname(odir + fname);
   const std::ios_base::openmode ofm = std::ios_base::out | std::ios_base::app;
-  static std::ofstream ofsus(odir + "/" + ofname, ofm);
+  static std::ofstream ofsus(ofname, ofm);
+  std::cout << "suspect and unreachable logging: " << ofname << std::endl;
   return ofsus;
 }
 
@@ -267,6 +271,9 @@ media_downloader::just_a_bit(lt::session& sesh, lt::torrent_handle& handle,
 {
   using namespace std;
 
+  auto to_seconds = [](auto duration)
+  { return std::chrono::duration_cast<std::chrono::seconds>(duration); };
+
   // Start timeout loop...
   // Ends if:
   /// 1: enough downloaded to make sized_file
@@ -274,37 +281,14 @@ media_downloader::just_a_bit(lt::session& sesh, lt::torrent_handle& handle,
   auto start_time = chrono::steady_clock::now();
   auto last_status_time = start_time;
 
-  auto to_seconds = [](auto duration)
-  { return std::chrono::duration_cast<std::chrono::seconds>(duration); };
-
   int64_t last_downloaded = 0;
   auto last_rate_time = start_time;
   double current_rate_bps = 0.0;
   while (true)
     {
-      // Start clock.
+      // Check clock.
       auto now = chrono::steady_clock::now();
-
-      // Check for timeout.
-      uint timeout_xtra(1);
       auto elapsed = to_seconds(now - start_time).count();
-      if (elapsed > tlimits.maximum * timeout_xtra)
-	{
-	  // Extend once.
-	  // Heuristic to continue if probablity for completion is high.
-	  bool almostp((to_mb(last_downloaded) / target_mb) >= 0.5);
-	  if (almostp && timeout_xtra == 1)
-	    {
-	      timeout_xtra = 2;
-	      cout << "timeout extended" << endl;
-	    }
-	  else
-	    {
-	      uint timeoutstotal = tlimits.maximum * timeout_xtra;
-	      cerr << "timeout after " << timeoutstotal << " seconds" << endl;
-	      break;
-	    }
-	}
 
       // Get status.
       auto status = handle.status();
@@ -319,21 +303,35 @@ media_downloader::just_a_bit(lt::session& sesh, lt::torrent_handle& handle,
       handle.file_progress(file_progress);
       std::int64_t fdownloaded = file_progress[p_index];
       auto fdownloaded_mb = fdownloaded ? to_mb(fdownloaded) : 0;
-      if (elapsed >= tlimits.minimum && fdownloaded_mb >= target_mb)
-	break;
+      if (tdownloaded_mb >= p_mb || fdownloaded_mb >= target_mb)
+	{
+	  cerr << "progress (" << fdownloaded_mb << ") of " << target_mb
+	       << endl;
+	  break;
+	}
+
+      // Check for timeout.
+      if (elapsed > tlimits.maximum)
+	{
+	  cerr << "timeout after " << tlimits.maximum << " seconds" << endl;
+	  break;
+	}
+
+      // Calculate current download rate.
+      double rate_elapsed = to_seconds(now - last_rate_time).count();
+      if (rate_elapsed >= 5 && status.total_done > 0)
+	{
+	  double delta_bytes = status.total_done - last_downloaded;
+	  current_rate_bps = delta_bytes / rate_elapsed;
+	  last_downloaded = status.total_done;
+	  last_rate_time = now;
+	}
 
       // Check if stalled.
-      if (elapsed > tlimits.unresponsive && status.download_rate == 0)
-	break;
-
-      // Calculate current download rate
-      double rate_elapsed = to_seconds(now - last_rate_time).count();
-      if (rate_elapsed >= 5 && status.total_payload_download > 0)
+      if (current_rate_bps == 0 && elapsed >= tlimits.unresponsive)
 	{
-	  double delta_bytes = status.total_payload_download - last_downloaded;
-	  current_rate_bps = delta_bytes / rate_elapsed;
-	  last_downloaded = status.total_payload_download;
-	  last_rate_time = now;
+	  cerr << "stalled in (" << elapsed << ") seconds" << endl;
+	  break;
 	}
 
       // Show progress every n second interval.
@@ -344,10 +342,9 @@ media_downloader::just_a_bit(lt::session& sesh, lt::torrent_handle& handle,
 	  double rate_kbps = current_rate_bps / 1024.0;
 	  cout << fixed << setprecision(2);
 	  cout << "  Peers: " << status.num_peers
-	       << " | Downloaded: " << tdownloaded_mb << " MB / "
-	       << p_mb << " MB"
+	       << " | Downloaded: " << fdownloaded_mb << ", "
+	       << tdownloaded_mb << " MB / " << p_mb << " MB"
 	       << " | Speed: " << rate_kbps << " KB/s";
-
 	  cout << endl;
 	  last_status_time = now;
 	}
@@ -358,6 +355,51 @@ media_downloader::just_a_bit(lt::session& sesh, lt::torrent_handle& handle,
 
       drain_alerts(sesh);
       this_thread::sleep_for(chrono::seconds(1));
+    }
+}
+
+
+/// Quiet session to measure progress.
+void
+media_downloader::is_enough(lt::session& sesh, lt::torrent_handle& handle,
+			    const uint max_wait)
+{
+  // Pause torrent.
+  // Disable auto_managed so the session doesn't restart it
+  using namespace std;
+  handle.auto_managed(false);
+  handle.pause();
+
+  // Wait for it to actually stop
+  for (int attempt = 0; attempt < max_wait; ++attempt)
+    {
+      auto status = handle.status();
+      if (status.paused)
+	{
+	  cout << "paused " << to_string(attempt) << endl;
+	  break;
+	}
+      this_thread::sleep_for(chrono::seconds(1));
+      drain_alerts(sesh);
+    }
+
+  // Flush
+  // Request resume data (this also forces dirty blocks to disk)
+  handle.flush_cache();
+  handle.save_resume_data(lt::torrent_handle::save_info_dict);
+
+  // Session shutdown handled later.
+  double downloaded = handle.status().total_done;
+  if (downloaded != 0)
+    {
+      cout << "handle tear down: ";
+      bool donep(false);
+      for (uint i = 0; i < max_wait && !donep; ++i)
+	{
+	  cout << i << ", ";
+	  donep = drain_alerts(sesh, handle);
+	}
+      cout << endl;
     }
 }
 
@@ -377,17 +419,11 @@ std::optional<fs::path>
 media_downloader::almost_nothing(const std::string& ifile,
 				   const std::string& output_dir,
 				   const std::int64_t bytes_to_download,
-				   const int timeout_seconds,
 				   const std::string fsuffix)
 {
   // Return sized_file_path file whenever possible, as that is the small one.
   using namespace std;
   optional<fs::path> ret(nullopt);
-
-  // Amount of time before downloading is considered futile.
-  // This could be for a number of factors: no peers, private, unreachable.
-  const int unresponsive_seconds(30);
-  const int minimum_seconds(5);
 
   fs::path prime_file_path;
   fs::path sized_file_path;
@@ -456,56 +492,57 @@ media_downloader::almost_nothing(const std::string& ifile,
 	}
       cout << "  ...metadata received." << endl;
 
-      //// XXXX make all of this restartable if written bytes are not enough.
-      //// fail: verification failed (4327) in
-      just_a_bit(sesh, handle, dtlimits, largest_file_index, max_mb, target_mb);
-
-      // Tear down.
-      // Pause session, flush data, remove torrent.
       try
 	{
-	  const uint max_wait(10);
-
-	  // Pause torrent.
-	  // Disable auto_managed so the session doesn't restart it
-	  handle.auto_managed(false);
-	  handle.pause();
-
-	  // Wait for it to actually stop
-	  for (int attempt = 0; attempt < max_wait; ++attempt)
+	  // Loop with increasing download target sizes until prime fills in.
+	  // 16, 32, 64, 128, 256, 512 (aka exponential).
+	  bool serializedp(false);
+	  bool stalledp(false);
+	  for (uint index = 1; index < 7 && !serializedp && !stalledp; index++)
 	    {
+	      uint dl_target_mb = target_mb * (1 << (index - 1));
+	      just_a_bit(sesh, handle, dtlimits, largest_file_index,
+			 max_mb, dl_target_mb);
+	      is_enough(sesh, handle);
+
 	      auto status = handle.status();
-	      if (status.paused)
+	      if (verify_data_on_disk(prime_file_path, bytes_to_download))
+		serializedp = true;
+	      else
 		{
-		  cout << "paused " << to_string(attempt) << endl;
-		  break;
+		  if (status.total_done == 0 && status.download_rate == 0)
+		    stalledp = true;
+		  else
+		    {
+		      cout << "try (" << index << ", " << dl_target_mb
+			   << ") complete" << endl;
+
+		      // Restart torrent
+		      handle.resume();
+		      handle.auto_managed(true);
+
+		      // Wait for it to actually start
+		      const uint max_wait = 20;
+		      for (int attempt = 0; attempt < max_wait; ++attempt)
+			{
+			  this_thread::sleep_for(chrono::seconds(1));
+			  status = handle.status();
+			  bool readyp = !status.paused && status.has_metadata;
+			  bool managedp = status.auto_managed;
+			  bool peersp = status.num_peers > 0;
+			  if (readyp && managedp)
+			    {
+			      cout << "resumed " << to_string(attempt) << endl;
+			      break;
+			    }
+			  drain_alerts(sesh);
+			}
+		    }
 		}
-	      std::this_thread::sleep_for(chrono::seconds(1));
-	      drain_alerts(sesh);
 	    }
-
-	  // Flush
-	  // Request resume data (this also forces dirty blocks to disk)
-	  handle.flush_cache();
-	  handle.save_resume_data(lt::torrent_handle::save_info_dict);
-
-	  // Session shutdown handled later.
-	  double downloaded = handle.status().total_done;
-	  if (downloaded != 0)
-	    {
-	      cout << "handle tear down: ";
-	      for (uint i = 0; i < max_wait; ++i)
-		{
-		  cout << i << ", ";
-		  drain_alerts(sesh, handle);
-		}
-	      cout << endl;
-	    }
-
-	  if (verify_data_on_disk(prime_file_path, bytes_to_download))
-	    cout << "tear down prime file validated" << endl;
 
 	  sesh.remove_torrent(handle);
+	  const uint max_wait = 10;
 	  bool removedp(false);
 	  for (uint i = 0; i < max_wait && !removedp; ++i)
 	    {
@@ -578,8 +615,8 @@ media_downloader::almost_nothing(const std::string& ifile,
       if (ff_size == 0)
 	{
 	  // Log in working directory.
-	  fs::path ppath = fs::path(output_dir).parent_path();
-	  ofstream& ofno = log_suspect(ppath.string());
+	  fs::path ppath = fs::path(output_dir).parent_path().parent_path();
+	  ofstream& ofno = log_suspect(ppath.lexically_normal().string());
 	  ofno << ifile << endl;
 	  ofno.flush();
 	}

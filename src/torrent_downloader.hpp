@@ -33,7 +33,12 @@
 namespace fs = std::filesystem;
 namespace lt = libtorrent;
 
-/// Timeout detailed in seconds.
+// Convenience.
+inline uint
+to_mb(double d)
+{ return d / (1024 * 1024); }
+
+/// Timeout details in seconds.
 struct time_limits
 {
   // Amount of time before downloading is considered futile.
@@ -50,17 +55,23 @@ struct time_limits
 };
 
 /// Default timeouts.
-constexpr time_limits dtlimits { 20, 5, 300 };
+constexpr time_limits dtlimits { 5, 0, 300 };
 
 
 /// Downloader encapsulation.
 struct media_downloader
 {
   void
+  is_enough(lt::session& sesh, lt::torrent_handle& handle,
+	    const uint max_wait = 10);
+
+  void
   just_a_bit(lt::session& sesh, lt::torrent_handle& handle,
 	     const time_limits& tlimits,
 	     const lt::file_index_t p_index, const double p_mb,
 	     const double target_mb);
+
+
 
   // With regrets to John Pawson.
   // Download only the first 'bytes_to_download' bytes of the media file
@@ -70,7 +81,6 @@ struct media_downloader
   almost_nothing(const std::string& torrent_path,
 		 const std::string& output_dir,
 		 const std::int64_t bytes_to_download,
-		 const int timeout_seconds = 300,
 		 const std::string fsuffix = ".sized");
 
 private:
@@ -82,9 +92,5 @@ private:
   drain_alerts(lt::session& sesh, lt::torrent_handle& handle);
 };
 
-// Convenience.
-inline uint
-to_mb(double d)
-{ return d / (1024 * 1024); }
 
 #endif // TORRENT_DOWNLOADER_HPP

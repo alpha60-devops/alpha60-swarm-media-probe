@@ -142,7 +142,7 @@ subtitle_format       | string | Subtitle format (e.g., "UTF-8", "ASS", "SRT") o
 }
 ```
 
-##Processing Rules
+## Processing Rules
 
 Multiple Tracks:
 - For audio_languages and subtitle_languages, collect all unique values from all tracks.

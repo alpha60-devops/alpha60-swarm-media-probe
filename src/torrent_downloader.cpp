@@ -530,9 +530,10 @@ media_downloader::almost_nothing(const std::string& ifile,
 			  bool readyp = !status.paused && status.has_metadata;
 			  bool managedp = status.auto_managed;
 			  bool peersp = status.num_peers > 0;
-			  if (readyp && managedp)
+			  if (readyp && managedp && peersp)
 			    {
-			      cout << "resumed " << to_string(attempt) << endl;
+			      cout << "resumed (" << attempt <<  " sec), "
+				   << "peers (" << status.num_peers << ")" << endl;
 			      break;
 			    }
 			  drain_alerts(sesh);

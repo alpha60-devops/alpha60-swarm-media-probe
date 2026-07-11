@@ -3,10 +3,12 @@
 enrichment::enrichment() {}
 
 pipeline_metrics
-enrichment::compute_pipeline_metrics(const std::vector<fs::path>& downloaded_files,
-				     const std::vector<MediaInfoData>& media_data,
+enrichment::compute_pipeline_metrics(const process_result& presult,
 				     size_t mini_size)
 {
+  const std::vector<MediaInfoData>& media_data = presult.media_data_list;
+  const std::vector<fs::path>& downloaded_files = presult.downloaded_files;
+
   pipeline_metrics metrics;
   metrics.media_cache_file_size = mini_size;
   metrics.btiha_size = downloaded_files.size();
@@ -63,15 +65,14 @@ enrichment::compute_pipeline_metrics(const std::vector<fs::path>& downloaded_fil
 
 std::string
 enrichment::build_output(const std::vector<TorrentFile>& torrents,
-			 const std::vector<MediaInfoData>& media_data,
-			 const std::vector<fs::path>& downloaded_files,
+			 const process_result& presult,
 			 const std::string& collection_key,
 			 const uint mini_size,
 			 uintmax_t cache_dir_size_mb,
 			 uintmax_t torrent_total_size_mb)
 {
   // Compute pipeline metrics
-  pipeline_metrics metrics = compute_pipeline_metrics(downloaded_files, media_data, mini_size);
+  pipeline_metrics metrics = compute_pipeline_metrics(presult, mini_size);
 
   // Get current UTC time
   auto now = std::time(nullptr);
@@ -95,6 +96,7 @@ enrichment::build_output(const std::vector<TorrentFile>& torrents,
   ss << "  },\n";
   ss << "  \"media_objects\": [\n";
 
+  const std::vector<MediaInfoData>& media_data = presult.media_data_list;
   for (size_t i = 0; i < torrents.size(); ++i)
     {
       const auto& tf = torrents[i];

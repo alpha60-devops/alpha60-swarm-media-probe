@@ -14,6 +14,16 @@
 
 namespace fs = std::filesystem;
 
+/// Process all torrents (download + extract)
+struct process_result
+{
+  std::vector<MediaInfoData>    media_data_list;
+  std::vector<fs::path>		downloaded_files;
+  size_t                        success_count;
+  size_t                        get_fail;
+  size_t                        extract_fail;
+};
+
 struct pipeline_metrics
 {
   size_t btiha_size = 0;              // total number of torrents processed
@@ -31,8 +41,7 @@ public:
 
     std::string
     build_output(const std::vector<TorrentFile>& torrents,
-		 const std::vector<MediaInfoData>& media_data,
-		 const std::vector<fs::path>& downloaded_files,
+		 const process_result& presult,
 		 const std::string& collection_key,
 		 const uint mini_size,
 		 uintmax_t cache_dir_size_mb,
@@ -43,9 +52,7 @@ public:
 
 private:
     pipeline_metrics
-    compute_pipeline_metrics(const std::vector<fs::path>& downloaded_files,
-			     const std::vector<MediaInfoData>& media_data,
-			     size_t mini_size);
+    compute_pipeline_metrics(const process_result& presult, size_t mini_size);
 
     std::string json_string(const std::string& str);
     std::string escape_json_string(const std::string& str);

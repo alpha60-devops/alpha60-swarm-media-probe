@@ -52,10 +52,6 @@ make_settings_pack()
   // This requires libtorrent version >= 2.0.6
   settings.set_int(settings_pack::disk_io_write_mode, settings_pack::write_through);
 
-  // 16MB cache (16KiB blocks * 1024)
-  // Set cache settings to trigger flushes with desired minimum file size.
-  settings.set_int(settings_pack::cache_size, 1024);
-
   // Setup alerts.
   using namespace lt::alert_category;
   auto pack_cat(error | storage | status | tracker | dht);
@@ -80,7 +76,8 @@ media_downloader::drain_alerts(lt::session& sesh)
 
 // Returns downloaded, waits for cache flushes
 bool
-media_downloader::drain_alerts(lt::session& sesh, lt::torrent_handle& handle)
+media_downloader::drain_alerts(lt::session& sesh,
+			       lt::torrent_handle& /*handle*/)
 {
   // Wait for up to 1 second for a libtorrent alert
   bool ret(false);
@@ -367,14 +364,16 @@ media_downloader::is_enough(lt::session& sesh, lt::torrent_handle& handle,
   // Pause torrent.
   // Disable auto_managed so the session doesn't restart it
   using namespace std;
-  handle.auto_managed(false);
+  // Clear auto_managed flag (disable automatic management)
+  handle.set_flags({}, lt::torrent_flags::auto_managed);
   handle.pause();
 
   // Wait for it to actually stop
-  for (int attempt = 0; attempt < max_wait; ++attempt)
+  for (uint attempt = 0; attempt < max_wait; ++attempt)
     {
       auto status = handle.status();
-      if (status.paused)
+      // Check paused flag via flags bitmask
+      if (status.flags & lt::torrent_flags::paused)
 	{
 	  cout << "paused " << to_string(attempt) << endl;
 	  break;
@@ -517,18 +516,19 @@ media_downloader::almost_nothing(const std::string& ifile,
 		      cout << "try (" << index << ", " << dl_target_mb
 			   << ") complete" << endl;
 
-		      // Restart torrent
+		      // Restart torrent: set auto_managed flag and resume
+		      handle.set_flags(lt::torrent_flags::auto_managed, lt::torrent_flags::auto_managed);
 		      handle.resume();
-		      handle.auto_managed(true);
 
 		      // Wait for it to actually start
 		      const uint max_wait = 20;
-		      for (int attempt = 0; attempt < max_wait; ++attempt)
+		      for (uint attempt = 0; attempt < max_wait; ++attempt)
 			{
 			  this_thread::sleep_for(chrono::seconds(1));
 			  status = handle.status();
-			  bool readyp = !status.paused && status.has_metadata;
-			  bool managedp = status.auto_managed;
+			  // Check paused flag via bitmask
+			  bool readyp = !(status.flags & lt::torrent_flags::paused) && status.has_metadata;
+			  bool managedp = (status.flags & lt::torrent_flags::auto_managed) != 0;
 			  bool peersp = status.num_peers > 0;
 			  if (readyp && managedp && peersp)
 			    {

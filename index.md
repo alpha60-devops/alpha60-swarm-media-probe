@@ -17,7 +17,7 @@ Naturally, we call it this whole workflow by the acryonym SMiP. Use like: take a
 - [Architecture Overview](/docs/architecture_overview.md) – A high-level description of the system's components and design.
 - [Pipeline Diagrams](/docs/pipeline_diagram.md) – Visual representations of the system's flow and deployment.
 - [Analysis](/docs/analysis.md) – Analysis of results.
-- [Sources](/docs/html.doxygen/index) – Source code documentation
+- [Sources](/docs/html.doxygen/index.html) – Source code documentation
 
 ## Quick Start (tl;dr)
 

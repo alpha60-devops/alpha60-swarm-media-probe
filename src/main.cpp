@@ -28,8 +28,8 @@ print_usage(const char* prog_name)
   cout << "Usage: " << prog_name << " <input_directory> [output_file] [cache_dir]" << endl;
   cout << endl;
   cout << "  input_directory: Directory containing .torrent files" << endl;
-  cout << "  output_file:     Optional output JSON path (default: output/media_objects_content_analysis.json)" << endl;
-  cout << "  cache_dir:       Optional directory for temporary downloads (default: ./download_cache)" << endl;
+  cout << "  output_file: Optional output JSON path (default: output/media_objects_content_analysis.json)" << endl;
+  cout << "  cache_dir: Optional directory for temporary downloads (default: ./download.cache)" << endl;
   cout << endl;
   cout << "Example:" << endl;
   cout << "  " << prog_name << " /path/to/collection-torrents-dir ./enriched.json ./cache" << endl;
@@ -165,16 +165,16 @@ find_cache_file(const fs::path& tdir)
 /// Toplevel download function.
 download_result
 download_torrent_media(const TorrentFile& tf, const fs::path& cache_dir,
-		       size_t min_fsize)
+		       probe_size psize)
 {
-  download_result ret = { };
-
   // Create unique subdirectory for this torrent using its BTIH, if it
   // doesn't exist already.
+  download_result ret = { };
   fs::path torrent_cache_dir = cache_dir / tf.btih;
   ret.media_path = find_cache_file(torrent_cache_dir);
 
   // Use cache if it meets the minimum file size specified.
+  auto [ min_fsize, max_dlsize ] = psize;
   if (fs::exists(ret.media_path) && fs::file_size(ret.media_path) >= min_fsize)
     {
       cout << "    Using cached download: " << ret.media_path << endl;
@@ -183,11 +183,11 @@ download_torrent_media(const TorrentFile& tf, const fs::path& cache_dir,
   else
     {
       // Download minimal media file
-      cout << "    Downloading first " << to_mb(min_fsize) << "MB..." << endl;
+      cout << "    Downloading first " << to_mb(max_dlsize) << "MB..." << endl;
       media_downloader downloader;
       auto media_path = downloader.almost_nothing(tf.torrent_path.string(),
 						  torrent_cache_dir.string(),
-						  min_fsize);
+						  psize);
       if (media_path.has_value())
 	{
 	  ret.media_path = media_path.value();
@@ -212,31 +212,26 @@ struct extract_result
 extract_result
 extract_media_info(const fs::path& media_path)
 {
-  extract_result result;
-  result.success = false;
-
   MediaInfoExtractor extractor(media_path);
   auto media_data = extractor.extract();
 
-  if (!media_data.has_value()) {
-    result.error_msg = "Failed to extract metadata";
-    return result;
-  }
+  extract_result result = { };
+  if (media_data.has_value())
+    {
+      result.data = media_data.value();
+      result.success = true;
 
-  result.data = media_data.value();
-  result.success = true;
-
-  // Print brief summary
-  const auto& md = result.data;
-  cout << "    ✓ Codec: " << (md.video.codec_id.empty() ? "unknown" : md.video.codec_id);
-  if (md.video.width > 0 && md.video.height > 0) {
-    cout << ", Resolution: " << md.video.width << "x" << md.video.height;
-  }
-  if (!md.video.frame_rate.empty()) {
-    cout << ", FPS: " << md.video.frame_rate;
-  }
-  cout << endl;
-
+      // Print brief summary
+      const auto& md = result.data;
+      cout << "    ✓ Codec: " << (md.video.codec_id.empty() ? "unknown" : md.video.codec_id);
+      if (md.video.width > 0 && md.video.height > 0) {
+	cout << ", Resolution: " << md.video.width << "x" << md.video.height;
+      }
+      if (!md.video.frame_rate.empty()) {
+	cout << ", FPS: " << md.video.frame_rate;
+      }
+      cout << endl;
+    }
   return result;
 }
 
@@ -245,11 +240,12 @@ extract_media_info(const fs::path& media_path)
 process_result
 process_all_torrents(const vector<TorrentFile>& torrents,
 		     const fs::path& cache_dir,
-		     const size_t min_fsize, const bool download_p)
+		     const probe_size psize, const bool download_p)
 {
   cout << "\n[2/3] " << (download_p ? "Downloading" : "Using cached")
        << " media ..." << endl;
 
+  auto [ min_fsize, max_dlsize ] = psize;
   process_result result = { };
   for (size_t i = 0; i < torrents.size() && !g_interrupted; ++i)
     {
@@ -259,8 +255,7 @@ process_all_torrents(const vector<TorrentFile>& torrents,
       fs::path torrent_cache_dir = cache_dir / tf.btih;
       fs::path cached_file = find_cache_file(torrent_cache_dir);
 
-      //bool cache_exists = fs::exists(cached_file) && fs::file_size(cached_file) >= min_fsize;
-      bool cache_existsp = fs::exists(cached_file);
+      bool cache_existsp = fs::exists(cached_file) && fs::file_size(cached_file) >= min_fsize;
       if (cache_existsp)
 	{
 	  cout << "    Using cached download: " << cached_file << endl;
@@ -279,7 +274,7 @@ process_all_torrents(const vector<TorrentFile>& torrents,
 	    }
 
 	  // Download
-	  download_result dlr = download_torrent_media(tf, cache_dir, min_fsize);
+	  download_result dlr = download_torrent_media(tf, cache_dir, psize);
 	  if (!dlr.success)
 	    {
 	      cerr << "    ✗ " << dlr.error_msg << endl;
@@ -296,6 +291,8 @@ process_all_torrents(const vector<TorrentFile>& torrents,
 
       cout << "    Extracting metadata..." << endl;
       auto extract_result = extract_media_info(cached_file);
+      cout << endl;
+
       if (extract_result.success)
 	{
 	  result.media_data_list.push_back(extract_result.data);
@@ -303,7 +300,7 @@ process_all_torrents(const vector<TorrentFile>& torrents,
 	}
       else
 	{
-	  cerr << "failed to extract cached metadata: "
+	  cerr << "failed to extract cached metadata file, removing: "
 	       << extract_result.error_msg << endl;
 
 	  // Clean up.
@@ -320,6 +317,7 @@ process_all_torrents(const vector<TorrentFile>& torrents,
 	  result.media_data_list.push_back(MediaInfoData());
 	  result.extract_fail++;
 	}
+      //      cout << endl;
     }
   cout << endl;
 
@@ -368,10 +366,10 @@ print_summary(size_t total_torrents, const process_result& process_result)
   cout << "\n========================================" << endl;
   cout << "  Pipeline Summary" << endl;
   cout << "========================================" << endl;
-  cout << "  Total torrents:        " << total_torrents << endl;
+  cout << "  Total torrents:         " << total_torrents << endl;
   cout << "  Successfully processed: " << process_result.success_count << endl;
-  cout << "  Get Failed:                 " << process_result.get_fail << endl;
-  cout << "  Extract Failed:                 " << process_result.extract_fail << endl;
+  cout << "  Get Failed:             " << process_result.get_fail << endl;
+  cout << "  Extract Failed:         " << process_result.extract_fail << endl;
   cout << "========================================" << endl;
 
   if (g_interrupted) {
@@ -430,18 +428,22 @@ int main(int argc, char* argv[])
   double cache_dir_size_mb = get_directory_size_mb(cache_dir);
   double torrent_total_size_mb = get_collection_size_mb(torrents);
 
-  // Step 2: Process all torrents (download + extract)
-  //const size_t min_fsize = 128 * 1024 * 1024;  // 64 MB
-  //const size_t min_fsize = 64 * 1024 * 1024;  // 64 MB
-  //const size_t min_fsize = 32 * 1024 * 1024;  // 32 MB
-  //const size_t min_fsize = 16 * 1024 * 1024;  // 16 MB
+  const size_t max_fsize = 512 * 1024 * 1024;  // 128 MB
+  //const size_t max_fsize = 128 * 1024 * 1024;  // 128 MB
+  //const size_t max_fsize = 64 * 1024 * 1024;  // 64 MB
+  //const size_t max_fsize = 32 * 1024 * 1024;  // 32 MB
+
+
+  const size_t min_fsize = 16 * 1024 * 1024;  // 16 MB
   //const size_t min_fsize = 10 * 1024 * 1024;  // 10 MB
-  const size_t min_fsize = 0; // only useful for cached only
+  //const size_t min_fsize = 0; // only useful for cached only
 
 
-  bool download_p = false;
-  auto process_result = process_all_torrents(torrents, cache_dir,
-					     min_fsize, download_p);
+  // Step 2: Process all torrents (download + extract)
+  bool download_p = true;
+  probe_size psize = { min_fsize, max_fsize };
+  auto process_result = process_all_torrents(torrents, cache_dir, psize,
+					     download_p);
 
   // Check for interrupt
   if (g_interrupted)

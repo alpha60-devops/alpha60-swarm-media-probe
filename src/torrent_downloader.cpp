@@ -251,7 +251,7 @@ std::ofstream&
 log_suspect(const std::string odir)
 {
   const std::string fname("download.suspect-or-no-peers.log");
-  const std::string ofname(odir + fname);
+  const std::string ofname(odir + "/" + fname);
   const std::ios_base::openmode ofm = std::ios_base::out | std::ios_base::app;
   static std::ofstream ofsus(ofname, ofm);
   std::cout << "suspect and unreachable logging: " << ofname << std::endl;
@@ -260,13 +260,16 @@ log_suspect(const std::string odir)
 
 
 /// Timeout loop for the downloader, active downloading until exit.
+/// @param psize is in mb
 void
 media_downloader::just_a_bit(lt::session& sesh, lt::torrent_handle& handle,
 			     const time_limits& tlimits,
-			     const lt::file_index_t p_index, const double p_mb,
-			     const double target_mb)
+			     const lt::file_index_t p_index,
+			     const probe_size psize)
 {
   using namespace std;
+
+  auto  [ p_mb, target_mb] = psize;
 
   auto to_seconds = [](auto duration)
   { return std::chrono::duration_cast<std::chrono::seconds>(duration); };
@@ -416,13 +419,14 @@ media_downloader::is_enough(lt::session& sesh, lt::torrent_handle& handle,
 /// @param fsuffix the suffix used on the minimal media file, default ".sized"
 std::optional<fs::path>
 media_downloader::almost_nothing(const std::string& ifile,
-				   const std::string& output_dir,
-				   const std::int64_t bytes_to_download,
-				   const std::string fsuffix)
+				 const std::string& output_dir,
+				 const probe_size psize,
+				 const std::string fsuffix)
 {
   // Return sized_file_path file whenever possible, as that is the small one.
   using namespace std;
   optional<fs::path> ret(nullopt);
+  auto [ min_fsize, max_dlsize ] = psize;
 
   fs::path prime_file_path;
   fs::path sized_file_path;
@@ -448,7 +452,7 @@ media_downloader::almost_nothing(const std::string& ifile,
 	    }
 	}
       const double max_mb = to_mb(max_size);
-      const double target_mb = to_mb(bytes_to_download);
+      const double target_mb = to_mb(min_fsize);
 
       auto target_file_path = files.file_path(largest_file_index);
       prime_file_path = fs::path(output_dir) / target_file_path;
@@ -497,15 +501,16 @@ media_downloader::almost_nothing(const std::string& ifile,
 	  // 16, 32, 64, 128, 256, 512 (aka exponential).
 	  bool serializedp(false);
 	  bool stalledp(false);
-	  for (uint index = 1; index < 7 && !serializedp && !stalledp; index++)
+	  for (uint index = 0; index < 6 && !serializedp && !stalledp; index++)
 	    {
-	      uint dl_target_mb = target_mb * (1 << (index - 1));
+	      uint power_of_two = 1u << index;
+	      uint dl_target_mb = target_mb * power_of_two;
 	      just_a_bit(sesh, handle, dtlimits, largest_file_index,
-			 max_mb, dl_target_mb);
+			 { dl_target_mb, to_mb(max_dlsize) });
 	      is_enough(sesh, handle);
 
 	      auto status = handle.status();
-	      if (verify_data_on_disk(prime_file_path, bytes_to_download))
+	      if (verify_data_on_disk(prime_file_path, min_fsize))
 		serializedp = true;
 	      else
 		{
@@ -513,7 +518,9 @@ media_downloader::almost_nothing(const std::string& ifile,
 		    stalledp = true;
 		  else
 		    {
-		      cout << "try (" << index << ", " << dl_target_mb
+		      uint pfile_mb = to_mb(fs::file_size(prime_file_path));
+		      cout << "try (" << index << ", "
+			   << pfile_mb << " of " << dl_target_mb
 			   << ") complete" << endl;
 
 		      // Restart torrent: set auto_managed flag and resume
@@ -583,13 +590,13 @@ media_downloader::almost_nothing(const std::string& ifile,
   // Create a specially-sized small file for the media archive.
   const bool ff_created = fs::exists(prime_file_path);
   const auto ff_size = ff_created ? fs::file_size(prime_file_path) : 0;
-  const bool ff_size_targetp = ff_size >= ulong(bytes_to_download);
+  const bool ff_size_targetp = ff_size >= ulong(min_fsize);
   if (ff_created && ff_size_targetp)
     {
-      if (verify_data_on_disk(prime_file_path, bytes_to_download))
+      if (verify_data_on_disk(prime_file_path, min_fsize))
 	{
 	  if (!copy_first_n_bytes(prime_file_path, sized_file_path,
-				  bytes_to_download))
+				  min_fsize))
 	    cerr << "fail: sized file not copied from prime file " << endl
 		 << prime_file_path.string() << endl;
 	}
@@ -609,7 +616,7 @@ media_downloader::almost_nothing(const std::string& ifile,
 	cout << "error: failed to remove file: " << ec.message() << endl;
     }
 
-  if (verify_data_on_disk(sized_file_path, bytes_to_download))
+  if (verify_data_on_disk(sized_file_path, min_fsize))
     return sized_file_path;
   else
     {

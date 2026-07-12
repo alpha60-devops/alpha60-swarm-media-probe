@@ -33,6 +33,12 @@
 namespace fs = std::filesystem;
 namespace lt = libtorrent;
 
+/// Parameters used in determining how media objects in the swarm
+/// probe are captured and saved to disk as fractional archival ".sized" files.
+/// 1 : is the minimum file size on disk to be viable for mediainfo extraction.
+/// 2 : is the maximum byte size downloaded that is necessary to produce archive
+using probe_size = std::tuple<std::size_t, std::size_t>;
+
 // Convenience.
 inline uint
 to_mb(double d)
@@ -67,9 +73,8 @@ struct media_downloader
 
   void
   just_a_bit(lt::session& sesh, lt::torrent_handle& handle,
-	     const time_limits& tlimits,
-	     const lt::file_index_t p_index, const double p_mb,
-	     const double target_mb);
+	     const time_limits& tlimits, const lt::file_index_t p_index,
+	     const probe_size psize);
 
 
 
@@ -78,10 +83,8 @@ struct media_downloader
   // Returns path to the downloaded partial file, or empty if failed.
   // 10 MB default,
   std::optional<fs::path>
-  almost_nothing(const std::string& torrent_path,
-		 const std::string& output_dir,
-		 const std::int64_t bytes_to_download,
-		 const std::string fsuffix = ".sized");
+  almost_nothing(const std::string& torrent_path, const std::string& output_dir,
+		 const probe_size psize, const std::string fsuffix = ".sized");
 
 private:
 

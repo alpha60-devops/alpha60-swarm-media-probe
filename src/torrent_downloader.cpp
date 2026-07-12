@@ -509,6 +509,15 @@ media_downloader::almost_nothing(const std::string& ifile,
 			 { dl_target_mb, to_mb(max_dlsize) });
 	      is_enough(sesh, handle);
 
+	      // Sync
+	      const bool forcesyncp(true);
+	      if (forcesyncp)
+		{
+		  int fd = open(prime_file_path.string().c_str(), O_RDONLY);
+		  if (fd != -1)
+		    fsync(fd);
+		}
+
 	      auto status = handle.status();
 	      if (verify_data_on_disk(prime_file_path, min_fsize))
 		serializedp = true;
@@ -573,6 +582,7 @@ media_downloader::almost_nothing(const std::string& ifile,
       // ...but force the proxy to destroy itself right here.  This line
       // blocks this background thread until shutdown is 100% finished.
       proxy = lt::session_proxy();
+      std::this_thread::sleep_for(std::chrono::milliseconds(500));
       cout << "session done" << endl;
     }
   catch (const exception& e)

@@ -5,14 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: process_result Struct Reference</title>
+<title>alpha60-swarm-media-probe: process_result Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="clipboard.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <script type="text/javascript" src="cookie.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
@@ -26,8 +23,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">My Project
+   <div id="projectname">alpha60-swarm-media-probe
    </div>
+   <div id="projectbrief">https://alpha60.co</div>
   </td>
  </tr>
  </tbody>
@@ -45,27 +43,11 @@ $(function() { codefold.init(); });
 <script type="text/javascript" src="menu.js"></script>
 <script type="text/javascript">
 $(function() {
-  initMenu('',true,false,'search.php','Search',true);
+  initMenu('',true,false,'search.php','Search',false);
   $(function() { init_search(); });
 });
 </script>
 <div id="main-nav"></div>
-</div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-$(function(){initNavTree('structprocess__result.html','','structprocess__result-members'); });
-</script>
-<div id="container">
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -87,7 +69,12 @@ $(function(){initNavTree('structprocess__result.html','','structprocess__result-
 </div>
 </div>
 
+</div><!-- top -->
+<div id="doc-content">
 <div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structprocess__result-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">process_result Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -99,38 +86,105 @@ $(function(){initNavTree('structprocess__result.html','','structprocess__result-
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:adfb8b2c087aacb1be57282cdc508818e" id="r_adfb8b2c087aacb1be57282cdc508818e"><td class="memItemLeft" align="right" valign="top"><a id="adfb8b2c087aacb1be57282cdc508818e" name="adfb8b2c087aacb1be57282cdc508818e"></a>
-std::vector&lt; <a class="el" href="structMediaInfoData.html">MediaInfoData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>media_data_list</b></td></tr>
-<tr class="memitem:a8eb7f47ee97a0608c11f1f6780082806" id="r_a8eb7f47ee97a0608c11f1f6780082806"><td class="memItemLeft" align="right" valign="top"><a id="a8eb7f47ee97a0608c11f1f6780082806" name="a8eb7f47ee97a0608c11f1f6780082806"></a>
-std::vector&lt; fs::path &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>downloaded_files</b></td></tr>
-<tr class="memitem:afd92b294cd472626e26f614e3dfaca16" id="r_afd92b294cd472626e26f614e3dfaca16"><td class="memItemLeft" align="right" valign="top"><a id="afd92b294cd472626e26f614e3dfaca16" name="afd92b294cd472626e26f614e3dfaca16"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>success_count</b></td></tr>
-<tr class="memitem:ad585ee637d6ad9954e0dde9378a9e637" id="r_ad585ee637d6ad9954e0dde9378a9e637"><td class="memItemLeft" align="right" valign="top"><a id="ad585ee637d6ad9954e0dde9378a9e637" name="ad585ee637d6ad9954e0dde9378a9e637"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>get_fail</b></td></tr>
-<tr class="memitem:a4af8fdd8c465a4a6ca498033bbe0229e" id="r_a4af8fdd8c465a4a6ca498033bbe0229e"><td class="memItemLeft" align="right" valign="top"><a id="a4af8fdd8c465a4a6ca498033bbe0229e" name="a4af8fdd8c465a4a6ca498033bbe0229e"></a>
-size_t&#160;</td><td class="memItemRight" valign="bottom"><b>extract_fail</b></td></tr>
+<tr class="memitem:a8eb7f47ee97a0608c11f1f6780082806" id="r_a8eb7f47ee97a0608c11f1f6780082806"><td class="memItemLeft" align="right" valign="top">std::vector&lt; fs::path &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8eb7f47ee97a0608c11f1f6780082806">downloaded_files</a></td></tr>
+<tr class="memitem:a4af8fdd8c465a4a6ca498033bbe0229e" id="r_a4af8fdd8c465a4a6ca498033bbe0229e"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4af8fdd8c465a4a6ca498033bbe0229e">extract_fail</a></td></tr>
+<tr class="memitem:ad585ee637d6ad9954e0dde9378a9e637" id="r_ad585ee637d6ad9954e0dde9378a9e637"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad585ee637d6ad9954e0dde9378a9e637">get_fail</a></td></tr>
+<tr class="memitem:adfb8b2c087aacb1be57282cdc508818e" id="r_adfb8b2c087aacb1be57282cdc508818e"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structMediaInfoData.html">MediaInfoData</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adfb8b2c087aacb1be57282cdc508818e">media_data_list</a></td></tr>
+<tr class="memitem:afd92b294cd472626e26f614e3dfaca16" id="r_afd92b294cd472626e26f614e3dfaca16"><td class="memItemLeft" align="right" valign="top">size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afd92b294cd472626e26f614e3dfaca16">success_count</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Process all torrents (download + extract) </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li><a class="el" href="json__enricher_8hpp_source.html">json_enricher.hpp</a></li>
+
+<p class="definition">Definition at line <a class="el" href="json__enricher_8hpp_source.html#l00018">18</a> of file <a class="el" href="json__enricher_8hpp_source.html">json_enricher.hpp</a>.</p>
+</div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a8eb7f47ee97a0608c11f1f6780082806" name="a8eb7f47ee97a0608c11f1f6780082806"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8eb7f47ee97a0608c11f1f6780082806">&#9670;&#160;</a></span>downloaded_files</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;fs::path&gt; process_result::downloaded_files</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="json__enricher_8hpp_source.html#l00021">21</a> of file <a class="el" href="json__enricher_8hpp_source.html">json_enricher.hpp</a>.</p>
+
+</div>
+</div>
+<a id="a4af8fdd8c465a4a6ca498033bbe0229e" name="a4af8fdd8c465a4a6ca498033bbe0229e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4af8fdd8c465a4a6ca498033bbe0229e">&#9670;&#160;</a></span>extract_fail</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t process_result::extract_fail</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="json__enricher_8hpp_source.html#l00024">24</a> of file <a class="el" href="json__enricher_8hpp_source.html">json_enricher.hpp</a>.</p>
+
+</div>
+</div>
+<a id="ad585ee637d6ad9954e0dde9378a9e637" name="ad585ee637d6ad9954e0dde9378a9e637"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad585ee637d6ad9954e0dde9378a9e637">&#9670;&#160;</a></span>get_fail</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t process_result::get_fail</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="json__enricher_8hpp_source.html#l00023">23</a> of file <a class="el" href="json__enricher_8hpp_source.html">json_enricher.hpp</a>.</p>
+
+</div>
+</div>
+<a id="adfb8b2c087aacb1be57282cdc508818e" name="adfb8b2c087aacb1be57282cdc508818e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#adfb8b2c087aacb1be57282cdc508818e">&#9670;&#160;</a></span>media_data_list</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt;<a class="el" href="structMediaInfoData.html">MediaInfoData</a>&gt; process_result::media_data_list</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="json__enricher_8hpp_source.html#l00020">20</a> of file <a class="el" href="json__enricher_8hpp_source.html">json_enricher.hpp</a>.</p>
+
+</div>
+</div>
+<a id="afd92b294cd472626e26f614e3dfaca16" name="afd92b294cd472626e26f614e3dfaca16"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afd92b294cd472626e26f614e3dfaca16">&#9670;&#160;</a></span>success_count</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">size_t process_result::success_count</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="json__enricher_8hpp_source.html#l00022">22</a> of file <a class="el" href="json__enricher_8hpp_source.html">json_enricher.hpp</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/bkoz/src/alpha60-swarm-media-probe/src/<a class="el" href="json__enricher_8hpp_source.html">json_enricher.hpp</a></li>
 </ul>
 </div><!-- contents -->
-</div><!-- doc-content -->
-<div id="page-nav" class="page-nav-panel">
-<div id="page-nav-resize-handle"></div>
-<div id="page-nav-tree">
-<div id="page-nav-contents">
-</div><!-- page-nav-contents -->
-</div><!-- page-nav-tree -->
-</div><!-- page-nav -->
-</div><!-- container -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="navelem"><a href="structprocess__result.html">process_result</a></li>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
 </body>
 </html>

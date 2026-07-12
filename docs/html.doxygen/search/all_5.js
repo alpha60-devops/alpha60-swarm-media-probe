@@ -1,6 +1,10 @@
 var searchData=
 [
-  ['media_5fdownloader_0',['media_downloader',['../structmedia__downloader.html',1,'']]],
-  ['mediainfodata_1',['MediaInfoData',['../structMediaInfoData.html',1,'']]],
-  ['mediainfoextractor_2',['MediaInfoExtractor',['../classMediaInfoExtractor.html',1,'']]]
+  ['file_5fpaths_0',['file_paths',['../structTorrentFile.html#ab6abd33acb2c715c22a00a836f9b8468',1,'TorrentFile']]],
+  ['file_5fsize_1',['file_size',['../structMediaInfoData.html#aa1cec57715e797409f981e919238cca2',1,'MediaInfoData']]],
+  ['file_5fsizes_2',['file_sizes',['../structTorrentFile.html#aa81a01f2ea193cd0c38426e629563d53',1,'TorrentFile']]],
+  ['find_5fcache_5ffile_3',['find_cache_file',['../main_8cpp.html#add21ae2bcf13ef5ca558ed098c0d0b9d',1,'main.cpp']]],
+  ['format_4',['format',['../structSubtitleMetadata.html#ab4446b7c5e7d1705a940840445023df7',1,'SubtitleMetadata']]],
+  ['format_5fcommercial_5fif_5fany_5',['format_commercial_if_any',['../structMediaInfoData.html#a1141327150501929d573e5b86ed5afb1',1,'MediaInfoData']]],
+  ['frame_5frate_6',['frame_rate',['../structVideoMetadata.html#ab1a777786fa0b3cd513b7ff7baebc519',1,'VideoMetadata']]]
 ];

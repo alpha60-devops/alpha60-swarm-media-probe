@@ -5,14 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: media_downloader Struct Reference</title>
+<title>alpha60-swarm-media-probe: media_downloader Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="clipboard.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <script type="text/javascript" src="cookie.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
@@ -26,8 +23,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">My Project
+   <div id="projectname">alpha60-swarm-media-probe
    </div>
+   <div id="projectbrief">https://alpha60.co</div>
   </td>
  </tr>
  </tbody>
@@ -45,27 +43,11 @@ $(function() { codefold.init(); });
 <script type="text/javascript" src="menu.js"></script>
 <script type="text/javascript">
 $(function() {
-  initMenu('',true,false,'search.php','Search',true);
+  initMenu('',true,false,'search.php','Search',false);
   $(function() { init_search(); });
 });
 </script>
 <div id="main-nav"></div>
-</div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-$(function(){initNavTree('structmedia__downloader.html','','structmedia__downloader-members'); });
-</script>
-<div id="container">
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -87,7 +69,13 @@ $(function(){initNavTree('structmedia__downloader.html','','structmedia__downloa
 </div>
 </div>
 
+</div><!-- top -->
+<div id="doc-content">
 <div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="structmedia__downloader-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">media_downloader Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -99,14 +87,22 @@ $(function(){initNavTree('structmedia__downloader.html','','structmedia__downloa
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a547a7761d2a4c2ec55b08bf80a1ab986" id="r_a547a7761d2a4c2ec55b08bf80a1ab986"><td class="memItemLeft" align="right" valign="top"><a id="a547a7761d2a4c2ec55b08bf80a1ab986" name="a547a7761d2a4c2ec55b08bf80a1ab986"></a>
-void&#160;</td><td class="memItemRight" valign="bottom"><b>is_enough</b> (lt::session &amp;sesh, lt::torrent_handle &amp;handle, const uint max_wait=10)</td></tr>
-<tr class="memdesc:a547a7761d2a4c2ec55b08bf80a1ab986"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quiet session to measure progress. <br /></td></tr>
-<tr class="memitem:a56abba035063900aaa20d96c4861bb0e" id="r_a56abba035063900aaa20d96c4861bb0e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56abba035063900aaa20d96c4861bb0e">just_a_bit</a> (lt::session &amp;sesh, lt::torrent_handle &amp;handle, const <a class="el" href="structtime__limits.html">time_limits</a> &amp;tlimits, const lt::file_index_t p_index, const probe_size psize)</td></tr>
-<tr class="memitem:a519efca173ee2bf68720301b382329b4" id="r_a519efca173ee2bf68720301b382329b4"><td class="memItemLeft" align="right" valign="top">std::optional&lt; fs::path &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a519efca173ee2bf68720301b382329b4">almost_nothing</a> (const std::string &amp;torrent_path, const std::string &amp;output_dir, const probe_size psize, const std::string fsuffix=&quot;.sized&quot;)</td></tr>
+<tr class="memitem:a519efca173ee2bf68720301b382329b4" id="r_a519efca173ee2bf68720301b382329b4"><td class="memItemLeft" align="right" valign="top">std::optional&lt; fs::path &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a519efca173ee2bf68720301b382329b4">almost_nothing</a> (const std::string &amp;torrent_path, const std::string &amp;output_dir, const <a class="el" href="torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e">probe_size</a> psize, const std::string fsuffix=&quot;.sized&quot;)</td></tr>
+<tr class="memdesc:a519efca173ee2bf68720301b382329b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Download a minimum-sized chunk of the largest media file. So that ffmpeg, mediainfo, and others can be used to determine the frame rate, frame size, audio and subtitles.  <br /></td></tr>
+<tr class="memitem:a547a7761d2a4c2ec55b08bf80a1ab986" id="r_a547a7761d2a4c2ec55b08bf80a1ab986"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a547a7761d2a4c2ec55b08bf80a1ab986">is_enough</a> (lt::session &amp;sesh, lt::torrent_handle &amp;handle, const uint max_wait=10)</td></tr>
+<tr class="memdesc:a547a7761d2a4c2ec55b08bf80a1ab986"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quiet session to measure progress.  <br /></td></tr>
+<tr class="memitem:a56abba035063900aaa20d96c4861bb0e" id="r_a56abba035063900aaa20d96c4861bb0e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56abba035063900aaa20d96c4861bb0e">just_a_bit</a> (lt::session &amp;sesh, lt::torrent_handle &amp;handle, const <a class="el" href="structtime__limits.html">time_limits</a> &amp;tlimits, const lt::file_index_t p_index, const <a class="el" href="torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e">probe_size</a> psize)</td></tr>
+<tr class="memdesc:a56abba035063900aaa20d96c4861bb0e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Timeout loop for the downloader, active downloading until exit.  <br /></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a463c9b342e122f4845092e414c4382db" id="r_a463c9b342e122f4845092e414c4382db"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a463c9b342e122f4845092e414c4382db">drain_alerts</a> (lt::session &amp;sesh)</td></tr>
+<tr class="memitem:a83defcddb4e1b73ede7b9bbc30633995" id="r_a83defcddb4e1b73ede7b9bbc30633995"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a83defcddb4e1b73ede7b9bbc30633995">drain_alerts</a> (lt::session &amp;sesh, lt::torrent_handle &amp;handle)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Downloader encapsulation. </p>
+
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8hpp_source.html#l00068">68</a> of file <a class="el" href="torrent__downloader_8hpp_source.html">torrent_downloader.hpp</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
 <a id="a519efca173ee2bf68720301b382329b4" name="a519efca173ee2bf68720301b382329b4"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a519efca173ee2bf68720301b382329b4">&#9670;&#160;</a></span>almost_nothing()</h2>
@@ -127,7 +123,7 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>is_enough</b> (lt::se
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const probe_size</td>          <td class="paramname"><span class="paramname"><em>psize</em></span>, </td>
+          <td class="paramtype">const <a class="el" href="torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e">probe_size</a></td>          <td class="paramname"><span class="paramname"><em>psize</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -136,7 +132,8 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>is_enough</b> (lt::se
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Download a minimum-sized chunk of the largest media file. So that ffmpeg, mediainfo, and others can be used to determine the frame rate, frame size, audio and subtitles.</p>
+
+<p>Download a minimum-sized chunk of the largest media file. So that ffmpeg, mediainfo, and others can be used to determine the frame rate, frame size, audio and subtitles. </p>
 <p>Download the largest file in the @parm torrent_path given as an argument, but stop at 10MB (or</p><dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">bytes_to_download)</td><td>and archive the smaller sized file.</td></tr>
@@ -146,6 +143,96 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>is_enough</b> (lt::se
   </table>
   </dd>
 </dl>
+
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00421">421</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a463c9b342e122f4845092e414c4382db" name="a463c9b342e122f4845092e414c4382db"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a463c9b342e122f4845092e414c4382db">&#9670;&#160;</a></span>drain_alerts() <span class="overload">[1/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">void media_downloader::drain_alerts </td>
+          <td>(</td>
+          <td class="paramtype">lt::session &amp;</td>          <td class="paramname"><span class="paramname"><em>sesh</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00065">65</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a83defcddb4e1b73ede7b9bbc30633995" name="a83defcddb4e1b73ede7b9bbc30633995"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a83defcddb4e1b73ede7b9bbc30633995">&#9670;&#160;</a></span>drain_alerts() <span class="overload">[2/2]</span></h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool media_downloader::drain_alerts </td>
+          <td>(</td>
+          <td class="paramtype">lt::session &amp;</td>          <td class="paramname"><span class="paramname"><em>sesh</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">lt::torrent_handle &amp;</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>&#160;)</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00079">79</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a547a7761d2a4c2ec55b08bf80a1ab986" name="a547a7761d2a4c2ec55b08bf80a1ab986"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a547a7761d2a4c2ec55b08bf80a1ab986">&#9670;&#160;</a></span>is_enough()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">void media_downloader::is_enough </td>
+          <td>(</td>
+          <td class="paramtype">lt::session &amp;</td>          <td class="paramname"><span class="paramname"><em>sesh</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">lt::torrent_handle &amp;</td>          <td class="paramname"><span class="paramname"><em>handle</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint</td>          <td class="paramname"><span class="paramname"><em>max_wait</em></span><span class="paramdefsep"> = </span><span class="paramdefval">10</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p>Quiet session to measure progress. </p>
+
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00364">364</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
 
 </div>
 </div>
@@ -178,11 +265,13 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>is_enough</b> (lt::se
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const probe_size</td>          <td class="paramname"><span class="paramname"><em>psize</em></span>&#160;)</td>
+          <td class="paramtype">const <a class="el" href="torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e">probe_size</a></td>          <td class="paramname"><span class="paramname"><em>psize</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
-<p>Timeout loop for the downloader, active downloading until exit. </p><dl class="params"><dt>Parameters</dt><dd>
+
+<p>Timeout loop for the downloader, active downloading until exit. </p>
+<dl class="params"><dt>Parameters</dt><dd>
   <table class="params">
     <tr><td class="paramname">psize</td><td>is in mb </td></tr>
   </table>
@@ -190,28 +279,19 @@ void&#160;</td><td class="memItemRight" valign="bottom"><b>is_enough</b> (lt::se
 </dl>
 <p>1: enough downloaded to make sized_file 2: timeout</p>
 
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00265">265</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
+
 </div>
 </div>
 <hr/>The documentation for this struct was generated from the following files:<ul>
-<li><a class="el" href="torrent__downloader_8hpp_source.html">torrent_downloader.hpp</a></li>
-<li><b>torrent_downloader.cpp</b></li>
+<li>/home/bkoz/src/alpha60-swarm-media-probe/src/<a class="el" href="torrent__downloader_8hpp_source.html">torrent_downloader.hpp</a></li>
+<li>/home/bkoz/src/alpha60-swarm-media-probe/src/<a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a></li>
 </ul>
 </div><!-- contents -->
-</div><!-- doc-content -->
-<div id="page-nav" class="page-nav-panel">
-<div id="page-nav-resize-handle"></div>
-<div id="page-nav-tree">
-<div id="page-nav-contents">
-</div><!-- page-nav-contents -->
-</div><!-- page-nav-tree -->
-</div><!-- page-nav -->
-</div><!-- container -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="navelem"><a href="structmedia__downloader.html">media_downloader</a></li>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
 </body>
 </html>

@@ -5,14 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: download_result Struct Reference</title>
+<title>alpha60-swarm-media-probe: download_result Struct Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="clipboard.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <script type="text/javascript" src="cookie.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
@@ -26,8 +23,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">My Project
+   <div id="projectname">alpha60-swarm-media-probe
    </div>
+   <div id="projectbrief">https://alpha60.co</div>
   </td>
  </tr>
  </tbody>
@@ -45,27 +43,11 @@ $(function() { codefold.init(); });
 <script type="text/javascript" src="menu.js"></script>
 <script type="text/javascript">
 $(function() {
-  initMenu('',true,false,'search.php','Search',true);
+  initMenu('',true,false,'search.php','Search',false);
   $(function() { init_search(); });
 });
 </script>
 <div id="main-nav"></div>
-</div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-$(function(){initNavTree('structdownload__result.html','','structdownload__result-members'); });
-</script>
-<div id="container">
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -87,7 +69,12 @@ $(function(){initNavTree('structdownload__result.html','','structdownload__resul
 </div>
 </div>
 
+</div><!-- top -->
+<div id="doc-content">
 <div class="header">
+  <div class="summary">
+<a href="#pub-attribs">Public Attributes</a> &#124;
+<a href="structdownload__result-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">download_result Struct Reference</div></div>
 </div><!--header-->
 <div class="contents">
@@ -97,34 +84,71 @@ $(function(){initNavTree('structdownload__result.html','','structdownload__resul
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-attribs" class="groupheader"><a id="pub-attribs" name="pub-attribs"></a>
 Public Attributes</h2></td></tr>
-<tr class="memitem:aa989f1f2b6ad116cf9009887bd618d2b" id="r_aa989f1f2b6ad116cf9009887bd618d2b"><td class="memItemLeft" align="right" valign="top"><a id="aa989f1f2b6ad116cf9009887bd618d2b" name="aa989f1f2b6ad116cf9009887bd618d2b"></a>
-fs::path&#160;</td><td class="memItemRight" valign="bottom"><b>media_path</b></td></tr>
-<tr class="memitem:a2c97eed46f988b38888a9dc41cc3625c" id="r_a2c97eed46f988b38888a9dc41cc3625c"><td class="memItemLeft" align="right" valign="top"><a id="a2c97eed46f988b38888a9dc41cc3625c" name="a2c97eed46f988b38888a9dc41cc3625c"></a>
-bool&#160;</td><td class="memItemRight" valign="bottom"><b>success</b></td></tr>
-<tr class="memitem:a8d478a845c87a8d26eeefd7d5a362a2b" id="r_a8d478a845c87a8d26eeefd7d5a362a2b"><td class="memItemLeft" align="right" valign="top"><a id="a8d478a845c87a8d26eeefd7d5a362a2b" name="a8d478a845c87a8d26eeefd7d5a362a2b"></a>
-string&#160;</td><td class="memItemRight" valign="bottom"><b>error_msg</b></td></tr>
+<tr class="memitem:a8d478a845c87a8d26eeefd7d5a362a2b" id="r_a8d478a845c87a8d26eeefd7d5a362a2b"><td class="memItemLeft" align="right" valign="top">string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8d478a845c87a8d26eeefd7d5a362a2b">error_msg</a></td></tr>
+<tr class="memitem:aa989f1f2b6ad116cf9009887bd618d2b" id="r_aa989f1f2b6ad116cf9009887bd618d2b"><td class="memItemLeft" align="right" valign="top">fs::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa989f1f2b6ad116cf9009887bd618d2b">media_path</a></td></tr>
+<tr class="memitem:a2c97eed46f988b38888a9dc41cc3625c" id="r_a2c97eed46f988b38888a9dc41cc3625c"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2c97eed46f988b38888a9dc41cc3625c">success</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock"><p>Download media sample for a single torrent. </p>
-</div><hr/>The documentation for this struct was generated from the following file:<ul>
-<li><b>main.cpp</b></li>
+
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00124">124</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+</div><a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a8d478a845c87a8d26eeefd7d5a362a2b" name="a8d478a845c87a8d26eeefd7d5a362a2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a8d478a845c87a8d26eeefd7d5a362a2b">&#9670;&#160;</a></span>error_msg</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">string download_result::error_msg</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00128">128</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+
+</div>
+</div>
+<a id="aa989f1f2b6ad116cf9009887bd618d2b" name="aa989f1f2b6ad116cf9009887bd618d2b"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa989f1f2b6ad116cf9009887bd618d2b">&#9670;&#160;</a></span>media_path</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">fs::path download_result::media_path</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00126">126</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a2c97eed46f988b38888a9dc41cc3625c" name="a2c97eed46f988b38888a9dc41cc3625c"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2c97eed46f988b38888a9dc41cc3625c">&#9670;&#160;</a></span>success</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">bool download_result::success</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00127">127</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+
+</div>
+</div>
+<hr/>The documentation for this struct was generated from the following file:<ul>
+<li>/home/bkoz/src/alpha60-swarm-media-probe/src/<a class="el" href="main_8cpp_source.html">main.cpp</a></li>
 </ul>
 </div><!-- contents -->
-</div><!-- doc-content -->
-<div id="page-nav" class="page-nav-panel">
-<div id="page-nav-resize-handle"></div>
-<div id="page-nav-tree">
-<div id="page-nav-contents">
-</div><!-- page-nav-contents -->
-</div><!-- page-nav-tree -->
-</div><!-- page-nav -->
-</div><!-- container -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="navelem"><a href="structdownload__result.html">download_result</a></li>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
 </body>
 </html>

@@ -5,14 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: TorrentParser Class Reference</title>
+<title>alpha60-swarm-media-probe: TorrentParser Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="clipboard.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <script type="text/javascript" src="cookie.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
@@ -26,8 +23,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">My Project
+   <div id="projectname">alpha60-swarm-media-probe
    </div>
+   <div id="projectbrief">https://alpha60.co</div>
   </td>
  </tr>
  </tbody>
@@ -45,27 +43,11 @@ $(function() { codefold.init(); });
 <script type="text/javascript" src="menu.js"></script>
 <script type="text/javascript">
 $(function() {
-  initMenu('',true,false,'search.php','Search',true);
+  initMenu('',true,false,'search.php','Search',false);
   $(function() { init_search(); });
 });
 </script>
 <div id="main-nav"></div>
-</div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-$(function(){initNavTree('classTorrentParser.html','','classTorrentParser-members'); });
-</script>
-<div id="container">
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -87,40 +69,193 @@ $(function(){initNavTree('classTorrentParser.html','','classTorrentParser-member
 </div>
 </div>
 
+</div><!-- top -->
+<div id="doc-content">
 <div class="header">
+  <div class="summary">
+<a href="#pub-methods">Public Member Functions</a> &#124;
+<a href="#pri-methods">Private Member Functions</a> &#124;
+<a href="#pri-attribs">Private Attributes</a> &#124;
+<a href="classTorrentParser-members.html">List of all members</a>  </div>
   <div class="headertitle"><div class="title">TorrentParser Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
+
+<p><code>#include &lt;<a class="el" href="torrent__parser_8hpp_source.html">torrent_parser.hpp</a>&gt;</code></p>
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4167b6516c495a5237d1fd6ea19316de" id="r_a4167b6516c495a5237d1fd6ea19316de"><td class="memItemLeft" align="right" valign="top"><a id="a4167b6516c495a5237d1fd6ea19316de" name="a4167b6516c495a5237d1fd6ea19316de"></a>
-&#160;</td><td class="memItemRight" valign="bottom"><b>TorrentParser</b> (const fs::path &amp;idir)</td></tr>
-<tr class="memitem:a188c50e7a5a39c54b610cb85f55a9399" id="r_a188c50e7a5a39c54b610cb85f55a9399"><td class="memItemLeft" align="right" valign="top"><a id="a188c50e7a5a39c54b610cb85f55a9399" name="a188c50e7a5a39c54b610cb85f55a9399"></a>
-std::vector&lt; <a class="el" href="structTorrentFile.html">TorrentFile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>parse_all_torrents</b> ()</td></tr>
-<tr class="memitem:afeb9eb239651a1f85992db61a767e604" id="r_afeb9eb239651a1f85992db61a767e604"><td class="memItemLeft" align="right" valign="top"><a id="afeb9eb239651a1f85992db61a767e604" name="afeb9eb239651a1f85992db61a767e604"></a>
-std::optional&lt; <a class="el" href="structTorrentFile.html">TorrentFile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><b>parse_single_torrent</b> (const fs::path &amp;torrent_file)</td></tr>
+<tr class="memitem:a4167b6516c495a5237d1fd6ea19316de" id="r_a4167b6516c495a5237d1fd6ea19316de"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4167b6516c495a5237d1fd6ea19316de">TorrentParser</a> (const fs::path &amp;idir)</td></tr>
+<tr class="memitem:a188c50e7a5a39c54b610cb85f55a9399" id="r_a188c50e7a5a39c54b610cb85f55a9399"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structTorrentFile.html">TorrentFile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a188c50e7a5a39c54b610cb85f55a9399">parse_all_torrents</a> ()</td></tr>
+<tr class="memitem:afeb9eb239651a1f85992db61a767e604" id="r_afeb9eb239651a1f85992db61a767e604"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structTorrentFile.html">TorrentFile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afeb9eb239651a1f85992db61a767e604">parse_single_torrent</a> (const fs::path &amp;torrent_file)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
+Private Member Functions</h2></td></tr>
+<tr class="memitem:a189ba6ff32048a071b36ed606e9dd85e" id="r_a189ba6ff32048a071b36ed606e9dd85e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a189ba6ff32048a071b36ed606e9dd85e">compute_info_hash</a> (const std::vector&lt; char &gt; &amp;torrent_data)</td></tr>
+<tr class="memitem:a6224bb954fe2cda5e62c0e02fa435d72" id="r_a6224bb954fe2cda5e62c0e02fa435d72"><td class="memItemLeft" align="right" valign="top">std::vector&lt; char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6224bb954fe2cda5e62c0e02fa435d72">read_torrent_file</a> (const fs::path &amp;path)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
+Private Attributes</h2></td></tr>
+<tr class="memitem:a91ee985b0c37fe7eb40d38cf45993922" id="r_a91ee985b0c37fe7eb40d38cf45993922"><td class="memItemLeft" align="right" valign="top">fs::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91ee985b0c37fe7eb40d38cf45993922">input_directory_</a></td></tr>
 </table>
+<a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
+<div class="textblock">
+<p class="definition">Definition at line <a class="el" href="torrent__parser_8hpp_source.html#l00029">29</a> of file <a class="el" href="torrent__parser_8hpp_source.html">torrent_parser.hpp</a>.</p>
+</div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
+<a id="a4167b6516c495a5237d1fd6ea19316de" name="a4167b6516c495a5237d1fd6ea19316de"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a4167b6516c495a5237d1fd6ea19316de">&#9670;&#160;</a></span>TorrentParser()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">TorrentParser::TorrentParser </td>
+          <td>(</td>
+          <td class="paramtype">const fs::path &amp;</td>          <td class="paramname"><span class="paramname"><em>idir</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel explicit">explicit</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torrent__parser_8cpp_source.html#l00005">5</a> of file <a class="el" href="torrent__parser_8cpp_source.html">torrent_parser.cpp</a>.</p>
+
+</div>
+</div>
+<a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
+<a id="a189ba6ff32048a071b36ed606e9dd85e" name="a189ba6ff32048a071b36ed606e9dd85e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a189ba6ff32048a071b36ed606e9dd85e">&#9670;&#160;</a></span>compute_info_hash()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::string TorrentParser::compute_info_hash </td>
+          <td>(</td>
+          <td class="paramtype">const std::vector&lt; char &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>torrent_data</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torrent__parser_8cpp_source.html#l00061">61</a> of file <a class="el" href="torrent__parser_8cpp_source.html">torrent_parser.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a188c50e7a5a39c54b610cb85f55a9399" name="a188c50e7a5a39c54b610cb85f55a9399"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a188c50e7a5a39c54b610cb85f55a9399">&#9670;&#160;</a></span>parse_all_torrents()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; <a class="el" href="structTorrentFile.html">TorrentFile</a> &gt; TorrentParser::parse_all_torrents </td>
+          <td>(</td>
+          <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torrent__parser_8cpp_source.html#l00008">8</a> of file <a class="el" href="torrent__parser_8cpp_source.html">torrent_parser.cpp</a>.</p>
+
+</div>
+</div>
+<a id="afeb9eb239651a1f85992db61a767e604" name="afeb9eb239651a1f85992db61a767e604"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#afeb9eb239651a1f85992db61a767e604">&#9670;&#160;</a></span>parse_single_torrent()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::optional&lt; <a class="el" href="structTorrentFile.html">TorrentFile</a> &gt; TorrentParser::parse_single_torrent </td>
+          <td>(</td>
+          <td class="paramtype">const fs::path &amp;</td>          <td class="paramname"><span class="paramname"><em>torrent_file</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torrent__parser_8cpp_source.html#l00027">27</a> of file <a class="el" href="torrent__parser_8cpp_source.html">torrent_parser.cpp</a>.</p>
+
+</div>
+</div>
+<a id="a6224bb954fe2cda5e62c0e02fa435d72" name="a6224bb954fe2cda5e62c0e02fa435d72"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a6224bb954fe2cda5e62c0e02fa435d72">&#9670;&#160;</a></span>read_torrent_file()</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::vector&lt; char &gt; TorrentParser::read_torrent_file </td>
+          <td>(</td>
+          <td class="paramtype">const fs::path &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span></td><td>)</td>
+          <td></td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torrent__parser_8cpp_source.html#l00086">86</a> of file <a class="el" href="torrent__parser_8cpp_source.html">torrent_parser.cpp</a>.</p>
+
+</div>
+</div>
+<a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
+<a id="a91ee985b0c37fe7eb40d38cf45993922" name="a91ee985b0c37fe7eb40d38cf45993922"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a91ee985b0c37fe7eb40d38cf45993922">&#9670;&#160;</a></span>input_directory_</h2>
+
+<div class="memitem">
+<div class="memproto">
+<table class="mlabels">
+  <tr>
+  <td class="mlabels-left">
+      <table class="memname">
+        <tr>
+          <td class="memname">fs::path TorrentParser::input_directory_</td>
+        </tr>
+      </table>
+  </td>
+  <td class="mlabels-right">
+<span class="mlabels"><span class="mlabel private">private</span></span>  </td>
+  </tr>
+</table>
+</div><div class="memdoc">
+
+<p class="definition">Definition at line <a class="el" href="torrent__parser_8hpp_source.html#l00041">41</a> of file <a class="el" href="torrent__parser_8hpp_source.html">torrent_parser.hpp</a>.</p>
+
+</div>
+</div>
 <hr/>The documentation for this class was generated from the following files:<ul>
-<li><a class="el" href="torrent__parser_8hpp_source.html">torrent_parser.hpp</a></li>
-<li><b>torrent_parser.cpp</b></li>
+<li>/home/bkoz/src/alpha60-swarm-media-probe/src/<a class="el" href="torrent__parser_8hpp_source.html">torrent_parser.hpp</a></li>
+<li>/home/bkoz/src/alpha60-swarm-media-probe/src/<a class="el" href="torrent__parser_8cpp_source.html">torrent_parser.cpp</a></li>
 </ul>
 </div><!-- contents -->
-</div><!-- doc-content -->
-<div id="page-nav" class="page-nav-panel">
-<div id="page-nav-resize-handle"></div>
-<div id="page-nav-tree">
-<div id="page-nav-contents">
-</div><!-- page-nav-contents -->
-</div><!-- page-nav-tree -->
-</div><!-- page-nav -->
-</div><!-- container -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="navelem"><a href="classTorrentParser.html">TorrentParser</a></li>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
 </body>
 </html>

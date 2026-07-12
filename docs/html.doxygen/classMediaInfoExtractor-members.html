@@ -5,14 +5,11 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>My Project: Member List</title>
+<title>alpha60-swarm-media-probe: Member List</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
 <script type="text/javascript" src="clipboard.js"></script>
-<link href="navtree.css" rel="stylesheet" type="text/css"/>
-<script type="text/javascript" src="navtreedata.js"></script>
-<script type="text/javascript" src="navtree.js"></script>
 <script type="text/javascript" src="cookie.js"></script>
 <link href="search/search.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="search/searchdata.js"></script>
@@ -26,8 +23,9 @@
  <tbody>
  <tr id="projectrow">
   <td id="projectalign">
-   <div id="projectname">My Project
+   <div id="projectname">alpha60-swarm-media-probe
    </div>
+   <div id="projectbrief">https://alpha60.co</div>
   </td>
  </tr>
  </tbody>
@@ -45,27 +43,11 @@ $(function() { codefold.init(); });
 <script type="text/javascript" src="menu.js"></script>
 <script type="text/javascript">
 $(function() {
-  initMenu('',true,false,'search.php','Search',true);
+  initMenu('',true,false,'search.php','Search',false);
   $(function() { init_search(); });
 });
 </script>
 <div id="main-nav"></div>
-</div><!-- top -->
-<div id="side-nav" class="ui-resizable side-nav-resizable">
-  <div id="nav-tree">
-    <div id="nav-tree-contents">
-      <div id="nav-sync" class="sync"></div>
-    </div>
-  </div>
-  <div id="splitbar" style="-moz-user-select:none;" 
-       class="ui-resizable-handle">
-  </div>
-</div>
-<script type="text/javascript">
-$(function(){initNavTree('classMediaInfoExtractor.html','',''); });
-</script>
-<div id="container">
-<div id="doc-content">
 <!-- window showing the filter options -->
 <div id="MSearchSelectWindow"
      onmouseover="return searchBox.OnSearchSelectShow()"
@@ -87,6 +69,8 @@ $(function(){initNavTree('classMediaInfoExtractor.html','',''); });
 </div>
 </div>
 
+</div><!-- top -->
+<div id="doc-content">
 <div class="header">
   <div class="headertitle"><div class="title">MediaInfoExtractor Member List</div></div>
 </div><!--header-->
@@ -94,18 +78,23 @@ $(function(){initNavTree('classMediaInfoExtractor.html','',''); });
 
 <p>This is the complete list of members for <a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a>, including all inherited members.</p>
 <table class="directory">
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>extract</b>() (defined in <a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a>)</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>interpret_color_primaries</b>(const std::string &amp;value) (defined in <a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a>)</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="even"><td class="entry"><b>is_black_and_white</b>(const std::string &amp;color_primaries) (defined in <a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a>)</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
-  <tr bgcolor="#f0f0f0" class="odd"><td class="entry"><b>MediaInfoExtractor</b>(const fs::path &amp;media_file) (defined in <a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a>)</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMediaInfoExtractor.html#ac07a2c22223e4cfd41ced6df62cdd9ba">exec_ffprobe</a>()</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMediaInfoExtractor.html#ac39c3ab8aca3ad7e01313d3804572f4c">exec_mediainfo</a>()</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMediaInfoExtractor.html#a6121b2f8d07862499b2927364ffdf8c4">extract</a>()</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMediaInfoExtractor.html#ae06b5743a7f45d4e066b6933e18431b4">extract_double_value</a>(const rapidjson::Value &amp;obj, const char *key)</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMediaInfoExtractor.html#af288a758c36812899f2fd66d3c734906">extract_int64_value</a>(const rapidjson::Value &amp;obj, const char *key)</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMediaInfoExtractor.html#ad10a140595290834a195391d232d6f9b">extract_string_value</a>(const rapidjson::Value &amp;obj, const char *key)</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMediaInfoExtractor.html#a8a6e799c858d2bec5e412e38bf138160">interpret_color_primaries</a>(const std::string &amp;value)</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMediaInfoExtractor.html#a9076da26923b659b1371666136dcdfb1">is_black_and_white</a>(const std::string &amp;color_primaries)</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"><span class="mlabel">static</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMediaInfoExtractor.html#a7a5ae69c8c23d9ca6cebf2bdd1f1b1e9">media_file_</a></td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMediaInfoExtractor.html#a136c779b40c3128c5d1953e4cd4af84a">MediaInfoExtractor</a>(const fs::path &amp;media_file)</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"><span class="mlabel">explicit</span></td></tr>
+  <tr class="even"><td class="entry"><a class="el" href="classMediaInfoExtractor.html#a79563d5d39729e5fe376ff9901bc5718">parse_ffprobe_output</a>(const std::string &amp;json_output, MediaInfoData &amp;data)</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
+  <tr class="odd"><td class="entry"><a class="el" href="classMediaInfoExtractor.html#aa8b438297af0fca5f4f999fa8cd6f816">parse_json_output</a>(const std::string &amp;json_output, MediaInfoData &amp;data)</td><td class="entry"><a class="el" href="classMediaInfoExtractor.html">MediaInfoExtractor</a></td><td class="entry"><span class="mlabel">private</span></td></tr>
 </table></div><!-- contents -->
-</div><!-- doc-content -->
-</div><!-- container -->
 <!-- start footer part -->
-<div id="nav-path" class="navpath"><!-- id is needed for treeview function! -->
-  <ul>
-    <li class="footer">Generated by <a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0 </li>
-  </ul>
-</div>
+<hr class="footer"/><address class="footer"><small>
+Generated by&#160;<a href="https://www.doxygen.org/index.html"><img class="footer" src="doxygen.svg" width="104" height="31" alt="doxygen"/></a> 1.14.0
+</small></address>
+</div><!-- doc-content -->
 </body>
 </html>

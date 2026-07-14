@@ -1,0 +1,12 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="1000" height="320" viewBox="0 0 1000 320" role="img" aria-labelledby="title desc">
+<title id="title">Alpha60 Swarm Media Probe overview</title><desc id="desc">Torrent files pass through parsing, cache or swarm acquisition, metadata extraction, and JSON enrichment.</desc>
+<defs><marker id="a" markerWidth="10" markerHeight="10" refX="9" refY="3" orient="auto"><path d="M0,0 L0,6 L9,3 z" fill="#334155"/></marker></defs>
+<style>.box{fill:#f8fafc;stroke:#334155;stroke-width:2;rx:12}.head{font:700 18px sans-serif;fill:#0f172a}.body{font:14px sans-serif;fill:#334155}.arrow{stroke:#334155;stroke-width:2.5;fill:none;marker-end:url(#a)}</style>
+<rect class="box" x="25" y="80" width="160" height="130"/><text class="head" x="105" y="115" text-anchor="middle">Input</text><text class="body" x="105" y="145" text-anchor="middle">.torrent directory</text><text class="body" x="105" y="170" text-anchor="middle">CLI paths</text>
+<rect class="box" x="225" y="80" width="160" height="130"/><text class="head" x="305" y="115" text-anchor="middle">Parse</text><text class="body" x="305" y="145" text-anchor="middle">torrent_parser</text><text class="body" x="305" y="170" text-anchor="middle">BTIH + file inventory</text>
+<rect class="box" x="425" y="40" width="170" height="100"/><text class="head" x="510" y="75" text-anchor="middle">Cache</text><text class="body" x="510" y="105" text-anchor="middle">reuse .sized file</text>
+<rect class="box" x="425" y="180" width="170" height="100"/><text class="head" x="510" y="215" text-anchor="middle">Swarm probe</text><text class="body" x="510" y="245" text-anchor="middle">media_downloader</text>
+<rect class="box" x="635" y="80" width="160" height="130"/><text class="head" x="715" y="115" text-anchor="middle">Extract</text><text class="body" x="715" y="145" text-anchor="middle">MediaInfo</text><text class="body" x="715" y="170" text-anchor="middle">FFprobe</text>
+<rect class="box" x="835" y="80" width="140" height="130"/><text class="head" x="905" y="115" text-anchor="middle">Output</text><text class="body" x="905" y="145" text-anchor="middle">enrichment</text><text class="body" x="905" y="170" text-anchor="middle">JSON + metrics</text>
+<path class="arrow" d="M185 145 H225"/><path class="arrow" d="M385 125 C405 125 405 90 425 90"/><path class="arrow" d="M385 165 C405 165 405 230 425 230"/><path class="arrow" d="M595 90 C615 90 615 125 635 125"/><path class="arrow" d="M595 230 C615 230 615 165 635 165"/><path class="arrow" d="M795 145 H835"/>
+</svg>

@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['read_5ftorrent_5ffile_0',['read_torrent_file',['../classTorrentParser.html#a6224bb954fe2cda5e62c0e02fa435d72',1,'TorrentParser']]]
+  ['read_5ftorrent_5ffile_0',['read_torrent_file',['../classtorrent__parser.html#ac033b763033f5a44d689694903bdcecb',1,'torrent_parser']]]
 ];

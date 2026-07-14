@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['language_0',['language',['../structMediaInfoData.html#aa91228fc44bb3d18d7d7453887516435',1,'MediaInfoData']]],
-  ['languages_1',['languages',['../structAudioMetadata.html#ae6b069f8c43f007d3db0d2a4ad87f3d0',1,'AudioMetadata::languages'],['../structSubtitleMetadata.html#ab3874be9f4710a4fb866518a416d97f8',1,'SubtitleMetadata::languages']]]
+  ['language_0',['language',['../structmedia__info__data.html#a49fa46671c5f5f3782a708134d2d125f',1,'media_info_data']]],
+  ['languages_1',['languages',['../structaudio__metadata.html#ab8fd118c8b1881cfdea0c39a88aa6e51',1,'audio_metadata::languages'],['../structsubtitle__metadata.html#a485afb2556e4c9a456f78f8a50f71046',1,'subtitle_metadata::languages']]]
 ];

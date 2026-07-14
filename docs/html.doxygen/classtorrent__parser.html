@@ -5,7 +5,7 @@
 <meta http-equiv="X-UA-Compatible" content="IE=11"/>
 <meta name="generator" content="Doxygen 1.14.0"/>
 <meta name="viewport" content="width=device-width, initial-scale=1"/>
-<title>alpha60-swarm-media-probe: TorrentParser Class Reference</title>
+<title>alpha60-swarm-media-probe: torrent_parser Class Reference</title>
 <link href="tabs.css" rel="stylesheet" type="text/css"/>
 <script type="text/javascript" src="jquery.js"></script>
 <script type="text/javascript" src="dynsections.js"></script>
@@ -22,6 +22,7 @@
 <table cellspacing="0" cellpadding="0">
  <tbody>
  <tr id="projectrow">
+  <td id="projectlogo"><img alt="Logo" src="a60-logo-outline.svg"/></td>
   <td id="projectalign">
    <div id="projectname">alpha60-swarm-media-probe
    </div>
@@ -76,8 +77,8 @@ $(function() {
 <a href="#pub-methods">Public Member Functions</a> &#124;
 <a href="#pri-methods">Private Member Functions</a> &#124;
 <a href="#pri-attribs">Private Attributes</a> &#124;
-<a href="classTorrentParser-members.html">List of all members</a>  </div>
-  <div class="headertitle"><div class="title">TorrentParser Class Reference</div></div>
+<a href="classtorrent__parser-members.html">List of all members</a>  </div>
+  <div class="headertitle"><div class="title">torrent_parser Class Reference</div></div>
 </div><!--header-->
 <div class="contents">
 
@@ -85,25 +86,25 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a4167b6516c495a5237d1fd6ea19316de" id="r_a4167b6516c495a5237d1fd6ea19316de"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a4167b6516c495a5237d1fd6ea19316de">TorrentParser</a> (const fs::path &amp;idir)</td></tr>
-<tr class="memitem:a188c50e7a5a39c54b610cb85f55a9399" id="r_a188c50e7a5a39c54b610cb85f55a9399"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structTorrentFile.html">TorrentFile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a188c50e7a5a39c54b610cb85f55a9399">parse_all_torrents</a> ()</td></tr>
-<tr class="memitem:afeb9eb239651a1f85992db61a767e604" id="r_afeb9eb239651a1f85992db61a767e604"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structTorrentFile.html">TorrentFile</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#afeb9eb239651a1f85992db61a767e604">parse_single_torrent</a> (const fs::path &amp;torrent_file)</td></tr>
+<tr class="memitem:a653893a55823046c1ff505e57669ccb1" id="r_a653893a55823046c1ff505e57669ccb1"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a653893a55823046c1ff505e57669ccb1">torrent_parser</a> (const fs::path &amp;idir)</td></tr>
+<tr class="memitem:a2274c25af1cd88937c4d1c27554fc96f" id="r_a2274c25af1cd88937c4d1c27554fc96f"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structtorrent__file.html">torrent_file</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2274c25af1cd88937c4d1c27554fc96f">parse_all_torrents</a> ()</td></tr>
+<tr class="memitem:aec5c787f4d2a5c6efc06a3d427bb3ca1" id="r_aec5c787f4d2a5c6efc06a3d427bb3ca1"><td class="memItemLeft" align="right" valign="top">std::optional&lt; <a class="el" href="structtorrent__file.html">torrent_file</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aec5c787f4d2a5c6efc06a3d427bb3ca1">parse_single_torrent</a> (const fs::path &amp;<a class="el" href="structtorrent__file.html">torrent_file</a>)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a189ba6ff32048a071b36ed606e9dd85e" id="r_a189ba6ff32048a071b36ed606e9dd85e"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a189ba6ff32048a071b36ed606e9dd85e">compute_info_hash</a> (const std::vector&lt; char &gt; &amp;torrent_data)</td></tr>
-<tr class="memitem:a6224bb954fe2cda5e62c0e02fa435d72" id="r_a6224bb954fe2cda5e62c0e02fa435d72"><td class="memItemLeft" align="right" valign="top">std::vector&lt; char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6224bb954fe2cda5e62c0e02fa435d72">read_torrent_file</a> (const fs::path &amp;path)</td></tr>
+<tr class="memitem:a468918c4340adca0424d5698f2c36e96" id="r_a468918c4340adca0424d5698f2c36e96"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a468918c4340adca0424d5698f2c36e96">compute_info_hash</a> (const std::vector&lt; char &gt; &amp;torrent_data)</td></tr>
+<tr class="memitem:ac033b763033f5a44d689694903bdcecb" id="r_ac033b763033f5a44d689694903bdcecb"><td class="memItemLeft" align="right" valign="top">std::vector&lt; char &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ac033b763033f5a44d689694903bdcecb">read_torrent_file</a> (const fs::path &amp;path)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-attribs" class="groupheader"><a id="pri-attribs" name="pri-attribs"></a>
 Private Attributes</h2></td></tr>
-<tr class="memitem:a91ee985b0c37fe7eb40d38cf45993922" id="r_a91ee985b0c37fe7eb40d38cf45993922"><td class="memItemLeft" align="right" valign="top">fs::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a91ee985b0c37fe7eb40d38cf45993922">input_directory_</a></td></tr>
+<tr class="memitem:a789c7bd8ff9fc5b61ba60b15fd97d4a4" id="r_a789c7bd8ff9fc5b61ba60b15fd97d4a4"><td class="memItemLeft" align="right" valign="top">fs::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a789c7bd8ff9fc5b61ba60b15fd97d4a4">input_directory</a></td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
 <p class="definition">Definition at line <a class="el" href="torrent__parser_8hpp_source.html#l00029">29</a> of file <a class="el" href="torrent__parser_8hpp_source.html">torrent_parser.hpp</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
-<a id="a4167b6516c495a5237d1fd6ea19316de" name="a4167b6516c495a5237d1fd6ea19316de"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a4167b6516c495a5237d1fd6ea19316de">&#9670;&#160;</a></span>TorrentParser()</h2>
+<a id="a653893a55823046c1ff505e57669ccb1" name="a653893a55823046c1ff505e57669ccb1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a653893a55823046c1ff505e57669ccb1">&#9670;&#160;</a></span>torrent_parser()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -112,7 +113,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">TorrentParser::TorrentParser </td>
+          <td class="memname">torrent_parser::torrent_parser </td>
           <td>(</td>
           <td class="paramtype">const fs::path &amp;</td>          <td class="paramname"><span class="paramname"><em>idir</em></span></td><td>)</td>
           <td></td>
@@ -130,8 +131,8 @@ Private Attributes</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a189ba6ff32048a071b36ed606e9dd85e" name="a189ba6ff32048a071b36ed606e9dd85e"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a189ba6ff32048a071b36ed606e9dd85e">&#9670;&#160;</a></span>compute_info_hash()</h2>
+<a id="a468918c4340adca0424d5698f2c36e96" name="a468918c4340adca0424d5698f2c36e96"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a468918c4340adca0424d5698f2c36e96">&#9670;&#160;</a></span>compute_info_hash()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -140,7 +141,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::string TorrentParser::compute_info_hash </td>
+          <td class="memname">std::string torrent_parser::compute_info_hash </td>
           <td>(</td>
           <td class="paramtype">const std::vector&lt; char &gt; &amp;</td>          <td class="paramname"><span class="paramname"><em>torrent_data</em></span></td><td>)</td>
           <td></td>
@@ -153,18 +154,18 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="torrent__parser_8cpp_source.html#l00061">61</a> of file <a class="el" href="torrent__parser_8cpp_source.html">torrent_parser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="torrent__parser_8cpp_source.html#l00067">67</a> of file <a class="el" href="torrent__parser_8cpp_source.html">torrent_parser.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a188c50e7a5a39c54b610cb85f55a9399" name="a188c50e7a5a39c54b610cb85f55a9399"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a188c50e7a5a39c54b610cb85f55a9399">&#9670;&#160;</a></span>parse_all_torrents()</h2>
+<a id="a2274c25af1cd88937c4d1c27554fc96f" name="a2274c25af1cd88937c4d1c27554fc96f"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a2274c25af1cd88937c4d1c27554fc96f">&#9670;&#160;</a></span>parse_all_torrents()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; <a class="el" href="structTorrentFile.html">TorrentFile</a> &gt; TorrentParser::parse_all_torrents </td>
+          <td class="memname">std::vector&lt; <a class="el" href="structtorrent__file.html">torrent_file</a> &gt; torrent_parser::parse_all_torrents </td>
           <td>(</td>
           <td class="paramname"><span class="paramname"><em></em></span></td><td>)</td>
           <td></td>
@@ -172,18 +173,18 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="torrent__parser_8cpp_source.html#l00008">8</a> of file <a class="el" href="torrent__parser_8cpp_source.html">torrent_parser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="torrent__parser_8cpp_source.html#l00009">9</a> of file <a class="el" href="torrent__parser_8cpp_source.html">torrent_parser.cpp</a>.</p>
 
 </div>
 </div>
-<a id="afeb9eb239651a1f85992db61a767e604" name="afeb9eb239651a1f85992db61a767e604"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#afeb9eb239651a1f85992db61a767e604">&#9670;&#160;</a></span>parse_single_torrent()</h2>
+<a id="aec5c787f4d2a5c6efc06a3d427bb3ca1" name="aec5c787f4d2a5c6efc06a3d427bb3ca1"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aec5c787f4d2a5c6efc06a3d427bb3ca1">&#9670;&#160;</a></span>parse_single_torrent()</h2>
 
 <div class="memitem">
 <div class="memproto">
       <table class="memname">
         <tr>
-          <td class="memname">std::optional&lt; <a class="el" href="structTorrentFile.html">TorrentFile</a> &gt; TorrentParser::parse_single_torrent </td>
+          <td class="memname">std::optional&lt; <a class="el" href="structtorrent__file.html">torrent_file</a> &gt; torrent_parser::parse_single_torrent </td>
           <td>(</td>
           <td class="paramtype">const fs::path &amp;</td>          <td class="paramname"><span class="paramname"><em>torrent_file</em></span></td><td>)</td>
           <td></td>
@@ -191,12 +192,12 @@ Private Attributes</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="torrent__parser_8cpp_source.html#l00027">27</a> of file <a class="el" href="torrent__parser_8cpp_source.html">torrent_parser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="torrent__parser_8cpp_source.html#l00030">30</a> of file <a class="el" href="torrent__parser_8cpp_source.html">torrent_parser.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a6224bb954fe2cda5e62c0e02fa435d72" name="a6224bb954fe2cda5e62c0e02fa435d72"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a6224bb954fe2cda5e62c0e02fa435d72">&#9670;&#160;</a></span>read_torrent_file()</h2>
+<a id="ac033b763033f5a44d689694903bdcecb" name="ac033b763033f5a44d689694903bdcecb"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ac033b763033f5a44d689694903bdcecb">&#9670;&#160;</a></span>read_torrent_file()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -205,7 +206,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">std::vector&lt; char &gt; TorrentParser::read_torrent_file </td>
+          <td class="memname">std::vector&lt; char &gt; torrent_parser::read_torrent_file </td>
           <td>(</td>
           <td class="paramtype">const fs::path &amp;</td>          <td class="paramname"><span class="paramname"><em>path</em></span></td><td>)</td>
           <td></td>
@@ -218,13 +219,13 @@ Private Attributes</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="torrent__parser_8cpp_source.html#l00086">86</a> of file <a class="el" href="torrent__parser_8cpp_source.html">torrent_parser.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="torrent__parser_8cpp_source.html#l00092">92</a> of file <a class="el" href="torrent__parser_8cpp_source.html">torrent_parser.cpp</a>.</p>
 
 </div>
 </div>
 <a name="doc-variable-members" id="doc-variable-members"></a><h2 id="header-doc-variable-members" class="groupheader">Member Data Documentation</h2>
-<a id="a91ee985b0c37fe7eb40d38cf45993922" name="a91ee985b0c37fe7eb40d38cf45993922"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a91ee985b0c37fe7eb40d38cf45993922">&#9670;&#160;</a></span>input_directory_</h2>
+<a id="a789c7bd8ff9fc5b61ba60b15fd97d4a4" name="a789c7bd8ff9fc5b61ba60b15fd97d4a4"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a789c7bd8ff9fc5b61ba60b15fd97d4a4">&#9670;&#160;</a></span>input_directory</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -233,7 +234,7 @@ Private Attributes</h2></td></tr>
   <td class="mlabels-left">
       <table class="memname">
         <tr>
-          <td class="memname">fs::path TorrentParser::input_directory_</td>
+          <td class="memname">fs::path torrent_parser::input_directory</td>
         </tr>
       </table>
   </td>

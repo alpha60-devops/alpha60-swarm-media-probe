@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['width_0',['width',['../structVideoMetadata.html#a925e2aac4d44feb35c44bccceec65600',1,'VideoMetadata']]]
+  ['width_0',['width',['../structvideo__metadata.html#a8b7ee4d4869964d82ac71fd3d8c7151f',1,'video_metadata']]]
 ];

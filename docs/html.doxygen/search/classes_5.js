@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['subtitlemetadata_0',['SubtitleMetadata',['../structSubtitleMetadata.html',1,'']]]
+  ['subtitle_5fmetadata_0',['subtitle_metadata',['../structsubtitle__metadata.html',1,'']]]
 ];

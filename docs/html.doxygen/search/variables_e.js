@@ -1,5 +1,5 @@
 var searchData=
 [
-  ['torrent_5fpath_0',['torrent_path',['../structTorrentFile.html#a15d1c5d0dca856e384b683d80dfa59d2',1,'TorrentFile']]],
-  ['total_5fsize_1',['total_size',['../structTorrentFile.html#a59fd8cd083c2f6b2773d5810698cbdb0',1,'TorrentFile']]]
+  ['torrent_5fpath_0',['torrent_path',['../structtorrent__file.html#a19dbb3de337c02130f86874ea17feb95',1,'torrent_file']]],
+  ['total_5fsize_1',['total_size',['../structtorrent__file.html#a52f07596511ca2051f135ef9b463a947',1,'torrent_file']]]
 ];

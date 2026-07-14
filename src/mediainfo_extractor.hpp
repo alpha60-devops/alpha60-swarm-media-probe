@@ -9,7 +9,7 @@
 
 namespace fs = std::filesystem;
 
-struct VideoMetadata
+struct video_metadata
 {
     std::string codec_id;
     std::string codec_version;
@@ -21,7 +21,7 @@ struct VideoMetadata
     std::string color_primaries;   // BT.709, BT.2020, BT.470 M (B&W), etc.
 };
 
-struct AudioMetadata
+struct audio_metadata
 {
     std::string codec;
     std::string codec_version;
@@ -32,13 +32,13 @@ struct AudioMetadata
     std::vector<std::string> languages;
 };
 
-struct SubtitleMetadata
+struct subtitle_metadata
 {
     std::vector<std::string> languages;
     std::string format;
 };
 
-struct MediaInfoData
+struct media_info_data
 {
     // General metadata
     std::string originating_source_medium_id;
@@ -61,17 +61,17 @@ struct MediaInfoData
     std::string video_creation_metadata;
 
     // Track metadata
-    VideoMetadata video;
-    AudioMetadata audio;
-    SubtitleMetadata subtitle;
+    video_metadata video;
+    audio_metadata audio;
+    subtitle_metadata subtitle;
 };
 
-class MediaInfoExtractor
+class media_info_extractor
 {
 public:
-    explicit MediaInfoExtractor(const fs::path& media_file);
+    explicit media_info_extractor(const fs::path& media_file);
 
-    std::optional<MediaInfoData> extract();
+    std::optional<media_info_data> extract();
 
     // Helper function to interpret color primaries for human-readable output
     static std::string interpret_color_primaries(const std::string& value);
@@ -80,12 +80,12 @@ public:
     static bool is_black_and_white(const std::string& color_primaries);
 
 private:
-    fs::path media_file_;
+    fs::path media_file;
 
     std::string exec_mediainfo();
     std::string exec_ffprobe();
-    bool parse_json_output(const std::string& json_output, MediaInfoData& data);
-    bool parse_ffprobe_output(const std::string& json_output, MediaInfoData& data);
+    bool parse_json_output(const std::string& json_output, media_info_data& data);
+    bool parse_ffprobe_output(const std::string& json_output, media_info_data& data);
 
     // JSON extraction helpers
     std::string extract_string_value(const rapidjson::Value& obj, const char* key);

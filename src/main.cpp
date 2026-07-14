@@ -93,7 +93,7 @@ get_directory_size_mb(const fs::path& path)
 
 /// Helper to calculate total size of all torrents' complete media files
 uintmax_t
-get_collection_size_mb(const std::vector<TorrentFile>& torrents)
+get_collection_size_mb(const std::vector<torrent_file>& torrents)
 {
   uintmax_t total_bytes = 0;
   for (const auto& tf : torrents)
@@ -103,11 +103,11 @@ get_collection_size_mb(const std::vector<TorrentFile>& torrents)
 
 
 /// Parse torrents from input directory
-vector<TorrentFile>
+vector<torrent_file>
 parse_torrents(const fs::path& input_dir)
 {
   cout << "\n[1/3] Parsing torrent files..." << endl;
-  TorrentParser parser(input_dir);
+  torrent_parser parser(input_dir);
   auto torrents = parser.parse_all_torrents();
 
   if (torrents.empty()) {
@@ -164,7 +164,7 @@ find_cache_file(const fs::path& tdir)
 
 /// Toplevel download function.
 download_result
-download_torrent_media(const TorrentFile& tf, const fs::path& cache_dir,
+download_torrent_media(const torrent_file& tf, const fs::path& cache_dir,
 		       probe_size psize)
 {
   // Create unique subdirectory for this torrent using its BTIH, if it
@@ -202,7 +202,7 @@ download_torrent_media(const TorrentFile& tf, const fs::path& cache_dir,
 /// Extract media info from downloaded file
 struct extract_result
 {
-  MediaInfoData data;
+  media_info_data data;
   bool success;
   string error_msg;
 };
@@ -212,7 +212,7 @@ struct extract_result
 extract_result
 extract_media_info(const fs::path& media_path)
 {
-  MediaInfoExtractor extractor(media_path);
+  media_info_extractor extractor(media_path);
   auto media_data = extractor.extract();
 
   extract_result result = { };
@@ -238,7 +238,7 @@ extract_media_info(const fs::path& media_path)
 
 /// Loop per element of btiha.
 process_result
-process_all_torrents(const vector<TorrentFile>& torrents,
+process_all_torrents(const vector<torrent_file>& torrents,
 		     const fs::path& cache_dir,
 		     const probe_size psize, const bool download_p)
 {
@@ -267,7 +267,7 @@ process_all_torrents(const vector<TorrentFile>& torrents,
 	  if (!download_p)
 	    {
 	      cerr << "    ✗ No cache found and download disabled. Skipping." << endl;
-	      result.media_data_list.push_back(MediaInfoData());
+	      result.media_data_list.push_back(media_info_data());
 	      result.downloaded_files.push_back("");
 	      result.get_fail++;
 	      continue;
@@ -278,7 +278,7 @@ process_all_torrents(const vector<TorrentFile>& torrents,
 	  if (!dlr.success)
 	    {
 	      cerr << "    ✗ " << dlr.error_msg << endl;
-	      result.media_data_list.push_back(MediaInfoData());
+	      result.media_data_list.push_back(media_info_data());
 	      result.downloaded_files.push_back("");
 	      result.get_fail++;
 	      continue;
@@ -314,7 +314,7 @@ process_all_torrents(const vector<TorrentFile>& torrents,
 	      cerr << "failed to remove cache file: " << ec.value() << endl;
 	    }
 
-	  result.media_data_list.push_back(MediaInfoData());
+	  result.media_data_list.push_back(media_info_data());
 	  result.extract_fail++;
 	}
       //      cout << endl;
@@ -328,7 +328,7 @@ process_all_torrents(const vector<TorrentFile>& torrents,
 /// Write enriched JSON output
 bool
 write_enriched_output(const fs::path& output_file,
-		      const vector<TorrentFile>& torrents,
+		      const vector<torrent_file>& torrents,
 		      const process_result& presult,
 		      const std::string& collection_key,
 		      size_t min_fsize,

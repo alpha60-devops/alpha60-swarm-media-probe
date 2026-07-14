@@ -17,7 +17,7 @@ namespace fs = std::filesystem;
 /// Process all torrents (download + extract)
 struct process_result
 {
-  std::vector<MediaInfoData>    media_data_list;
+  std::vector<media_info_data>    media_data_list;
   std::vector<fs::path>		downloaded_files;
   size_t                        success_count;
   size_t                        get_fail;
@@ -40,7 +40,7 @@ public:
     enrichment();
 
     std::string
-    build_output(const std::vector<TorrentFile>& torrents,
+    build_output(const std::vector<torrent_file>& torrents,
 		 const process_result& presult,
 		 const std::string& collection_key,
 		 const uint mini_size,

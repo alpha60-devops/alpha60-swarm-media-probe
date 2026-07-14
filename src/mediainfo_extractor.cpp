@@ -11,27 +11,27 @@
 #include <iostream>
 
 // Custom deleter for FILE* using pclose
-struct PcloseDeleter {
+struct pclose_deleter {
     void operator()(FILE* f) const {
 	if (f) pclose(f);
     }
 };
 
-MediaInfoExtractor::MediaInfoExtractor(const fs::path& media_file)
-    : media_file_(media_file) {}
+media_info_extractor::media_info_extractor(const fs::path& media_file)
+    : media_file(media_file) {}
 
-std::optional<MediaInfoData> MediaInfoExtractor::extract() {
-    if (media_file_.empty() || !fs::exists(media_file_)) {
-	std::cerr << "  [MediaInfo] File not found: " << media_file_.string() << std::endl;
+std::optional<media_info_data> media_info_extractor::extract() {
+    if (media_file.empty() || !fs::exists(media_file)) {
+	std::cerr << "  [MediaInfo] File not found: " << media_file.string() << std::endl;
 	return std::nullopt;
     }
 
-    auto file_size = fs::file_size(media_file_);
-    std::cout << "  [MediaInfo] Analyzing: " << media_file_.filename().string()
+    auto file_size = fs::file_size(media_file);
+    std::cout << "  [MediaInfo] Analyzing: " << media_file.filename().string()
 	      << " (" << file_size / (1024*1024) << " MB)" << std::endl;
 
     std::string json_output = exec_mediainfo();
-    MediaInfoData data;
+    media_info_data data;
 
     if (json_output.empty() || !parse_json_output(json_output, data)) {
 	std::cerr << "  [MediaInfo] Failed to parse JSON output" << std::endl;
@@ -48,8 +48,8 @@ std::optional<MediaInfoData> MediaInfoExtractor::extract() {
     return data;
 }
 
-std::string MediaInfoExtractor::exec_mediainfo() {
-    std::string cmd = "mediainfo --Output=JSON \"" + media_file_.string() + "\" 2>/dev/null";
+std::string media_info_extractor::exec_mediainfo() {
+    std::string cmd = "mediainfo --Output=JSON \"" + media_file.string() + "\" 2>/dev/null";
     std::array<char, 256> buffer;
     std::string result;
 
@@ -58,7 +58,7 @@ std::string MediaInfoExtractor::exec_mediainfo() {
 	std::cerr << "  [MediaInfo] Failed to execute mediainfo" << std::endl;
 	return "";
     }
-    std::unique_ptr<FILE, PcloseDeleter> pipe_ptr(pipe);
+    std::unique_ptr<FILE, pclose_deleter> pipe_ptr(pipe);
 
     while (fgets(buffer.data(), buffer.size(), pipe_ptr.get()) != nullptr) {
 	result += buffer.data();
@@ -67,10 +67,10 @@ std::string MediaInfoExtractor::exec_mediainfo() {
 }
 
 std::string
-MediaInfoExtractor::exec_ffprobe()
+media_info_extractor::exec_ffprobe()
 {
   std::string ffcmd = "ffprobe -v quiet -print_format json -show_streams -analyzeduration 10M -probesize 10M ";
-  std::string cmd = ffcmd + "\"" + media_file_.string() + "\" 2>/dev/null";
+  std::string cmd = ffcmd + "\"" + media_file.string() + "\" 2>/dev/null";
   std::array<char, 256> buffer;
   std::string result;
 
@@ -80,7 +80,7 @@ MediaInfoExtractor::exec_ffprobe()
       std::cerr << "  [FFprobe] Failed to execute ffprobe" << std::endl;
       return result;
     }
-  std::unique_ptr<FILE, PcloseDeleter> pipe_ptr(pipe);
+  std::unique_ptr<FILE, pclose_deleter> pipe_ptr(pipe);
 
   while (fgets(buffer.data(), buffer.size(), pipe_ptr.get()) != nullptr)
     {
@@ -89,7 +89,7 @@ MediaInfoExtractor::exec_ffprobe()
   return result;
 }
 
-bool MediaInfoExtractor::parse_ffprobe_output(const std::string& json_output, MediaInfoData& data) {
+bool media_info_extractor::parse_ffprobe_output(const std::string& json_output, media_info_data& data) {
     rapidjson::Document doc;
     if (doc.Parse(json_output.c_str()).HasParseError()) {
 	std::cerr << "  [FFprobe] JSON parse error" << std::endl;
@@ -142,7 +142,7 @@ bool MediaInfoExtractor::parse_ffprobe_output(const std::string& json_output, Me
     return true;
 }
 
-bool MediaInfoExtractor::parse_json_output(const std::string& json_output, MediaInfoData& data) {
+bool media_info_extractor::parse_json_output(const std::string& json_output, media_info_data& data) {
     rapidjson::Document doc;
     if (doc.Parse(json_output.c_str()).HasParseError()) {
 	std::cerr << "  [MediaInfo] JSON parse error at offset " << doc.GetErrorOffset() << std::endl;
@@ -249,7 +249,7 @@ bool MediaInfoExtractor::parse_json_output(const std::string& json_output, Media
 }
 
 // Helper function to interpret color_primaries values for human-readable output
-std::string MediaInfoExtractor::interpret_color_primaries(const std::string& value)
+std::string media_info_extractor::interpret_color_primaries(const std::string& value)
 {
     if (value.empty()) return "unknown";
     if (value == "BT.709") return "HD (Rec.709)";
@@ -264,19 +264,19 @@ std::string MediaInfoExtractor::interpret_color_primaries(const std::string& val
 }
 
 // Helper to detect black & white content
-bool MediaInfoExtractor::is_black_and_white(const std::string& color_primaries)
+bool media_info_extractor::is_black_and_white(const std::string& color_primaries)
 {
     return (color_primaries == "BT.470 M" || color_primaries == "BT.470 B,G");
 }
 
-std::string MediaInfoExtractor::extract_string_value(const rapidjson::Value& obj, const char* key) {
+std::string media_info_extractor::extract_string_value(const rapidjson::Value& obj, const char* key) {
     if (obj.HasMember(key) && obj[key].IsString()) {
 	return obj[key].GetString();
     }
     return "";
 }
 
-std::int64_t MediaInfoExtractor::extract_int64_value(const rapidjson::Value& obj, const char* key) {
+std::int64_t media_info_extractor::extract_int64_value(const rapidjson::Value& obj, const char* key) {
     if (obj.HasMember(key)) {
 	if (obj[key].IsInt64()) {
 	    return obj[key].GetInt64();
@@ -289,7 +289,7 @@ std::int64_t MediaInfoExtractor::extract_int64_value(const rapidjson::Value& obj
     return 0;
 }
 
-double MediaInfoExtractor::extract_double_value(const rapidjson::Value& obj, const char* key) {
+double media_info_extractor::extract_double_value(const rapidjson::Value& obj, const char* key) {
     if (obj.HasMember(key)) {
 	if (obj[key].IsDouble()) {
 	    return obj[key].GetDouble();

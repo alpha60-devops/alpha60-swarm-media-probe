@@ -17,7 +17,7 @@
 
 namespace fs = std::filesystem;
 
-struct TorrentFile {
+struct torrent_file {
     std::string btih;                     // BitTorrent Info Hash (40-character hex)
     std::string name;                     // Torrent name
     std::vector<std::string> file_paths;  // Paths of files within torrent
@@ -26,19 +26,19 @@ struct TorrentFile {
     fs::path torrent_path;                // Filesystem path to .torrent file
 };
 
-class TorrentParser {
+class torrent_parser {
 public:
     // Constructor takes directory containing .torrent files
-    explicit TorrentParser(const fs::path& idir);
+    explicit torrent_parser(const fs::path& idir);
     
     // Parse all .torrent files in the input directory
-    std::vector<TorrentFile> parse_all_torrents();
+    std::vector<torrent_file> parse_all_torrents();
     
     // Parse a single .torrent file
-    std::optional<TorrentFile> parse_single_torrent(const fs::path& torrent_file);
+    std::optional<torrent_file> parse_single_torrent(const fs::path& torrent_file);
     
 private:
-    fs::path input_directory_;
+    fs::path input_directory;
     
     // Compute BTIH (info hash) from torrent file data
     std::string compute_info_hash(const std::vector<char>& torrent_data);

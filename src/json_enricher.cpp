@@ -6,7 +6,7 @@ pipeline_metrics
 enrichment::compute_pipeline_metrics(const process_result& presult,
 				     size_t mini_size)
 {
-  const std::vector<MediaInfoData>& media_data = presult.media_data_list;
+  const std::vector<media_info_data>& media_data = presult.media_data_list;
   const std::vector<fs::path>& downloaded_files = presult.downloaded_files;
 
   pipeline_metrics metrics;
@@ -16,7 +16,7 @@ enrichment::compute_pipeline_metrics(const process_result& presult,
   for (size_t i = 0; i < downloaded_files.size(); ++i)
     {
       const auto& path = downloaded_files[i];
-      const auto& md = (i < media_data.size()) ? media_data[i] : MediaInfoData();
+      const auto& md = (i < media_data.size()) ? media_data[i] : media_info_data();
 
       // Check if file exists and has size
       bool file_exists = !path.empty() && fs::exists(path);
@@ -64,7 +64,7 @@ enrichment::compute_pipeline_metrics(const process_result& presult,
 }
 
 std::string
-enrichment::build_output(const std::vector<TorrentFile>& torrents,
+enrichment::build_output(const std::vector<torrent_file>& torrents,
 			 const process_result& presult,
 			 const std::string& collection_key,
 			 const uint mini_size,
@@ -96,11 +96,11 @@ enrichment::build_output(const std::vector<TorrentFile>& torrents,
   ss << "  },\n";
   ss << "  \"media_objects\": [\n";
 
-  const std::vector<MediaInfoData>& media_data = presult.media_data_list;
+  const std::vector<media_info_data>& media_data = presult.media_data_list;
   for (size_t i = 0; i < torrents.size(); ++i)
     {
       const auto& tf = torrents[i];
-      const auto& md = (i < media_data.size()) ? media_data[i] : MediaInfoData();
+      const auto& md = (i < media_data.size()) ? media_data[i] : media_info_data();
 
     ss << "    {\n";
     ss << "      \"btih\": \"" << escape_json_string(tf.btih) << "\",\n";

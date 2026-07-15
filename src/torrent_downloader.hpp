@@ -84,7 +84,8 @@ struct media_downloader
   // 10 MB default,
   std::optional<fs::path>
   almost_nothing(const std::string& torrent_path, const std::string& output_dir,
-		 const probe_size psize, const std::string fsuffix = ".sized");
+		 const probe_size psize, const bool delete_p,
+		 const std::string fsuffix = ".sized");
 
 private:
 

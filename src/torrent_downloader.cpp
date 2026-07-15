@@ -420,7 +420,7 @@ media_downloader::is_enough(lt::session& sesh, lt::torrent_handle& handle,
 std::optional<fs::path>
 media_downloader::almost_nothing(const std::string& ifile,
 				 const std::string& output_dir,
-				 const probe_size psize,
+				 const probe_size psize, const bool delete_p,
 				 const std::string fsuffix)
 {
   // Return sized_file_path file whenever possible, as that is the small one.
@@ -618,8 +618,7 @@ media_downloader::almost_nothing(const std::string& ifile,
 
   // Clean up
   // Remove large file and used sized file if possible.
-  const bool cleanupp(true);
-  if (cleanupp && ff_created)
+  if (delete_p && ff_created)
     {
       error_code ec;
       if (!fs::remove(prime_file_path, ec))

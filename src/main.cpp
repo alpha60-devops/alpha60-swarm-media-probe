@@ -209,7 +209,7 @@ find_cache_file(const fs::path& tdir)
 /// Toplevel download function.
 download_result
 download_torrent_media(const torrent_file& tf, const fs::path& cache_dir,
-		       probe_size psize)
+		       const probe_size psize, const bool delete_p)
 {
   // Create unique subdirectory for this torrent using its BTIH, if it
   // doesn't exist already.
@@ -231,7 +231,7 @@ download_torrent_media(const torrent_file& tf, const fs::path& cache_dir,
       media_downloader downloader;
       auto media_path = downloader.almost_nothing(tf.torrent_path.string(),
 						  torrent_cache_dir.string(),
-						  psize);
+						  psize, delete_p);
       if (media_path.has_value())
 	{
 	  ret.media_path = media_path.value();
@@ -283,8 +283,8 @@ extract_media_info(const fs::path& media_path)
 /// Loop per element of btiha.
 process_result
 process_all_torrents(const vector<torrent_file>& torrents,
-		     const fs::path& cache_dir,
-		     const probe_size psize, const bool download_p)
+		     const fs::path& cache_dir, const probe_size psize,
+		     const bool download_p, const bool delete_p)
 {
   cout << "\n[2/3] " << (download_p ? "Downloading" : "Using cached")
        << " media ..." << endl;
@@ -318,7 +318,7 @@ process_all_torrents(const vector<torrent_file>& torrents,
 	    }
 
 	  // Download
-	  download_result dlr = download_torrent_media(tf, cache_dir, psize);
+	  download_result dlr = download_torrent_media(tf, cache_dir, psize, delete_p);
 	  if (!dlr.success)
 	    {
 	      cerr << "    ✗ " << dlr.error_msg << endl;
@@ -344,18 +344,21 @@ process_all_torrents(const vector<torrent_file>& torrents,
 	}
       else
 	{
-	  cerr << "failed to extract cached metadata file, removing: "
+	  cerr << "failed to extract cached metadata file: "
 	       << extract_result.error_msg << endl;
 
 	  // Clean up.
 	  // Remove the file/directory (recursively for directories).
 	  // Returns the number of items removed, but we ignore the count.
-	  std::error_code ec;
-	  fs::remove_all(cached_file, ec);
-	  if (ec)
+	  if (delete_p)
 	    {
-	      // Something went wrong – permission denied, invalid path, etc.
-	      cerr << "failed to remove cache file: " << ec.value() << endl;
+	      std::error_code ec;
+	      fs::remove_all(cached_file, ec);
+	      if (ec)
+		{
+		  // Something went wrong – permission denied, invalid path, etc.
+		  cerr << "failed to remove cache file: " << ec.value() << endl;
+		}
 	    }
 
 	  result.media_data_list.push_back(media_info_data());
@@ -445,9 +448,8 @@ int main(int argc, char* argv[])
   }
 
   // Create output and cache directories
-  if (output_file.has_parent_path()) {
+  if (output_file.has_parent_path())
     fs::create_directories(output_file.parent_path());
-  }
   fs::create_directories(cache_dir);
 
   // Print banner
@@ -485,10 +487,11 @@ int main(int argc, char* argv[])
 
 
   // Step 2: Process all torrents (download + extract)
-  bool download_p = true;
-  probe_size psize = { min_fsize, max_fsize };
+  const bool download_p = true;
+  const bool delete_p = true;
+  const probe_size psize = { min_fsize, max_fsize };
   auto process_result = process_all_torrents(torrents, cache_dir, psize,
-					     download_p);
+					     download_p, delete_p);
 
   // Check for interrupt
   if (g_interrupted)

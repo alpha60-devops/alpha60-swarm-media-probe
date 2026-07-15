@@ -4,7 +4,7 @@ enrichment::enrichment() {}
 
 pipeline_metrics
 enrichment::compute_pipeline_metrics(const process_result& presult,
-				     size_t mini_size)
+				     const size_t mini_size, const size_t csize)
 {
   const std::vector<media_info_data>& media_data = presult.media_data_list;
   const std::vector<fs::path>& downloaded_files = presult.downloaded_files;
@@ -12,6 +12,7 @@ enrichment::compute_pipeline_metrics(const process_result& presult,
   pipeline_metrics metrics;
   metrics.media_cache_file_size = mini_size;
   metrics.btiha_size = downloaded_files.size();
+  metrics.btiha_cached_size = csize;
 
   for (size_t i = 0; i < downloaded_files.size(); ++i)
     {
@@ -69,10 +70,11 @@ enrichment::build_output(const std::vector<torrent_file>& torrents,
 			 const std::string& collection_key,
 			 const uint mini_size,
 			 uintmax_t cache_dir_size_mb,
-			 uintmax_t torrent_total_size_mb)
+			 uintmax_t torrent_total_size_mb,
+			 const uint csize)
 {
   // Compute pipeline metrics
-  pipeline_metrics metrics = compute_pipeline_metrics(presult, mini_size);
+  pipeline_metrics metrics = compute_pipeline_metrics(presult, mini_size, csize);
 
   // Get current UTC time
   auto now = std::time(nullptr);
@@ -88,8 +90,9 @@ enrichment::build_output(const std::vector<torrent_file>& torrents,
   ss << "  \"collection_media_size_mb\": " << torrent_total_size_mb << ",\n";
   ss << "  \"pipeline_metrics\": {\n";
   ss << "    \"btiha_size\": " << metrics.btiha_size << ",\n";
-  ss << "    \"media_cache_file_size_mb\": " << metrics.media_cache_file_size / (1024*1024) << ",\n";
+  ss << "    \"min_cache_file_size_mb\": " << metrics.media_cache_file_size / (1024*1024) << ",\n";
   ss << "    \"btiha_unreachable_size\": " << metrics.btiha_unreachable_size << ",\n";
+  ss << "    \"btiha_cached_size\": " << metrics.btiha_cached_size << ",\n";
   ss << "    \"btiha_partial_size\": " << metrics.btiha_partial_size << ",\n";
   ss << "    \"btiha_extracted_size\": " << metrics.btiha_extracted_size << ",\n";
   ss << "    \"btiha_extracted_percent\": " << std::fixed << std::setprecision(2) << metrics.btiha_extracted_percent << "\n";

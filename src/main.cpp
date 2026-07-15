@@ -110,11 +110,10 @@ parse_torrents(const fs::path& input_dir)
   torrent_parser parser(input_dir);
   auto torrents = parser.parse_all_torrents();
 
-  if (torrents.empty()) {
+  if (torrents.empty())
     cerr << "Error: No .torrent files found in " << input_dir << endl;
-  } else {
+  else
     cout << "Found " << torrents.size() << " torrent file(s)" << endl;
-  }
 
   return torrents;
 }
@@ -129,6 +128,50 @@ struct download_result
 };
 
 
+
+/**
+ * Count all regular files with extension ".sized" inside the given root directory.
+ *
+ * @param root The directory to search (defaults to the current working directory).
+ * @param fsuffix count files matching this suffix, defaults to 'sized'
+ * @return Number of cache files.
+ */
+std::size_t
+count_cached_files(const fs::path& root, const std::string fsuffix = ".sized")
+{
+    std::size_t count = 0;
+    std::error_code ec;
+
+    // Not a directory, or error
+    if (!fs::is_directory(root, ec))
+	return 0;
+
+    for (const auto& entry : fs::recursive_directory_iterator(root, ec))
+      {
+	if (ec)
+	  {
+	    // If an error occurs during iteration, we can break or continue.
+	    // Here we skip problematic entries and keep going.
+	    ec.clear();
+	    continue;
+	  }
+	try
+	  {
+	    if (fs::is_regular_file(entry.path()))
+	      if (entry.path().extension() == fsuffix)
+		++count;
+	  }
+	catch (const fs::filesystem_error&)
+	  {
+	    // Permission errors, etc.; skip this entry
+	  }
+      }
+
+    return count;
+}
+
+
+/// Locate path for cache.
 fs::path
 find_cache_file(const fs::path& tdir)
 {
@@ -161,6 +204,7 @@ find_cache_file(const fs::path& tdir)
     }
   return ret;
 }
+
 
 /// Toplevel download function.
 download_result
@@ -202,9 +246,9 @@ download_torrent_media(const torrent_file& tf, const fs::path& cache_dir,
 /// Extract media info from downloaded file
 struct extract_result
 {
-  media_info_data data;
-  bool success;
-  string error_msg;
+  media_info_data	data;
+  bool			success;
+  string		error_msg;
 };
 
 
@@ -331,15 +375,16 @@ write_enriched_output(const fs::path& output_file,
 		      const vector<torrent_file>& torrents,
 		      const process_result& presult,
 		      const std::string& collection_key,
-		      size_t min_fsize,
+		      const size_t min_fsize,
 		      uintmax_t cache_dir_size_mb,
-		      uintmax_t torrent_total_size_mb)
+		      uintmax_t torrent_total_size_mb,
+		      const size_t ccount)
 {
   cout << "\n[3/3] Building enriched JSON..." << endl;
 
   enrichment nrichr;
   string jdata = nrichr.build_output(torrents, presult, collection_key, min_fsize,
-				     cache_dir_size_mb, torrent_total_size_mb);
+				     cache_dir_size_mb, torrent_total_size_mb, ccount);
   if (!nrichr.write_output(output_file.string(), jdata))
     {
       cerr << "✗ Error: Failed to write output file" << endl;
@@ -453,8 +498,10 @@ int main(int argc, char* argv[])
     }
 
   // Step 3: Write output
+  const uint ccount = count_cached_files(cache_dir);
   if (write_enriched_output(output_file, torrents, process_result, collection_key,
-			    min_fsize, cache_dir_size_mb, torrent_total_size_mb))
+			    min_fsize, cache_dir_size_mb, torrent_total_size_mb,
+			    ccount))
     {
       print_summary(torrents.size(), process_result);
       return 0;

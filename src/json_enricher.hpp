@@ -17,7 +17,7 @@ namespace fs = std::filesystem;
 /// Process all torrents (download + extract)
 struct process_result
 {
-  std::vector<media_info_data>    media_data_list;
+  std::vector<media_info_data>  media_data_list;
   std::vector<fs::path>		downloaded_files;
   size_t                        success_count;
   size_t                        get_fail;
@@ -27,10 +27,11 @@ struct process_result
 struct pipeline_metrics
 {
   size_t btiha_size = 0;              // total number of torrents processed
-  size_t media_cache_file_size = 0;   // size of each cached file in bytes
+  size_t media_cache_file_size = 0;   // minimum size of each cached file in bytes
   size_t btiha_unreachable_size = 0;  // cache file_size == 0
-  size_t btiha_partial_size = 0;      // cache file_size > 0, but incomplete
-  size_t btiha_extracted_size = 0;    // basic video/audio metadata confirmed
+  size_t btiha_cached_size = 0;       // *.sized file (aka cache file) created
+  size_t btiha_partial_size = 0;      // cache file_size > 0, but extraction incomplete
+  size_t btiha_extracted_size = 0;    // video/audio metadata extraction confirmed
   double btiha_extracted_percent = 0.0;
 };
 
@@ -45,14 +46,16 @@ public:
 		 const std::string& collection_key,
 		 const uint mini_size,
 		 uintmax_t cache_dir_size_mb,
-		 uintmax_t torrent_total_size_mb);
+		 uintmax_t torrent_total_size_mb,
+		 const uint csize);
 
     bool
     write_output(const std::string& output_path, const std::string& json_content);
 
 private:
     pipeline_metrics
-    compute_pipeline_metrics(const process_result& presult, size_t mini_size);
+    compute_pipeline_metrics(const process_result& presult,
+			     const size_t mini_size, const size_t csize);
 
     std::string json_string(const std::string& str);
     std::string escape_json_string(const std::string& str);

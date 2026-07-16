@@ -69,20 +69,20 @@ namespace
 
 struct survey_config
 {
-    std::chrono::seconds mediainfo_timeout{20};
-    std::chrono::seconds ffprobe_timeout{20};
-    std::chrono::seconds ffmpeg_timeout{120};
-    std::uintmax_t max_archive_size{128ULL * 1024ULL * 1024ULL};
-    double archive_size_margin{0.92};
-    std::size_t max_redux_attempts{3};
+  std::chrono::seconds	mediainfo_timeout{20};
+  std::chrono::seconds	ffprobe_timeout{20};
+  std::chrono::seconds	ffmpeg_timeout{120};
+  std::uintmax_t	max_archive_size{128ULL * 1024ULL * 1024ULL};
+  double		archive_size_margin{0.92};
+  std::size_t		max_redux_attempts{3};
 };
 
 struct command_result
 {
-    bool started{false};
-    bool timed_out{false};
-    bool terminated_by_signal{false};
-    int exit_code{-1};
+    bool started {false};
+    bool timed_out {false};
+    bool terminated_by_signal {false};
+    int exit_code {-1};
     std::chrono::milliseconds elapsed{0};
     std::string standard_output;
     std::string standard_error;
@@ -141,97 +141,81 @@ struct survey_report
     std::vector<file_observation> observations;
 };
 
-std::string lower_copy(std::string value)
+std::string
+lower_copy(std::string value)
 {
-    std::transform(
-	value.begin(),
-	value.end(),
-	value.begin(),
-	[](unsigned char character)
-	{
-	    return static_cast<char>(std::tolower(character));
-	});
-    return value;
+  auto llc = [](unsigned char character) { return static_cast<char>(std::tolower(character)); };
+
+  std::transform(value.begin(), value.end(), value.begin(), llc);
+  return value;
 }
 
-bool has_suffix_case_insensitive(const fs::path& path, std::string_view suffix)
+bool
+has_suffix_case_insensitive(const fs::path& path, std::string_view suffix)
 {
-    const std::string value = lower_copy(path.filename().string());
-    const std::string expected = lower_copy(std::string(suffix));
-    const bool result = value.size() >= expected.size() &&
-			value.compare(value.size() - expected.size(), expected.size(), expected) == 0;
-    return result;
+  const std::string value = lower_copy(path.filename().string());
+  const std::string expected = lower_copy(std::string(suffix));
+  const bool result = value.size() >= expected.size() &&
+    value.compare(value.size() - expected.size(), expected.size(), expected) == 0;
+  return result;
 }
 
-std::string utc_timestamp()
+std::string
+utc_timestamp()
 {
-    const std::time_t now = std::time(nullptr);
-    std::tm value{};
-    gmtime_r(&now, &value);
-    std::ostringstream stream;
-    stream << std::put_time(&value, "%Y-%m-%dT%H:%M:%SZ");
-    return stream.str();
+  const std::time_t now = std::time(nullptr);
+  std::tm value{};
+  gmtime_r(&now, &value);
+  std::ostringstream stream;
+  stream << std::put_time(&value, "%Y-%m-%dT%H:%M:%SZ");
+  return stream.str();
 }
 
-fs::path relative_or_original(const fs::path& path, const fs::path& root)
+fs::path
+relative_or_original(const fs::path& path, const fs::path& root)
 {
-    std::error_code error;
-    fs::path result = fs::relative(path, root, error);
-    if (error || result.empty())
+  std::error_code error;
+  fs::path result = fs::relative(path, root, error);
+  if (error || result.empty())
+    result = path;
+  return result;
+}
+
+std::vector<fs::path>
+find_regular_files(const fs::path& root, std::string_view suffix, bool recursive)
+{
+  std::vector<fs::path> result;
+  std::error_code error;
+
+  const auto dopt = fs::directory_options::skip_permission_denied;
+  if (recursive)
     {
-	result = path;
-    }
-    return result;
-}
+      fs::recursive_directory_iterator iterator(root, dopt, error);
 
-std::vector<fs::path> find_regular_files(
-    const fs::path& root,
-    std::string_view suffix,
-    bool recursive)
-{
-    std::vector<fs::path> result;
-    std::error_code error;
-
-    if (recursive)
-    {
-	fs::recursive_directory_iterator iterator(
-	    root,
-	    fs::directory_options::skip_permission_denied,
-	    error);
-	const fs::recursive_directory_iterator end;
-
-	while (!error && iterator != end)
+      const fs::recursive_directory_iterator end;
+      while (!error && iterator != end)
 	{
-	    const fs::directory_entry& entry = *iterator;
-	    std::error_code type_error;
-	    if (entry.is_regular_file(type_error) &&
-		!type_error &&
-		has_suffix_case_insensitive(entry.path(), suffix))
-	    {
-		result.push_back(entry.path());
-	    }
-	    iterator.increment(error);
+	  const fs::directory_entry& entry = *iterator;
+	  std::error_code type_error;
+	  const bool fpassp = entry.is_regular_file(type_error) && !type_error;
+	  if (fpassp && has_suffix_case_insensitive(entry.path(), suffix))
+	    result.push_back(entry.path());
+	  iterator.increment(error);
 	}
     }
-    else
+  else
     {
-	fs::directory_iterator iterator(
-	    root,
-	    fs::directory_options::skip_permission_denied,
-	    error);
-	const fs::directory_iterator end;
+      fs::directory_iterator iterator(root, dopt, error);
 
-	while (!error && iterator != end)
+      const fs::directory_iterator end;
+      while (!error && iterator != end)
 	{
-	    const fs::directory_entry& entry = *iterator;
-	    std::error_code type_error;
-	    if (entry.is_regular_file(type_error) &&
-		!type_error &&
-		has_suffix_case_insensitive(entry.path(), suffix))
-	    {
-		result.push_back(entry.path());
-	    }
-	    iterator.increment(error);
+	  const fs::directory_entry& entry = *iterator;
+	  std::error_code type_error;
+	  const bool fpassp = entry.is_regular_file(type_error) && !type_error;
+	  if (fpassp && has_suffix_case_insensitive(entry.path(), suffix))
+	    result.push_back(entry.path());
+	  iterator.increment(error);
 	}
     }
 
@@ -239,178 +223,160 @@ std::vector<fs::path> find_regular_files(
     return result;
 }
 
-std::vector<std::uint8_t> read_sampled_bytes(
-    const fs::path& path,
-    std::size_t head_size,
-    std::size_t tail_size)
+
+std::vector<std::uint8_t>
+read_sampled_bytes(const fs::path& path,
+		   std::size_t head_size, std::size_t tail_size)
 {
-    std::vector<std::uint8_t> result;
-    std::ifstream stream(path, std::ios::binary);
+  std::vector<std::uint8_t> result;
+  std::ifstream stream(path, std::ios::binary);
 
-    if (stream)
+  if (stream)
     {
-	stream.seekg(0, std::ios::end);
-	const std::streamoff length = stream.tellg();
-	stream.seekg(0, std::ios::beg);
+      stream.seekg(0, std::ios::end);
+      const std::streamoff length = stream.tellg();
+      stream.seekg(0, std::ios::beg);
 
-	if (length > 0)
+      if (length > 0)
 	{
-	    const std::size_t total = static_cast<std::size_t>(length);
-	    const std::size_t head = std::min(head_size, total);
-	    result.resize(head);
-	    stream.read(reinterpret_cast<char*>(result.data()), static_cast<std::streamsize>(head));
-	    result.resize(static_cast<std::size_t>(stream.gcount()));
+	  const std::size_t total = static_cast<std::size_t>(length);
+	  const std::size_t head = std::min(head_size, total);
+	  result.resize(head);
+	  stream.read(reinterpret_cast<char*>(result.data()), static_cast<std::streamsize>(head));
+	  result.resize(static_cast<std::size_t>(stream.gcount()));
 
-	    if (total > head && tail_size > 0)
+	  if (total > head && tail_size > 0)
 	    {
-		const std::size_t tail = std::min(tail_size, total - head);
-		const std::size_t old_size = result.size();
-		result.resize(old_size + tail);
-		stream.clear();
-		stream.seekg(static_cast<std::streamoff>(total - tail), std::ios::beg);
-		stream.read(
-		    reinterpret_cast<char*>(result.data() + old_size),
-		    static_cast<std::streamsize>(tail));
-		result.resize(old_size + static_cast<std::size_t>(stream.gcount()));
+	      const std::size_t tail = std::min(tail_size, total - head);
+	      const std::size_t old_size = result.size();
+	      result.resize(old_size + tail);
+	      stream.clear();
+	      stream.seekg(static_cast<std::streamoff>(total - tail), std::ios::beg);
+	      stream.read(reinterpret_cast<char*>(result.data() + old_size),
+			  static_cast<std::streamsize>(tail));
+	      result.resize(old_size + static_cast<std::size_t>(stream.gcount()));
 	    }
 	}
     }
 
-    return result;
+  return result;
 }
 
-bool contains_bytes(const std::vector<std::uint8_t>& data, std::string_view needle)
+
+bool
+contains_bytes(const std::vector<std::uint8_t>& data, std::string_view needle)
 {
-    bool result{false};
-    if (!needle.empty() && data.size() >= needle.size())
+  bool result{false};
+  if (!needle.empty() && data.size() >= needle.size())
     {
-	const auto iterator = std::search(
-	    data.begin(),
-	    data.end(),
-	    needle.begin(),
-	    needle.end(),
+      const auto iterator = std::search(data.begin(), data.end(),
+					needle.begin(), needle.end(),
 	    [](std::uint8_t left, char right)
 	    {
 		return left == static_cast<std::uint8_t>(right);
 	    });
-	result = iterator != data.end();
+      result = iterator != data.end();
     }
-    return result;
+  return result;
 }
 
-bool has_ebml_header(const std::vector<std::uint8_t>& data)
+
+bool
+has_ebml_header(const std::vector<std::uint8_t>& data)
 {
-    const std::array<std::uint8_t, 4> ebml{0x1A, 0x45, 0xDF, 0xA3};
-    const bool result = data.size() >= ebml.size() &&
-			std::equal(ebml.begin(), ebml.end(), data.begin());
-    return result;
+  const std::array<std::uint8_t, 4> ebml{0x1A, 0x45, 0xDF, 0xA3};
+  const bool result = data.size() >= ebml.size() && std::equal(ebml.begin(), ebml.end(), data.begin());
+  return result;
 }
 
-std::string classify_container(const fs::path& sized_path, const std::vector<std::uint8_t>& data)
+
+std::string
+classify_container(const fs::path& sized_path,
+		   const std::vector<std::uint8_t>& data)
 {
     fs::path media_path = sized_path;
     media_path.replace_extension();
     const std::string extension = lower_copy(media_path.extension().string());
-    std::string result{"unknown"};
+    std::string result {"unknown"};
 
     if (has_ebml_header(data))
-    {
-	result = extension == ".webm" ? "webm" : "matroska";
-    }
+      result = extension == ".webm" ? "webm" : "matroska";
     else if (contains_bytes(data, "ftyp") ||
 	     contains_bytes(data, "moov") ||
 	     contains_bytes(data, "moof"))
     {
-	result = contains_bytes(data, "moof") ? "fragmented-mp4" :
-		 extension == ".mov" ? "mov" : "mp4";
+      result = contains_bytes(data, "moof") ? "fragmented-mp4" :
+	extension == ".mov" ? "mov" : "mp4";
     }
     else if (extension == ".mkv")
-    {
-	result = "matroska";
-    }
+      result = "matroska";
+    else if (extension == ".avi")
+      result = "avi";
     else if (extension == ".webm")
-    {
-	result = "webm";
-    }
+      result = "webm";
     else if (extension == ".mp4" || extension == ".m4v")
-    {
-	result = "mp4";
-    }
+      result = "mp4";
     else if (extension == ".mov")
-    {
-	result = "mov";
-    }
+      result = "mov";
     else if (extension == ".ts" || extension == ".m2ts")
-    {
-	result = "mpeg-ts";
-    }
+      result = "mpeg-ts";
 
     return result;
 }
 
-bool has_container_metadata(const std::string& container, const std::vector<std::uint8_t>& data)
+
+bool
+has_container_metadata(const std::string& container,
+		       const std::vector<std::uint8_t>& data)
 {
-    bool result{false};
+  bool result {false};
 
-    if (container == "mp4" || container == "mov")
-    {
-	result = contains_bytes(data, "moov");
-    }
-    else if (container == "fragmented-mp4")
-    {
-	result = contains_bytes(data, "moof");
-    }
-    else if (container == "matroska" || container == "webm")
-    {
-	result = has_ebml_header(data);
-    }
-    else if (container == "mpeg-ts")
-    {
-	result = !data.empty() && data.front() == 0x47;
-    }
+  if (container == "mp4" || container == "mov")
+    result = contains_bytes(data, "moov");
+  else if (container == "fragmented-mp4")
+    result = contains_bytes(data, "moof");
+  else if (container == "matroska" || container == "webm")
+    result = has_ebml_header(data);
+  else if (container == "mpeg-ts")
+    result = !data.empty() && data.front() == 0x47;
 
-    return result;
+  return result;
 }
 
-void close_fd(int& descriptor)
+void
+close_fd(int& descriptor)
 {
-    if (descriptor >= 0)
+  if (descriptor >= 0)
     {
-	close(descriptor);
-	descriptor = -1;
+      close(descriptor);
+      descriptor = -1;
     }
 }
 
-void append_pipe_data(int descriptor, std::string& destination, bool& open)
-{
-    std::array<char, 8192> buffer{};
-    bool continue_reading{true};
 
-    while (continue_reading && open)
+void
+append_pipe_data(int descriptor, std::string& destination, bool& open)
+{
+  std::array<char, 8192> buffer{};
+  bool continue_reading{true};
+
+  while (continue_reading && open)
     {
-	const ssize_t count = read(descriptor, buffer.data(), buffer.size());
-	if (count > 0)
-	{
-	    destination.append(buffer.data(), static_cast<std::size_t>(count));
-	}
-	else if (count == 0)
-	{
-	    open = false;
-	}
-	else if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
-	{
-	    continue_reading = false;
-	}
-	else
-	{
-	    open = false;
-	}
+      const ssize_t count = read(descriptor, buffer.data(), buffer.size());
+      if (count > 0)
+	destination.append(buffer.data(), static_cast<std::size_t>(count));
+      else if (count == 0)
+	open = false;
+      else if (errno == EAGAIN || errno == EWOULDBLOCK || errno == EINTR)
+	continue_reading = false;
+      else
+	open = false;
     }
 }
 
-command_result run_command(
-    const std::vector<std::string>& arguments,
-    std::chrono::seconds timeout)
+command_result
+run_command(const std::vector<std::string>& arguments,
+	    std::chrono::seconds timeout)
 {
     command_result result;
     int stdout_pipe[2]{-1, -1};
@@ -515,62 +481,62 @@ command_result run_command(
     return result;
 }
 
+
 // -----------------------------------------------------------------------------
 // MediaInfo JSON validation using RapidJSON
 // -----------------------------------------------------------------------------
-bool mediainfo_succeeded(const command_result& result)
+bool
+mediainfo_succeeded(const command_result& result)
 {
-    if (!result.started || result.timed_out || result.exit_code != 0)
-	return false;
+  if (!result.started || result.timed_out || result.exit_code != 0)
+    return false;
 
-    rapidjson::Document doc;
-    doc.Parse(result.standard_output.c_str());
-    if (doc.HasParseError() || !doc.IsObject())
-	return false;
+  rapidjson::Document doc;
+  doc.Parse(result.standard_output.c_str());
+  if (doc.HasParseError() || !doc.IsObject())
+    return false;
 
-    auto media_it = doc.FindMember("media");
-    if (media_it == doc.MemberEnd() || !media_it->value.IsObject())
-	return false;
+  auto media_it = doc.FindMember("media");
+  if (media_it == doc.MemberEnd() || !media_it->value.IsObject())
+    return false;
 
-    auto track_it = media_it->value.FindMember("track");
-    if (track_it == media_it->value.MemberEnd() || !track_it->value.IsArray())
-	return false;
+  auto track_it = media_it->value.FindMember("track");
+  if (track_it == media_it->value.MemberEnd() || !track_it->value.IsArray())
+    return false;
 
-    for (const auto& track : track_it->value.GetArray())
+  for (const auto& track : track_it->value.GetArray())
     {
-	if (!track.IsObject())
-	    continue;
-	auto type_it = track.FindMember("@type");
-	if (type_it != track.MemberEnd() && type_it->value.IsString())
+      if (!track.IsObject())
+	continue;
+      auto type_it = track.FindMember("@type");
+      if (type_it != track.MemberEnd() && type_it->value.IsString())
 	{
-	    if (std::string_view(type_it->value.GetString(), type_it->value.GetStringLength()) == "General")
-		return true;
+	  if (std::string_view(type_it->value.GetString(), type_it->value.GetStringLength()) == "General")
+	    return true;
 	}
     }
-    return false;
+  return false;
 }
 
-command_result run_mediainfo(const fs::path& path, const survey_config& config)
+
+command_result
+run_mediainfo(const fs::path& path, const survey_config& config)
 {
-    const std::vector<std::string> arguments{
-	"mediainfo",
-	"--Output=JSON",
-	"--Full",
-	path.string()};
-    command_result result = run_command(arguments, config.mediainfo_timeout);
-    return result;
+
+  const std::vector<std::string> arguments { "mediainfo", "--Output=JSON", "--Full", path.string()};
+  command_result result = run_command(arguments, config.mediainfo_timeout);
+  return result;
 }
+
 
 // -----------------------------------------------------------------------------
 // FFprobe JSON parsing using RapidJSON
 // -----------------------------------------------------------------------------
-media_probe run_ffprobe(
-    const fs::path& path,
-    std::uintmax_t source_size,
-    const survey_config& config)
+media_probe
+run_ffprobe(const fs::path& path, std::uintmax_t source_size, const survey_config& config)
 {
-    media_probe result;
-    const std::vector<std::string> arguments{
+  media_probe result;
+  const std::vector<std::string> arguments {
 	"ffprobe",
 	"-v", "error",
 	"-show_format",
@@ -578,129 +544,122 @@ media_probe run_ffprobe(
 	"-of", "json",
 	path.string()};
 
-    result.command = run_command(arguments, config.ffprobe_timeout);
+  result.command = run_command(arguments, config.ffprobe_timeout);
 
-    if (!result.command.started || result.command.timed_out || result.command.exit_code != 0)
-	return result;
+  if (!result.command.started || result.command.timed_out || result.command.exit_code != 0)
+    return result;
 
-    rapidjson::Document doc;
-    doc.Parse(result.command.standard_output.c_str());
-    if (doc.HasParseError() || !doc.IsObject())
-	return result;
+  rapidjson::Document doc;
+  doc.Parse(result.command.standard_output.c_str());
+  if (doc.HasParseError() || !doc.IsObject())
+    return result;
 
-    auto format_it = doc.FindMember("format");
-    if (format_it == doc.MemberEnd() || !format_it->value.IsObject())
-	return result;
+  auto format_it = doc.FindMember("format");
+  if (format_it == doc.MemberEnd() || !format_it->value.IsObject())
+    return result;
 
-    const auto& format = format_it->value;
+  const auto& format = format_it->value;
 
-    auto duration_it = format.FindMember("duration");
-    if (duration_it != format.MemberEnd() && duration_it->value.IsString())
+  auto duration_it = format.FindMember("duration");
+  if (duration_it != format.MemberEnd() && duration_it->value.IsString())
     {
-	try
+      try
 	{
-	    result.duration_seconds = std::stod(duration_it->value.GetString());
+	  result.duration_seconds = std::stod(duration_it->value.GetString());
 	}
-	catch (...) {}
+      catch (...) { }
     }
 
-    auto bitrate_it = format.FindMember("bit_rate");
-    if (bitrate_it != format.MemberEnd() && bitrate_it->value.IsString())
+  auto bitrate_it = format.FindMember("bit_rate");
+  if (bitrate_it != format.MemberEnd() && bitrate_it->value.IsString())
     {
-	try
+      try
 	{
-	    result.bitrate_bits_per_second = std::stod(bitrate_it->value.GetString());
+	  result.bitrate_bits_per_second = std::stod(bitrate_it->value.GetString());
 	}
-	catch (...) {}
+      catch (...) {}
     }
 
-    auto format_name_it = format.FindMember("format_name");
-    if (format_name_it != format.MemberEnd() && format_name_it->value.IsString())
+  auto format_name_it = format.FindMember("format_name");
+  if (format_name_it != format.MemberEnd() && format_name_it->value.IsString())
     {
-	result.format_name = format_name_it->value.GetString();
+      result.format_name = format_name_it->value.GetString();
     }
 
-    // If bitrate is missing, estimate from duration and file size.
-    if (result.duration_seconds > 0.0 && result.bitrate_bits_per_second <= 0.0)
+  // If bitrate is missing, estimate from duration and file size.
+  if (result.duration_seconds > 0.0 && result.bitrate_bits_per_second <= 0.0)
     {
-	result.bitrate_bits_per_second = static_cast<double>(source_size) * 8.0 / result.duration_seconds;
+      result.bitrate_bits_per_second = static_cast<double>(source_size) * 8.0 / result.duration_seconds;
     }
 
-    result.valid = (result.duration_seconds > 0.0 && result.bitrate_bits_per_second > 0.0);
-    return result;
+  result.valid = (result.duration_seconds > 0.0 && result.bitrate_bits_per_second > 0.0);
+  return result;
 }
 
-std::string stable_path_id(const fs::path& relative_path)
+
+std::string
+stable_path_id(const fs::path& relative_path)
 {
-    const std::string value = relative_path.generic_string();
-    const std::uint64_t hash = static_cast<std::uint64_t>(std::hash<std::string>{}(value));
-    std::ostringstream stream;
-    stream << std::hex << std::setw(16) << std::setfill('0') << hash;
-    return stream.str();
+  const std::string value = relative_path.generic_string();
+  const std::uint64_t hash = static_cast<std::uint64_t>(std::hash<std::string>{}(value));
+  std::ostringstream stream;
+  stream << std::hex << std::setw(16) << std::setfill('0') << hash;
+  return stream.str();
 }
 
-fs::path original_media_filename(const fs::path& sized_path)
+
+fs::path
+original_media_filename(const fs::path& sized_path)
 {
-    fs::path result = sized_path.filename();
-    result.replace_extension();
-    if (result.extension().empty())
-    {
-	result += ".bin";
-    }
-    return result;
+  fs::path result = sized_path.filename();
+  result.replace_extension();
+  if (result.extension().empty())
+    result += ".bin";
+  return result;
 }
 
-std::vector<std::string> make_ffmpeg_arguments(
-    const fs::path& input,
-    const fs::path& output,
-    const std::string& container,
-    double target_seconds)
+std::vector<std::string>
+make_ffmpeg_arguments(const fs::path& input, const fs::path& output,
+		      const std::string& container, double target_seconds)
 {
-    std::ostringstream duration;
-    duration << std::fixed << std::setprecision(3) << std::max(0.1, target_seconds);
+  std::ostringstream duration;
+  duration << std::fixed << std::setprecision(3) << std::max(0.1, target_seconds);
 
-    std::vector<std::string> result{
-	"ffmpeg",
-	"-nostdin",
-	"-hide_banner",
-	"-loglevel", "error",
-	"-i", input.string(),
-	"-map", "0",
-	"-c", "copy",
-	"-t", duration.str()};
+  std::vector<std::string> result{
+    "ffmpeg",
+    "-nostdin",
+    "-hide_banner",
+    "-loglevel", "error",
+    "-i", input.string(),
+    "-map", "0",
+    "-c", "copy",
+    "-t", duration.str()};
 
-    if (container == "mp4" || container == "mov")
+  if (container == "mp4" || container == "mov")
     {
-	result.emplace_back("-movflags");
-	result.emplace_back("+faststart");
+      result.emplace_back("-movflags");
+      result.emplace_back("+faststart");
     }
-    else if (container == "fragmented-mp4")
+  else if (container == "fragmented-mp4")
     {
-	result.emplace_back("-movflags");
-	result.emplace_back("+empty_moov+frag_keyframe+default_base_moof");
+      result.emplace_back("-movflags");
+      result.emplace_back("+empty_moov+frag_keyframe+default_base_moof");
     }
 
-    result.emplace_back("-y");
-    result.emplace_back(output.string());
-    return result;
+  result.emplace_back("-y");
+  result.emplace_back(output.string());
+  return result;
 }
 
-bool container_supported_for_redux(const std::string& container)
-{
-    const bool result = container == "mp4" ||
-			container == "mov" ||
-			container == "fragmented-mp4" ||
-			container == "matroska" ||
-			container == "webm" ||
-			container == "mpeg-ts";
-    return result;
-}
 
-bool create_redux(
-    file_observation& observation,
-    const fs::path& download_cache_root,
-    const survey_config& config,
-    bool verbose)
+bool
+container_supported_for_redux(const std::string& container)
+{ return container != "unknown"; }
+
+
+bool
+create_redux(file_observation& observation, const fs::path& download_cache_root,
+	     const survey_config& config, bool verbose)
 {
     bool result{false};
     auto log = [&](const std::string& msg) { if (verbose) std::cout << msg << std::endl; };
@@ -827,102 +786,92 @@ bool create_redux(
     return result;
 }
 
-file_observation inspect_file(
-    const fs::path& path,
-    const fs::path& download_cache_root,
-    const survey_config& config,
-    bool verbose)
+
+file_observation
+inspect_file(const fs::path& path, const fs::path& download_cache_root,
+	     const survey_config& config, bool verbose)
 {
-    auto log = [&](const std::string& msg) { if (verbose) std::cout << msg << std::endl; };
+  auto log = [&](const std::string& msg) { if (verbose) std::cout << msg << std::endl; };
 
-    file_observation result;
-    result.source_path = path;
-    result.relative_path = relative_or_original(path, download_cache_root);
+  file_observation result;
+  result.source_path = path;
+  result.relative_path = relative_or_original(path, download_cache_root);
 
-    log("Processing " + result.relative_path.generic_string());
+  log("Processing " + result.relative_path.generic_string());
 
-    std::error_code error;
-    result.source_size = fs::file_size(path, error);
-    if (error)
+  std::error_code error;
+  result.source_size = fs::file_size(path, error);
+  if (error)
     {
-	result.mediainfo_error = error.message();
-	log("  - Error getting file size: " + error.message());
+      result.mediainfo_error = error.message();
+      log("  - Error getting file size: " + error.message());
     }
-    else
+  else
     {
-	log("  - Size: " + std::to_string(result.source_size) + " bytes");
-	const std::vector<std::uint8_t> bytes = read_sampled_bytes(
-	    path,
-	    8ULL * 1024ULL * 1024ULL,
-	    8ULL * 1024ULL * 1024ULL);
-	result.detected_container = classify_container(path, bytes);
-	result.container_metadata_present = has_container_metadata(
-	    result.detected_container,
-	    bytes);
-	log("  - Container: " + result.detected_container +
-	    (result.container_metadata_present ? " (metadata present)" : " (metadata missing)"));
+      log("  - Size: " + std::to_string(result.source_size) + " bytes");
+      const std::vector<std::uint8_t> bytes = read_sampled_bytes(
+								 path,
+								 8ULL * 1024ULL * 1024ULL,
+								 8ULL * 1024ULL * 1024ULL);
+      result.detected_container = classify_container(path, bytes);
+      result.container_metadata_present = has_container_metadata(
+								 result.detected_container,
+								 bytes);
+      log("  - Container: " + result.detected_container +
+	  (result.container_metadata_present ? " (metadata present)" : " (metadata missing)"));
 
-	log("  - Running mediainfo on " + path.generic_string());
-	const command_result mediainfo = run_mediainfo(path, config);
-	result.mediainfo_passed = mediainfo_succeeded(mediainfo);
-	result.mediainfo_timed_out = mediainfo.timed_out;
-	result.mediainfo_exit_code = mediainfo.exit_code;
-	result.mediainfo_elapsed = mediainfo.elapsed;
-	result.mediainfo_error = mediainfo.standard_error;
-	log("  - mediainfo " + std::string(result.mediainfo_passed ? "passed" : "failed"));
+      log("  - Running mediainfo on " + path.generic_string());
+      const command_result mediainfo = run_mediainfo(path, config);
+      result.mediainfo_passed = mediainfo_succeeded(mediainfo);
+      result.mediainfo_timed_out = mediainfo.timed_out;
+      result.mediainfo_exit_code = mediainfo.exit_code;
+      result.mediainfo_elapsed = mediainfo.elapsed;
+      result.mediainfo_error = mediainfo.standard_error;
+      log("  - mediainfo " + std::string(result.mediainfo_passed ? "passed" : "failed"));
 
-	result.redux_required = result.source_size > config.max_archive_size;
-	if (result.redux_required)
+      result.redux_required = result.source_size > config.max_archive_size;
+      if (result.redux_required)
 	{
-	    log("  - Redux required (oversized)");
-	    create_redux(result, download_cache_root, config, verbose);
+	  log("  - Redux required (oversized)");
+	  create_redux(result, download_cache_root, config, verbose);
 	}
-	else
+      else
 	{
-	    log("  - Redux not required (within size limit)");
+	  log("  - Redux not required (within size limit)");
 	}
     }
 
-    return result;
+  return result;
 }
 
-void append_named_lists(survey_report& report, const file_observation& observation)
+
+void
+append_named_lists(survey_report& report, const file_observation& observation)
 {
-    if (observation.container_metadata_present)
-    {
-	report.sized_metadata_pass.push_back(observation.relative_path);
-    }
-    else
-    {
-	report.sized_metadata_fail.push_back(observation.relative_path);
-    }
+  if (observation.container_metadata_present)
+    report.sized_metadata_pass.push_back(observation.relative_path);
+  else
+    report.sized_metadata_fail.push_back(observation.relative_path);
 
-    if (observation.mediainfo_passed)
-    {
-	report.sized_metadata_mediainfo_pass.push_back(observation.relative_path);
-    }
-    else
-    {
-	report.sized_metadata_mediainfo_fails.push_back(observation.relative_path);
-    }
+  if (observation.mediainfo_passed)
+    report.sized_metadata_mediainfo_pass.push_back(observation.relative_path);
+  else
+    report.sized_metadata_mediainfo_fails.push_back(observation.relative_path);
 
-    if (observation.redux_required)
+  if (observation.redux_required)
     {
-	const fs::path redux_relative = observation.redux_path.empty()
-	    ? observation.relative_path
+      const fs::path redux_relative = observation.redux_path.empty()
+	? observation.relative_path
 	    : relative_or_original(observation.redux_path, report.download_cache_root);
-	if (observation.redux_created &&
-	    observation.redux_container_metadata_present &&
-	    observation.redux_mediainfo_passed)
-	{
-	    report.sized_metadata_mediainfo_pass_redux.push_back(redux_relative);
-	}
-	else
-	{
-	    report.sized_metadata_mediainfo_fails_redux.push_back(redux_relative);
-	}
+      if (observation.redux_created &&
+	  observation.redux_container_metadata_present &&
+	  observation.redux_mediainfo_passed)
+	report.sized_metadata_mediainfo_pass_redux.push_back(redux_relative);
+      else
+	report.sized_metadata_mediainfo_fails_redux.push_back(redux_relative);
     }
 }
+
 
 // -----------------------------------------------------------------------------
 // JSON serialization with RapidJSON
@@ -1067,7 +1016,7 @@ serialize_report(const survey_report& report, const fs::path& output_path)
 
   // Write buffer to temporary file
   std::ofstream out(temporary_path, std::ios::binary | std::ios::trunc);
-  if (!out)
+  if (out.good())
     {
       out.write(buffer.GetString(), buffer.GetSize());
       out.flush();
@@ -1079,8 +1028,13 @@ serialize_report(const survey_report& report, const fs::path& output_path)
   return out.good() && !error;
 }
 
+
+///
 class download_cache_survey
 {
+  survey_config		config;
+  bool			verbose_;
+
 public:
     explicit download_cache_survey(survey_config config = {},
 				   bool verbose = false)
@@ -1168,13 +1122,10 @@ public:
 
       return result;
     }
-
-private:
-  survey_config config;
-  bool verbose_;
 };
 
 } // namespace
+
 
 bool
 survey_media_cache(const fs::path& torrent_directory,
@@ -1186,7 +1137,6 @@ survey_media_cache(const fs::path& torrent_directory,
 }
 
 
-
 int main(int argc, char** argv)
 {
   bool verbose = false;
@@ -1195,13 +1145,9 @@ int main(int argc, char** argv)
     {
       std::string arg = argv[i];
       if (arg == "--verbose")
-	{
-	  verbose = true;
-	}
+	verbose = true;
       else
-	{
-	  args.push_back(arg);
-	}
+	args.push_back(arg);
     }
 
   if (args.size() == 2)
@@ -1211,8 +1157,8 @@ int main(int argc, char** argv)
     }
   else
     {
-      std::cerr
-	<< "usage: media_cache_survey [torrent-directory] [download.cache] [--verbose]";
+      std::string m("media_cache_survey [torrent-directory] [download.cache] [--verbose]");
+      std::cerr << "usage: " << m << std::endl;
       return 1;
     }
 }

@@ -16,6 +16,12 @@ Naturally, we call it this whole workflow by the acryonym SMiP. Use like: take a
 - [API Specifications](/docs/api_specifications.md) – The schema for the final JSON output.
 - [Architecture Overview](/docs/architecture_overview.md) – A high-level description of the system's components and design.
 - [Pipeline Diagrams](/docs/pipeline_diagram.md) – Visual representations of the system's flow and deployment.
+- Cache Survey
+  - [Workflow and development summary](docs/media_cache_survey.md)
+  - [Architecture](docs/media_cache_survey_architecture.md)
+  - [Single-file processing sequence](docs/media_cache_survey_sequence.svg)
+
+
 - [Analysis](/docs/analysis.md) – Analysis of results.
 - [Sources](/docs/html.doxygen/index.html) – Source code documentation
 

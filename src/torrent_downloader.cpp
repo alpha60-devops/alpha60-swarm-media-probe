@@ -91,6 +91,30 @@ prioritize_probe_ranges(lt::torrent_handle& handle,
   handle.prioritize_pieces(priorities);
 }
 
+std::pair<std::size_t, std::size_t>
+probe_piece_progress(const lt::torrent_handle& handle,
+                     const lt::torrent_info& torrent,
+                     const lt::file_index_t file_index,
+                     const std::uint64_t prefix_bytes,
+                     const std::uint64_t tail_bytes)
+{
+  const std::vector<byte_range> ranges = make_probe_ranges(
+    torrent, file_index, prefix_bytes, tail_bytes);
+  std::size_t verified{0};
+  std::size_t required{0};
+  for (const byte_range& range : ranges)
+    {
+      const auto [first_piece, last_piece] = piece_span(torrent, file_index, range);
+      for (int piece = first_piece; piece <= last_piece; ++piece)
+        {
+          required++;
+          if (handle.have_piece(lt::piece_index_t{piece}))
+            verified++;
+        }
+    }
+  return {verified, required};
+}
+
 bool
 probe_ranges_complete(const lt::torrent_handle& handle,
                       const lt::torrent_info& torrent,
@@ -98,15 +122,9 @@ probe_ranges_complete(const lt::torrent_handle& handle,
                       const std::uint64_t prefix_bytes,
                       const std::uint64_t tail_bytes)
 {
-  const std::vector<byte_range> ranges = make_probe_ranges(
-    torrent, file_index, prefix_bytes, tail_bytes);
-  bool result{!ranges.empty()};
-  for (const byte_range& range : ranges)
-    {
-      const auto [first_piece, last_piece] = piece_span(torrent, file_index, range);
-      for (int piece = first_piece; piece <= last_piece && result; ++piece)
-        result = handle.have_piece(lt::piece_index_t{piece});
-    }
+  const auto [verified, required] = probe_piece_progress(
+    handle, torrent, file_index, prefix_bytes, tail_bytes);
+  const bool result = required > 0 && verified == required;
   return result;
 }
 
@@ -320,10 +338,12 @@ verify_data_on_disk(const fs::path& file_path,
 		    const std::size_t bytes_to_check = 1024)
 {
   bool result = false;
-  if (fs::exists(file_path))
+  std::error_code error;
+  const bool regular_file = fs::is_regular_file(file_path, error);
+  if (regular_file && !error)
     {
-      const auto file_size = fs::file_size(file_path);
-      if (file_size >= min_size)
+      const auto file_size = fs::file_size(file_path, error);
+      if (!error && file_size >= min_size)
 	{
 	  std::ifstream file(file_path, std::ios::binary);
 	  if (file.is_open())
@@ -370,102 +390,114 @@ log_suspect(const std::string odir)
 
 
 /// Timeout loop for the downloader, active downloading until exit.
-/// @param psize is in mb
-void
-media_downloader::just_a_bit(lt::session& sesh, lt::torrent_handle& handle,
-			     const time_limits& tlimits,
-			     const lt::file_index_t p_index,
-			     const probe_size psize)
+/// Completion is based on verified pieces in the requested head/tail ranges,
+/// not aggregate torrent byte counters.
+probe_wait_result
+media_downloader::just_a_bit(lt::session& sesh,
+                             lt::torrent_handle& handle,
+                             const time_limits& tlimits,
+                             const lt::torrent_info& torrent,
+                             const lt::file_index_t p_index,
+                             const std::uint64_t prefix_bytes,
+                             const std::uint64_t tail_bytes,
+                             const probe_size psize)
 {
   using namespace std;
 
-  auto  [ p_mb, target_mb] = psize;
-
+  const auto [planned_mb, target_mb] = psize;
   auto to_seconds = [](auto duration)
   { return std::chrono::duration_cast<std::chrono::seconds>(duration); };
 
-  // Start timeout loop...
-  // Ends if:
-  /// 1: enough downloaded to make sized_file
-  /// 2: timeout
-  auto start_time = chrono::steady_clock::now();
+  const auto start_time = chrono::steady_clock::now();
   auto last_status_time = start_time;
+  auto last_progress_time = start_time;
 
-  int64_t last_downloaded = 0;
-  auto last_rate_time = start_time;
-  double current_rate_bps = 0.0;
+  auto status = handle.status();
+  std::int64_t last_payload_download = status.total_payload_download;
+  auto [last_verified, required] = probe_piece_progress(
+    handle, torrent, p_index, prefix_bytes, tail_bytes);
+
+  probe_wait_result result;
+  result.verified_pieces = last_verified;
+  result.required_pieces = required;
+
   while (true)
     {
-      // Check clock.
-      auto now = chrono::steady_clock::now();
-      auto elapsed = to_seconds(now - start_time).count();
+      const auto now = chrono::steady_clock::now();
+      const auto elapsed = to_seconds(now - start_time).count();
+      status = handle.status();
 
-      // Get status.
-      auto status = handle.status();
+      const auto [verified, required_now] = probe_piece_progress(
+        handle, torrent, p_index, prefix_bytes, tail_bytes);
+      result.verified_pieces = verified;
+      result.required_pieces = required_now;
 
-      // Check if the download has reached the target size and time.
-      // status.total_payload_download
-      // status.all_time_download
-      const double tdownloaded_mb = to_mb(status.total_done);
-
-      // Ask the torrent handle for the download progress of ALL files
-      std::vector<std::int64_t> file_progress;
-      handle.file_progress(file_progress);
-      std::int64_t fdownloaded = file_progress[p_index];
-      auto fdownloaded_mb = fdownloaded ? to_mb(fdownloaded) : 0;
-      if (tdownloaded_mb >= p_mb || fdownloaded_mb >= target_mb)
+      if (required_now > 0 && verified == required_now)
 	{
-	  cerr << "progress (" << fdownloaded_mb << ") of " << target_mb
-	       << endl;
+	  result.status = probe_wait_status::complete;
+	  cerr << "verified probe pieces (" << verified << "/"
+	       << required_now << ")" << endl;
 	  break;
 	}
 
-      // Check for timeout.
-      if (elapsed > tlimits.maximum)
+      if (status.errc)
 	{
+	  result.status = probe_wait_status::torrent_error;
+	  cerr << "torrent error while waiting for probe ranges: "
+	       << status.errc.message() << endl;
+	  break;
+	}
+
+      const bool piece_progress = verified > last_verified;
+      const bool payload_progress =
+        status.total_payload_download > last_payload_download;
+      if (piece_progress || payload_progress)
+	{
+	  last_progress_time = now;
+	  last_verified = verified;
+	  last_payload_download = status.total_payload_download;
+	}
+
+      if (elapsed >= tlimits.maximum)
+	{
+	  result.status = probe_wait_status::timed_out;
 	  cerr << "timeout after " << tlimits.maximum << " seconds" << endl;
 	  break;
 	}
 
-      // Calculate current download rate.
-      double rate_elapsed = to_seconds(now - last_rate_time).count();
-      if (rate_elapsed >= 5 && status.total_done > 0)
+      const auto quiet_seconds = to_seconds(now - last_progress_time).count();
+      if (elapsed >= tlimits.minimum &&
+          quiet_seconds >= tlimits.unresponsive)
 	{
-	  double delta_bytes = status.total_done - last_downloaded;
-	  current_rate_bps = delta_bytes / rate_elapsed;
-	  last_downloaded = status.total_done;
-	  last_rate_time = now;
-	}
-
-      // Check if stalled.
-      if (current_rate_bps == 0 && elapsed >= tlimits.unresponsive)
-	{
-	  cerr << "stalled in (" << elapsed << ") seconds" << endl;
+	  result.status = probe_wait_status::stalled;
+	  cerr << "stalled after " << quiet_seconds
+	       << " seconds without probe-piece progress" << endl;
 	  break;
 	}
 
-      // Show progress every n second interval.
-      const auto status_interval = 5;
-      auto status_elapsed = to_seconds(now - last_status_time).count();
-      if (status_elapsed >= status_interval)
+      const auto status_elapsed = to_seconds(now - last_status_time).count();
+      if (status_elapsed >= 5)
 	{
-	  double rate_kbps = current_rate_bps / 1024.0;
+	  const double payload_mb = to_mb(status.total_payload_download);
+	  const double rate_kbps = status.download_payload_rate / 1024.0;
 	  cout << fixed << setprecision(2);
 	  cout << "  Peers: " << status.num_peers
-	       << " | Downloaded: " << fdownloaded_mb << ", "
-	       << tdownloaded_mb << " MB / " << p_mb << " MB"
-	       << " | Speed: " << rate_kbps << " KB/s";
-	  cout << endl;
+	       << " | Verified pieces: " << verified << "/" << required_now
+	       << " | Payload: " << payload_mb << " MB / " << planned_mb
+	       << " MB"
+	       << " | Target file: " << target_mb << " MB"
+	       << " | Speed: " << rate_kbps << " KB/s" << endl;
 	  last_status_time = now;
 	}
 
-      // Force a flush periodically
-      if (elapsed % 5 == 0 && elapsed > 0)
+      if (elapsed % 30 == 0 && elapsed > 0)
 	handle.force_reannounce();
 
       drain_alerts(sesh);
       this_thread::sleep_for(chrono::seconds(1));
     }
+
+  return result;
 }
 
 
@@ -587,7 +619,9 @@ media_downloader::almost_nothing(const std::string& ifile,
       // Set up download priorities.
       vector<lt::download_priority_t> priorities;
       priorities.resize(ti->num_files(), lt::download_priority_t{0});
-      priorities[static_cast<int>(largest_file_index)] = lt::download_priority_t{0};
+      // Keep the selected file materialized on disk. Piece priorities below
+      // still limit network acquisition to the requested probe ranges.
+      priorities[static_cast<int>(largest_file_index)] = lt::download_priority_t{1};
       params.file_priorities = priorities;
 
       // Start BTIH in session...
@@ -632,20 +666,22 @@ media_downloader::almost_nothing(const std::string& ifile,
 		static_cast<std::uint64_t>(dl_target_mb) * bytes_per_megabyte;
 	      const std::uint64_t requested_tail =
 		static_cast<std::uint64_t>(tail_target_mb) * bytes_per_megabyte;
-
 	      prioritize_probe_ranges(handle, *ti, largest_file_index,
 			      requested_prefix, requested_tail);
-	      just_a_bit(sesh, handle, dtlimits, largest_file_index,
-			 { probe_target_mb, probe_target_mb });
+	      const probe_wait_result wait_result = just_a_bit(
+		sesh, handle, dtlimits, *ti, largest_file_index,
+		requested_prefix, requested_tail,
+		{ probe_target_mb, probe_target_mb });
 	      is_enough(sesh, handle);
 
-	      // Sync
-	      const bool forcesyncp(true);
-	      if (forcesyncp)
+	      // Sync a materialized file, if libtorrent created one.
+	      int fd = open(prime_file_path.string().c_str(), O_RDONLY);
+	      if (fd != -1)
 		{
-		  int fd = open(prime_file_path.string().c_str(), O_RDONLY);
-		  if (fd != -1)
-		    fsync(fd);
+		  if (fsync(fd) != 0)
+		    cerr << "fsync failed for " << prime_file_path << ": "
+			 << strerror(errno) << endl;
+		  close(fd);
 		}
 
 	      auto status = handle.status();
@@ -673,38 +709,61 @@ media_downloader::almost_nothing(const std::string& ifile,
 
 	      if (!serializedp)
 		{
-		  if (status.total_done == 0 && status.download_rate == 0)
-		    stalledp = true;
+		  const bool wait_failed =
+		    wait_result.status != probe_wait_status::complete;
+		  if (wait_failed)
+		    {
+		      stalledp = true;
+		      cerr << "probe range acquisition stopped with "
+			   << wait_result.verified_pieces << "/"
+			   << wait_result.required_pieces
+			   << " pieces verified" << endl;
+		    }
 		  else if (dl_target_mb >= max_download_mb)
 		    exhaustedp = true;
 		  else
 		    {
-		      uint pfile_mb = to_mb(fs::file_size(prime_file_path));
-		      cout << "try (" << index << ", "
-			   << pfile_mb << " logical MB, " << probe_target_mb
-			   << " MB planned) complete" << endl;
-
-		      // Restart torrent: set auto_managed flag and resume
-		      handle.set_flags(lt::torrent_flags::auto_managed, lt::torrent_flags::auto_managed);
-		      handle.resume();
-
-		      // Wait for it to actually start
-		      const uint max_wait = 20;
-		      for (uint attempt = 0; attempt < max_wait; ++attempt)
+		      std::error_code file_error;
+		      const auto prime_size = fs::file_size(
+			prime_file_path, file_error);
+		      if (file_error)
 			{
-			  this_thread::sleep_for(chrono::seconds(1));
-			  status = handle.status();
-			  // Check paused flag via bitmask
-			  bool readyp = !(status.flags & lt::torrent_flags::paused) && status.has_metadata;
-			  bool managedp = (status.flags & lt::torrent_flags::auto_managed) != 0;
-			  bool peersp = status.num_peers > 0;
-			  if (readyp && managedp && peersp)
+			  cerr << "probe file is not available: "
+			       << prime_file_path << ": "
+			       << file_error.message() << endl;
+			  stalledp = true;
+			}
+		      else
+			{
+			  const uint pfile_mb = to_mb(prime_size);
+			  cout << "try (" << index << ", "
+			       << pfile_mb << " logical MB, " << probe_target_mb
+			       << " MB planned) complete" << endl;
+
+			  // Restart torrent: set auto_managed flag and resume.
+			  handle.set_flags(lt::torrent_flags::auto_managed,
+					   lt::torrent_flags::auto_managed);
+			  handle.resume();
+
+			  const uint max_wait = 20;
+			  for (uint attempt = 0; attempt < max_wait; ++attempt)
 			    {
-			      cout << "resumed (" << attempt <<  " sec), "
-				   << "peers (" << status.num_peers << ")" << endl;
-			      break;
+			      this_thread::sleep_for(chrono::seconds(1));
+			      status = handle.status();
+			      const bool readyp =
+				!(status.flags & lt::torrent_flags::paused) &&
+				status.has_metadata;
+			      const bool managedp =
+				(status.flags & lt::torrent_flags::auto_managed) != 0;
+			      if (readyp && managedp)
+				{
+				  cout << "resumed (" << attempt << " sec), "
+				       << "peers (" << status.num_peers << ")"
+				       << endl;
+				  break;
+				}
+			      drain_alerts(sesh);
 			    }
-			  drain_alerts(sesh);
 			}
 		    }
 		}
@@ -720,12 +779,10 @@ media_downloader::almost_nothing(const std::string& ifile,
 	    }
 	  cout << endl;
 	}
-      catch (std::exception& e)
+      catch (const std::exception& e)
 	{
-	  cout << "almost_nothing:: exception thrown during tear down ";
-	  cout << endl;
-	  cout << e.what();
-	  cout << endl;
+	  cerr << "almost_nothing: exception during download/probe lifecycle"
+	       << endl << e.what() << endl;
 	}
 
       // Initiate session shutdown.
@@ -750,8 +807,17 @@ media_downloader::almost_nothing(const std::string& ifile,
   // Confirm prime_file data on disk, create sized file.
   // Check actual file on disk for non-zero data.
   // Create a specially-sized small file for the media archive.
-  const bool ff_created = fs::exists(prime_file_path);
-  const auto ff_size = ff_created ? fs::file_size(prime_file_path) : 0;
+  std::error_code prime_error;
+  const bool ff_created = fs::is_regular_file(prime_file_path, prime_error);
+  const auto ff_size = ff_created && !prime_error
+    ? fs::file_size(prime_file_path, prime_error)
+    : 0;
+  if (prime_error)
+    {
+      cerr << "probe file is not materialized: " << prime_file_path
+	   << ": " << prime_error.message() << endl;
+      prime_error.clear();
+    }
   const bool ff_size_targetp = ff_size >= ulong(min_fsize);
   if (!redux_createdp && ff_created && ff_size_targetp)
     {

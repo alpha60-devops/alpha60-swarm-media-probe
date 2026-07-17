@@ -7,6 +7,7 @@
 #include <cerrno>
 
 #include <atomic>
+#include <cstdint>
 #include <string>
 #include <optional>
 #include <thread>
@@ -60,8 +61,24 @@ struct time_limits
   uint maximum;
 };
 
-/// Default timeouts.
-constexpr time_limits dtlimits { 5, 0, 300 };
+enum class probe_wait_status
+{
+  complete,
+  stalled,
+  timed_out,
+  torrent_error
+};
+
+struct probe_wait_result
+{
+  probe_wait_status status{probe_wait_status::stalled};
+  std::size_t verified_pieces{0};
+  std::size_t required_pieces{0};
+};
+
+/// Default timeouts. Allow peer discovery and handshake before declaring a
+/// range request stalled, while retaining a five-minute absolute limit.
+constexpr time_limits dtlimits { 30, 10, 300 };
 
 
 /// Downloader encapsulation.
@@ -71,9 +88,12 @@ struct media_downloader
   is_enough(lt::session& sesh, lt::torrent_handle& handle,
 	    const uint max_wait = 10);
 
-  void
+  probe_wait_result
   just_a_bit(lt::session& sesh, lt::torrent_handle& handle,
-	     const time_limits& tlimits, const lt::file_index_t p_index,
+	     const time_limits& tlimits, const lt::torrent_info& torrent,
+	     const lt::file_index_t p_index,
+	     const std::uint64_t prefix_bytes,
+	     const std::uint64_t tail_bytes,
 	     const probe_size psize);
 
 

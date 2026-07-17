@@ -1,53 +1,44 @@
 # Alpha60 Swarm Media Probe Documentation
 
-## Intro
+## Introduction
 
-Welcome to the documentation for the **Swarm Media Probe**. This tool is a designed to be used with a specific workflow that takes as input a collection of hashes for media files (BitTorrent .torrent file BTIH), downloads a minimal portion of their
-associated media content, extracts a minimal sample, and uses that media sample to derive technical metadata about video, audio, subtitles that are present (using ffprobe and mediainfo), and outputs a structured JSON data file.
+Alpha60 Swarm Media Probe, or SMiP, accepts collections of BitTorrent `.torrent` files, acquires small verified ranges from selected media objects, creates bounded cache artifacts, extracts technical media metadata, and writes a structured JSON report.
 
-These probe runs can build on results from previous probes,  filling in more complete data over time with longer timeouts, or requesting larger sample sizes for the existing cache. The generated cache files can be archived for future re-analysis. The workflow permits running the probe without any downloading, as an analysis-only pass for generating structured JSON.
+Probe runs can reuse previous cache artifacts, run without networking, or expand acquisition budgets over time. The workflow is intended for collection-level media research rather than complete torrent downloads.
 
-This report file can be saved, analyzed and compared to other input collections over time.
+## Documentation
 
-Naturally, we call it this whole workflow by the acryonym SMiP. Use like: take a sip of the smip!
+- [Code guide](docs/README.md)
+- [Requirements and dependencies](docs/requirements.md)
+- [Architecture](docs/architecture.md)
+- [Pipeline walkthrough](docs/pipeline_walkthrough.md)
+- [Components](docs/components.md)
+- [Media redux](docs/media_redux.md)
+- [Data model and JSON](docs/data_model.md)
+- [Media cache survey](docs/media_cache_survey.md)
+- [Media cache survey architecture](docs/media_cache_survey_architecture.md)
+- [Generated source documentation](docs/html.doxygen/index.html)
 
-## Documentation Sections
+## Quick start
 
-- [API Specifications](/docs/api_specifications.md) – The schema for the final JSON output.
-- [Architecture Overview](/docs/architecture_overview.md) – A high-level description of the system's components and design.
-- [Pipeline Diagrams](/docs/pipeline_diagram.md) – Visual representations of the system's flow and deployment.
-- Cache Survey
-  - [Workflow and development summary](docs/media_cache_survey.md)
-  - [Architecture](docs/media_cache_survey_architecture.md)
-  - [Single-file processing sequence](docs/media_cache_survey_sequence.svg)
+```bash
+cmake -S . -B build
+cmake --build build -j"$(nproc)"
 
+./build/media_enrichment \
+  /path/to/torrent/directory \
+  ./media_objects_medium_info.json \
+  ./download.cache
+```
 
-- [Analysis](/docs/analysis.md) – Analysis of results.
-- [Sources](/docs/html.doxygen/index.html) – Source code documentation
+The production build requires C++20, libtorrent-rasterbar 2.x, Boost, OpenSSL, RapidJSON, MediaInfo, FFmpeg, and FFprobe. See the requirements document for package and operational details.
 
-## Quick Start (tl;dr)
+## Cache behavior
 
-#### Build the project
-cd alpha60-swarm-media-probe
-mkdir build && cd build
-cmake .. && make -j$(nproc)
+The downloader requests verified piece spans rather than accepting aggregate sparse-file progress. It grows a contiguous prefix and, for MP4/M4V/MOV, can also request a tail range containing end-positioned container metadata.
 
-#### Run the pipeline
-./media_enrichment /path/to/torrent/dir ./output.json ./cache_dir
+While the sparse source still exists, `media_redux` attempts to create a bounded, parseable `.sized` artifact. If redux cannot succeed, the downloader can retain a verified contiguous-prefix fallback. Existing cache artifacts can be audited with the standalone media-cache survey.
 
+## Visual documentation
 
-- Minimal Downloading: Only downloads the first 10MB of the media file—enough to extract all technical metadata.
-- Persistent Cache: Stores downloaded partial files to avoid re-downloading on subsequent runs.
-- Comprehensive Metadata: Extracts codecs, resolution, bitrate, audio languages, and more.
-- Robust API: Outputs a strictly versioned JSON schema (1.0).
-
-## Visuals
-
-The architecture and workflow are illustrated using Mermaid and SVG diagrams found in this directory:
-
-- [Build and runtime flow](/docs/build-runtime-flow.svg)
-- [Sequence diagram of the main pipeline](/docs/component-sequence-diagram.svg)
-- [Container diagram](/docs/container-diagram.svg)
-- [Core data models](/docs/data-structure-diagram.svg)
-- [Deployment workflow](/docs/deployment-diagram.svg)
-- [Legend](/docs/legend.svg)
+The repository includes SVG diagrams and Doxygen-generated source pages under `docs/`.

@@ -2,189 +2,123 @@
 
 ## Scope
 
-`media_cache_survey` is a Linux-only C++20 subsystem that inventories and
-validates cached partial-media artifacts. It operates on two filesystem roots:
+`media_cache_survey` is a Linux-only C++20 subsystem that inventories and validates cached partial-media artifacts. It operates on a torrent collection directory and a recursive `download.cache` root.
 
-```cpp
-bool run(
-    const fs::path& torrent_directory,
-    const fs::path& download_cache_root);
-```
+The survey is separate from production acquisition. It works only with bytes already present in `.sized` artifacts and cannot ask libtorrent for missing ranges.
 
-The torrent directory identifies the media collection. The cache root contains
-the previous swarm-probe artifacts, including recursively stored `.sized`
-files.
-
-## High-level architecture
+## High-level flow
 
 ```text
-┌──────────────────────┐
-│ torrent_directory    │
-│ *.torrent inventory  │
-└──────────┬───────────┘
-           │
-           │ collection context
-           ▼
-┌────────────────────────────┐
-│ download_cache_root        │
-│ recursive *.sized discovery│
-└─────────────┬──────────────┘
-              │
-              ▼
-┌────────────────────────────┐
-│ lightweight container scan │
-│ moov / moof / EBML         │
-└─────────────┬──────────────┘
-              │
-              ▼
-┌────────────────────────────┐
-│ MediaInfo subprocess       │
-│ JSON + timeout validation  │
-└─────────────┬──────────────┘
-              │
-              ▼
-       source > size limit?
-          │           │
-         no          yes
-          │           ▼
-          │  ┌──────────────────────┐
-          │  │ ffprobe estimation   │
-          │  │ duration / bitrate   │
-          │  └──────────┬───────────┘
-          │             ▼
-          │  ┌──────────────────────┐
-          │  │ FFmpeg stream-copy   │
-          │  │ bounded redux output │
-          │  └──────────┬───────────┘
-          │             ▼
-          │  ┌──────────────────────┐
-          │  │ redux validation     │
-          │  │ marker + MediaInfo   │
-          │  └──────────┬───────────┘
-          │             │
-          └─────────────┴───────────┐
-                                    ▼
-                         ┌────────────────────┐
-                         │ atomic JSON report │
-                         └────────────────────┘
+torrent directory
+    │
+    ├── inventory *.torrent
+    │
+download.cache
+    │
+    ├── recursively discover *.sized
+    │
+    ├── sampled container-marker scan
+    │      moov / moof / EBML / RIFF-AVI / TS sync
+    │
+    ├── MediaInfo subprocess and JSON validation
+    │
+    ├── source larger than archive limit?
+    │      │
+    │      └── FFprobe demux check
+    │             │
+    │             └── FFmpeg bounded stream-copy redux
+    │                    explicit muxer
+    │                    extension-preserving temporary path
+    │                    size limit
+    │                    subtitle retry
+    │
+    ├── redux marker and MediaInfo validation
+    │
+    └── atomic JSON report
 ```
 
-## Components
+## Discovery
 
-### Discovery
+Discovery performs two scans:
 
-Discovery performs two independent scans:
+- non-recursive `.torrent` discovery for collection context;
+- recursive `.sized` discovery for the survey workload.
 
-- non-recursive `.torrent` discovery in `torrent_directory`
-- recursive `.sized` discovery in `download_cache_root`
+All report paths are stored relative to the relevant roots where possible.
 
-The first scan records collection context. The second scan defines the actual
-survey workload.
+## Container marker scanner
 
-### Container marker scanner
+The scanner reads bounded head and tail samples and recognizes:
 
-The lightweight scanner answers whether enough structural container metadata
-is present to justify deeper probing.
-
-Current checks include:
-
-| Container family | Structural marker |
+| Family | Structural signal |
 |---|---|
-| MP4 / MOV | `moov` atom |
-| fragmented MP4 | one or more `moof` atoms |
-| Matroska / WebM | EBML header and recognizable structure |
+| MP4 / MOV | `moov` |
+| fragmented MP4 | `moof` |
+| Matroska / WebM | EBML signature |
+| AVI | RIFF header with `AVI ` form type |
+| MPEG-TS | sync byte `0x47` |
 
-This stage does not decode media and should remain inexpensive.
+The marker scan is deliberately independent from semantic extraction. MediaInfo success is authoritative for whether useful metadata can be recovered.
 
-### MediaInfo runner
+## MediaInfo runner
 
-MediaInfo is run as a child process and must satisfy all of the following:
+MediaInfo runs as a controlled child process. A pass requires process startup, no timeout, exit code zero, parseable JSON, and a General track.
 
-- process started
-- process completed before the configured timeout
-- exit code was zero
-- output parsed as JSON
-- output contains recognizable media metadata
+The default timeout is 20 seconds. stdout and stderr are drained concurrently with `poll()` to avoid deadlock.
 
-The default timeout is 20 seconds.
+## Redux planner
 
-The process wrapper should use POSIX process APIs rather than `std::system()`
-so that stdout, stderr, deadlines, and process-tree termination are controlled.
+Files larger than the default 128 MiB maximum are candidates. The survey maps the classified container to an explicit muxer and invokes FFprobe first.
 
-### Redux planner
+When duration and bitrate are available, the survey estimates a target duration from the safety-margin byte target. Missing duration or bitrate does not change the `-fs` byte limit, but an input that FFprobe cannot demux is rejected before FFmpeg.
 
-Files larger than the configured archive limit are candidates for remuxing.
+## Redux subprocess
 
-Default limit:
+Redux uses stream copy and selects only useful stream classes:
 
 ```text
-128 MiB
+video: first optional video stream
+audio: optional audio streams
+subtitles: optional on attempt one, omitted on attempt two
+data: disabled
 ```
 
-A reduction is not raw byte truncation. It is a stream-copy remux intended to
-preserve:
-
-- valid container headers and trailers
-- packet boundaries
-- existing video keyframes
-- stream metadata
-- MP4 `moov` placement or fMP4 fragmentation metadata
-
-`ffprobe` provides duration and bitrate data. The implementation estimates a
-target duration using a safety margin, invokes FFmpeg, checks the actual output
-size, and retries with a shorter duration when necessary.
-
-### Redux validation
-
-A redux artifact is accepted only when:
-
-1. FFmpeg succeeds.
-2. The output exists and is nonempty.
-3. Its size is at or below the configured maximum.
-4. The lightweight structural scan succeeds.
-5. MediaInfo successfully extracts metadata.
-
-The original `.sized` file is never modified.
-
-### Report serializer
-
-The serializer writes a single JSON report under the cache survey directory:
+Temporary output paths preserve the media extension:
 
 ```text
-download.cache/.survey/download-cache-survey.json
+output.partial.mkv
+output.partial.mp4
 ```
 
-The report includes:
+An explicit `-f` muxer is also supplied. This avoids the former failure mode where a path ending only in `.partial` left FFmpeg unable to select an output format.
 
-- configuration
-- torrent and `.sized` inventories
-- named result lists
-- detailed per-file observations
-- subprocess timing
-- exit codes
-- timeout state
-- failure stage and reason
-- redux output paths and sizes
+MP4 and MOV use `+faststart`. Fragmented MP4 uses empty-moov and fragment flags. `-fs` bounds the candidate toward the configured archive target.
 
-The report is written to a temporary file and atomically renamed into place.
+## Redux validation
 
-## Result dimensions
+A survey redux is accepted only when:
 
-The design deliberately keeps these results independent:
+1. FFmpeg succeeds before timeout.
+2. The temporary output exists and is nonempty.
+3. The output does not exceed the hard maximum.
+4. The temporary file is renamed successfully.
+5. The structural marker check passes.
+6. MediaInfo extracts valid metadata.
+
+The original `.sized` artifact is never modified.
+
+## Report model
+
+The report keeps four dimensions independent:
 
 ```text
-container structure
-MediaInfo extraction
-redux generation
-redux MediaInfo extraction
+original marker result
+original MediaInfo result
+redux generation result
+redux MediaInfo result
 ```
 
-A sample may fail the lightweight marker scan but pass MediaInfo. That is useful
-diagnostic information and should not be collapsed into one boolean.
-
-## Named lists
-
-The report exposes these primary lists:
+Primary named lists are:
 
 ```text
 sized-metadata-pass
@@ -195,79 +129,31 @@ sized-metadata-mediainfo-pass-redux
 sized-metadata-mediainfo-fails-redux
 ```
 
-The first pair describes structural scanning. The second pair describes
-MediaInfo behavior on the original sample. The final pair describes reduced
-archives.
+Each observation also records command exit codes, elapsed times, timeout state, paths, byte sizes, and diagnostic text.
 
-## Process and failure model
+## Failure model
 
-Each external command records:
+Each subprocess records whether it started, timed out, exited normally, or was terminated. On timeout, the survey sends `SIGTERM` to the process group, waits briefly, sends `SIGKILL`, and reaps the child.
 
-```cpp
-struct command_result
-{
-    int exit_code;
-    bool started;
-    bool timed_out;
-    bool terminated_by_signal;
-    std::chrono::milliseconds elapsed;
-    std::string standard_output;
-    std::string standard_error;
-};
-```
+Typical redux failure categories are:
 
-Recommended timeout behavior:
+- unsupported container;
+- FFprobe cannot demux the partial source;
+- FFmpeg timeout or mux failure;
+- missing temporary output;
+- invalid or oversized output;
+- structural marker failure; or
+- MediaInfo validation failure.
 
-1. Start the child in its own process group.
-2. Drain stdout and stderr with `poll()`.
-3. Check completion with `waitpid(..., WNOHANG)`.
-4. Send `SIGTERM` after the deadline.
-5. Send `SIGKILL` after a short grace period.
-6. Reap the child and store diagnostics.
+## Production relationship
 
-## Concurrency model
+The production `media_redux` component and the survey redux share the same design principles, but operate at different points:
 
-The workload naturally separates into three resource classes:
+- **Production redux** runs before the sparse torrent backing file is deleted and benefits from verified, container-aware head/tail acquisition.
+- **Survey redux** runs later against a previously archived `.sized` artifact and cannot fill missing pieces.
 
-| Work type | Cost | Suggested concurrency |
-|---|---:|---:|
-| container marker scan | low CPU and I/O | hardware concurrency |
-| MediaInfo | moderate process and I/O | up to 4 |
-| FFmpeg stream copy | high I/O | 1 or 2 |
+For this reason, production redux should normally be preferred for creating future cache artifacts, while the survey remains useful for auditing historical cache data.
 
-Bounded queues are preferable to spawning one child process per discovered
-file.
+## Concurrency
 
-## Repository integration
-
-Expected documentation layout:
-
-```text
-index.md
-docs/
-├── media_cache_survey.md
-├── media_cache_survey_architecture.md
-└── media_cache_survey_sequence.svg
-```
-
-The corresponding implementation file is:
-
-```text
-media_cache_survey.cpp
-```
-
-## Development conclusions
-
-The most reusable conclusions from this work are:
-
-- Structural container detection and semantic metadata extraction are separate
-  signals.
-- MP4 `+faststart` relocates metadata; it does not enforce an output byte limit.
-- Exact byte limits require estimation, safety margin, output measurement, and
-  bounded retries.
-- `-c copy` preserves existing keyframes but cannot invent new ones.
-- Container-specific FFmpeg flags must be selected from an explicit whitelist.
-- Timeout-capable subprocess control is required for untrusted partial media.
-- Relative paths and stable IDs make reports and redux artifacts portable.
-- Atomic report replacement prevents partially written survey results.
-- A single-return C++ style can be preserved without weakening error handling.
+The survey currently processes files serially. Future parallelization should use separate bounded queues because marker scans, MediaInfo, and FFmpeg have different resource profiles. FFmpeg redux should remain the most tightly limited because it is I/O intensive.

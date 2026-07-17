@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['media_5fdownloader_0',['media_downloader',['../structmedia__downloader.html',1,'']]],
-  ['media_5finfo_5fdata_1',['media_info_data',['../structmedia__info__data.html',1,'']]],
-  ['media_5finfo_5fextractor_2',['media_info_extractor',['../classmedia__info__extractor.html',1,'']]]
+  ['download_5fcache_5fsurvey_0',['download_cache_survey',['../classanonymous__namespace_02media__cache__survey_8cpp_03_1_1download__cache__survey.html',1,'anonymous_namespace{media_cache_survey.cpp}']]],
+  ['download_5fresult_1',['download_result',['../structdownload__result.html',1,'']]]
 ];

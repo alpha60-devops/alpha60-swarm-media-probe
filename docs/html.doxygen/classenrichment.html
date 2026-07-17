@@ -86,18 +86,18 @@ $(function() {
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
 <tr class="memitem:a6180eb998c530c309bfe3efaec4c3993" id="r_a6180eb998c530c309bfe3efaec4c3993"><td class="memItemLeft" align="right" valign="top">&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a6180eb998c530c309bfe3efaec4c3993">enrichment</a> ()</td></tr>
-<tr class="memitem:a8d9f561699f2983d2ef8cc25774b1370" id="r_a8d9f561699f2983d2ef8cc25774b1370"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a8d9f561699f2983d2ef8cc25774b1370">build_output</a> (const std::vector&lt; <a class="el" href="structtorrent__file.html">torrent_file</a> &gt; &amp;torrents, const <a class="el" href="structprocess__result.html">process_result</a> &amp;presult, const std::string &amp;collection_key, const uint mini_size, uintmax_t cache_dir_size_mb, uintmax_t torrent_total_size_mb)</td></tr>
+<tr class="memitem:aad77b18c0c0607091658c7f3e02f6126" id="r_aad77b18c0c0607091658c7f3e02f6126"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aad77b18c0c0607091658c7f3e02f6126">build_output</a> (const std::vector&lt; <a class="el" href="structtorrent__file.html">torrent_file</a> &gt; &amp;torrents, const <a class="el" href="structprocess__result.html">process_result</a> &amp;presult, const std::string &amp;collection_key, const uint mini_size, uintmax_t cache_dir_size_mb, uintmax_t torrent_total_size_mb, const uint csize)</td></tr>
 <tr class="memitem:a95077d86fea1799d6583960e8c3c4cc2" id="r_a95077d86fea1799d6583960e8c3c4cc2"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a95077d86fea1799d6583960e8c3c4cc2">write_output</a> (const std::string &amp;output_path, const std::string &amp;json_content)</td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pri-methods" class="groupheader"><a id="pri-methods" name="pri-methods"></a>
 Private Member Functions</h2></td></tr>
-<tr class="memitem:a3070cd684aa9891f4e4d131ed6e25fea" id="r_a3070cd684aa9891f4e4d131ed6e25fea"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpipeline__metrics.html">pipeline_metrics</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3070cd684aa9891f4e4d131ed6e25fea">compute_pipeline_metrics</a> (const <a class="el" href="structprocess__result.html">process_result</a> &amp;presult, size_t mini_size)</td></tr>
+<tr class="memitem:a675d980cbf1b910c91aeacac50cae675" id="r_a675d980cbf1b910c91aeacac50cae675"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structpipeline__metrics.html">pipeline_metrics</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a675d980cbf1b910c91aeacac50cae675">compute_pipeline_metrics</a> (const <a class="el" href="structprocess__result.html">process_result</a> &amp;presult, const size_t mini_size, const size_t csize)</td></tr>
 <tr class="memitem:aeeaf7090c9452c996532998cc090bd30" id="r_aeeaf7090c9452c996532998cc090bd30"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aeeaf7090c9452c996532998cc090bd30">escape_json_string</a> (const std::string &amp;str)</td></tr>
 <tr class="memitem:a3a6c276509cb7edb61aa55187920b67c" id="r_a3a6c276509cb7edb61aa55187920b67c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a3a6c276509cb7edb61aa55187920b67c">json_string</a> (const std::string &amp;str)</td></tr>
 </table>
 <a name="details" id="details"></a><h2 id="header-details" class="groupheader">Detailed Description</h2>
 <div class="textblock">
-<p class="definition">Definition at line <a class="el" href="json__enricher_8hpp_source.html#l00037">37</a> of file <a class="el" href="json__enricher_8hpp_source.html">json_enricher.hpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="json__enricher_8hpp_source.html#l00038">38</a> of file <a class="el" href="json__enricher_8hpp_source.html">json_enricher.hpp</a>.</p>
 </div><a name="doc-constructors" id="doc-constructors"></a><h2 id="header-doc-constructors" class="groupheader">Constructor &amp; Destructor Documentation</h2>
 <a id="a6180eb998c530c309bfe3efaec4c3993" name="a6180eb998c530c309bfe3efaec4c3993"></a>
 <h2 class="memtitle"><span class="permalink"><a href="#a6180eb998c530c309bfe3efaec4c3993">&#9670;&#160;</a></span>enrichment()</h2>
@@ -119,8 +119,8 @@ Private Member Functions</h2></td></tr>
 </div>
 </div>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a8d9f561699f2983d2ef8cc25774b1370" name="a8d9f561699f2983d2ef8cc25774b1370"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a8d9f561699f2983d2ef8cc25774b1370">&#9670;&#160;</a></span>build_output()</h2>
+<a id="aad77b18c0c0607091658c7f3e02f6126" name="aad77b18c0c0607091658c7f3e02f6126"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aad77b18c0c0607091658c7f3e02f6126">&#9670;&#160;</a></span>build_output()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -153,17 +153,22 @@ Private Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uintmax_t</td>          <td class="paramname"><span class="paramname"><em>torrent_total_size_mb</em></span>&#160;)</td>
+          <td class="paramtype">uintmax_t</td>          <td class="paramname"><span class="paramname"><em>torrent_total_size_mb</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const uint</td>          <td class="paramname"><span class="paramname"><em>csize</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="json__enricher_8cpp_source.html#l00067">67</a> of file <a class="el" href="json__enricher_8cpp_source.html">json_enricher.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="json__enricher_8cpp_source.html#l00068">68</a> of file <a class="el" href="json__enricher_8cpp_source.html">json_enricher.cpp</a>.</p>
 
 </div>
 </div>
-<a id="a3070cd684aa9891f4e4d131ed6e25fea" name="a3070cd684aa9891f4e4d131ed6e25fea"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a3070cd684aa9891f4e4d131ed6e25fea">&#9670;&#160;</a></span>compute_pipeline_metrics()</h2>
+<a id="a675d980cbf1b910c91aeacac50cae675" name="a675d980cbf1b910c91aeacac50cae675"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a675d980cbf1b910c91aeacac50cae675">&#9670;&#160;</a></span>compute_pipeline_metrics()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -179,7 +184,12 @@ Private Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>mini_size</em></span>&#160;)</td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>mini_size</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>csize</em></span>&#160;)</td>
         </tr>
       </table>
   </td>
@@ -216,7 +226,7 @@ Private Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="json__enricher_8cpp_source.html#l00204">204</a> of file <a class="el" href="json__enricher_8cpp_source.html">json_enricher.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="json__enricher_8cpp_source.html#l00207">207</a> of file <a class="el" href="json__enricher_8cpp_source.html">json_enricher.cpp</a>.</p>
 
 </div>
 </div>
@@ -243,7 +253,7 @@ Private Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="json__enricher_8cpp_source.html#l00182">182</a> of file <a class="el" href="json__enricher_8cpp_source.html">json_enricher.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="json__enricher_8cpp_source.html#l00185">185</a> of file <a class="el" href="json__enricher_8cpp_source.html">json_enricher.cpp</a>.</p>
 
 </div>
 </div>
@@ -266,7 +276,7 @@ Private Member Functions</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="json__enricher_8cpp_source.html#l00190">190</a> of file <a class="el" href="json__enricher_8cpp_source.html">json_enricher.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="json__enricher_8cpp_source.html#l00193">193</a> of file <a class="el" href="json__enricher_8cpp_source.html">json_enricher.cpp</a>.</p>
 
 </div>
 </div>

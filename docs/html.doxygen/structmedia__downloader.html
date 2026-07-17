@@ -88,8 +88,8 @@ $(function() {
 <table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-pub-methods" class="groupheader"><a id="pub-methods" name="pub-methods"></a>
 Public Member Functions</h2></td></tr>
-<tr class="memitem:a519efca173ee2bf68720301b382329b4" id="r_a519efca173ee2bf68720301b382329b4"><td class="memItemLeft" align="right" valign="top">std::optional&lt; fs::path &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a519efca173ee2bf68720301b382329b4">almost_nothing</a> (const std::string &amp;torrent_path, const std::string &amp;output_dir, const <a class="el" href="torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e">probe_size</a> psize, const std::string fsuffix=&quot;.sized&quot;)</td></tr>
-<tr class="memdesc:a519efca173ee2bf68720301b382329b4"><td class="mdescLeft">&#160;</td><td class="mdescRight">Download a minimum-sized chunk of the largest media file. So that ffmpeg, mediainfo, and others can be used to determine the frame rate, frame size, audio and subtitles.  <br /></td></tr>
+<tr class="memitem:abae2e0fe0a73db3f75f8bf67ed6bd223" id="r_abae2e0fe0a73db3f75f8bf67ed6bd223"><td class="memItemLeft" align="right" valign="top">std::optional&lt; fs::path &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#abae2e0fe0a73db3f75f8bf67ed6bd223">almost_nothing</a> (const std::string &amp;torrent_path, const std::string &amp;output_dir, const <a class="el" href="torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e">probe_size</a> psize, const bool delete_p, const std::string fsuffix=&quot;.sized&quot;)</td></tr>
+<tr class="memdesc:abae2e0fe0a73db3f75f8bf67ed6bd223"><td class="mdescLeft">&#160;</td><td class="mdescRight">Download a minimum-sized chunk of the largest media file. So that ffmpeg, mediainfo, and others can be used to determine the frame rate, frame size, audio and subtitles.  <br /></td></tr>
 <tr class="memitem:a547a7761d2a4c2ec55b08bf80a1ab986" id="r_a547a7761d2a4c2ec55b08bf80a1ab986"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a547a7761d2a4c2ec55b08bf80a1ab986">is_enough</a> (lt::session &amp;sesh, lt::torrent_handle &amp;handle, const uint max_wait=10)</td></tr>
 <tr class="memdesc:a547a7761d2a4c2ec55b08bf80a1ab986"><td class="mdescLeft">&#160;</td><td class="mdescRight">Quiet session to measure progress.  <br /></td></tr>
 <tr class="memitem:a56abba035063900aaa20d96c4861bb0e" id="r_a56abba035063900aaa20d96c4861bb0e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a56abba035063900aaa20d96c4861bb0e">just_a_bit</a> (lt::session &amp;sesh, lt::torrent_handle &amp;handle, const <a class="el" href="structtime__limits.html">time_limits</a> &amp;tlimits, const lt::file_index_t p_index, const <a class="el" href="torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e">probe_size</a> psize)</td></tr>
@@ -105,8 +105,8 @@ Private Member Functions</h2></td></tr>
 
 <p class="definition">Definition at line <a class="el" href="torrent__downloader_8hpp_source.html#l00068">68</a> of file <a class="el" href="torrent__downloader_8hpp_source.html">torrent_downloader.hpp</a>.</p>
 </div><a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Member Function Documentation</h2>
-<a id="a519efca173ee2bf68720301b382329b4" name="a519efca173ee2bf68720301b382329b4"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a519efca173ee2bf68720301b382329b4">&#9670;&#160;</a></span>almost_nothing()</h2>
+<a id="abae2e0fe0a73db3f75f8bf67ed6bd223" name="abae2e0fe0a73db3f75f8bf67ed6bd223"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#abae2e0fe0a73db3f75f8bf67ed6bd223">&#9670;&#160;</a></span>almost_nothing()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -129,6 +129,11 @@ Private Member Functions</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
+          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>delete_p</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
           <td class="paramtype">const std::string</td>          <td class="paramname"><span class="paramname"><em>fsuffix</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;.sized&quot;</span>&#160;)</td>
         </tr>
       </table>
@@ -145,7 +150,7 @@ Private Member Functions</h2></td></tr>
   </dd>
 </dl>
 
-<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00421">421</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00531">531</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
 
 </div>
 </div>
@@ -172,7 +177,7 @@ Private Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00065">65</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00175">175</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
 
 </div>
 </div>
@@ -203,7 +208,7 @@ Private Member Functions</h2></td></tr>
 </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00079">79</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00189">189</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
 
 </div>
 </div>
@@ -233,7 +238,7 @@ Private Member Functions</h2></td></tr>
 
 <p>Quiet session to measure progress. </p>
 
-<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00364">364</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00474">474</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
 
 </div>
 </div>
@@ -280,7 +285,7 @@ Private Member Functions</h2></td></tr>
 </dl>
 <p>1: enough downloaded to make sized_file 2: timeout</p>
 
-<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00265">265</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00375">375</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
 
 </div>
 </div>

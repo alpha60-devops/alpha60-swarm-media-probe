@@ -78,11 +78,21 @@ $(function() {
 <div id="doc-content">
 <div class="header">
   <div class="summary">
-<a href="#func-members">Functions</a>  </div>
+<a href="#nested-classes">Classes</a> &#124;
+<a href="#namespaces">Namespaces</a> &#124;
+<a href="#func-members">Functions</a> &#124;
+<a href="#var-members">Variables</a>  </div>
   <div class="headertitle"><div class="title">torrent_downloader.cpp File Reference</div></div>
 </div><!--header-->
 <div class="contents">
 <div class="textblock"><code>#include &quot;<a class="el" href="torrent__downloader_8hpp_source.html">torrent_downloader.hpp</a>&quot;</code><br />
+<code>#include &quot;<a class="el" href="media__redux_8hpp_source.html">media_redux.hpp</a>&quot;</code><br />
+<code>#include &lt;algorithm&gt;</code><br />
+<code>#include &lt;cctype&gt;</code><br />
+<code>#include &lt;cstdint&gt;</code><br />
+<code>#include &lt;memory&gt;</code><br />
+<code>#include &lt;utility&gt;</code><br />
+<code>#include &lt;vector&gt;</code><br />
 </div><div class="textblock"><div id="dynsection-0" onclick="return dynsection.toggleVisibility(this)" class="dynheader closed" style="cursor:pointer;"><span class="dynarrow"><span class="arrowhead closed"></span></span>Include dependency graph for torrent_downloader.cpp:</div>
 <div id="dynsection-0-summary" class="dynsummary" style="display:block;">
 </div>
@@ -92,15 +102,33 @@ $(function() {
 </div>
 <p><a href="torrent__downloader_8cpp_source.html">Go to the source code of this file.</a></p>
 <table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-nested-classes" class="groupheader"><a id="nested-classes" name="nested-classes"></a>
+Classes</h2></td></tr>
+<tr class="memitem:anonymous_5Fnamespace_7Btorrent_5Fdownloader_2Ecpp_7D_3A_3Abyte_5Frange" id="r_anonymous_5Fnamespace_7Btorrent_5Fdownloader_2Ecpp_7D_3A_3Abyte_5Frange"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="structanonymous__namespace_02torrent__downloader_8cpp_03_1_1byte__range.html">anonymous_namespace{torrent_downloader.cpp}::byte_range</a></td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-namespaces" class="groupheader"><a id="namespaces" name="namespaces"></a>
+Namespaces</h2></td></tr>
+<tr class="memitem:anonymous_5Fnamespace_7Btorrent_5Fdownloader_2Ecpp_7D" id="r_anonymous_5Fnamespace_7Btorrent_5Fdownloader_2Ecpp_7D"><td class="memItemLeft" align="right" valign="top">namespace &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02torrent__downloader_8cpp_03.html">anonymous_namespace{torrent_downloader.cpp}</a></td></tr>
+</table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
 <tr class="memitem:adeec561a28c4839fd081dc17a1a198c1" id="r_adeec561a28c4839fd081dc17a1a198c1"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#adeec561a28c4839fd081dc17a1a198c1">copy_first_n_bytes</a> (const fs::path &amp;source, const fs::path &amp;destination, const std::int64_t num_bytes)</td></tr>
 <tr class="memdesc:adeec561a28c4839fd081dc17a1a198c1"><td class="mdescLeft">&#160;</td><td class="mdescRight">Copy the first N bytes from source file to destination file.  <br /></td></tr>
+<tr class="memitem:a52c4f90ff76690c18519a6ab13706962" id="r_a52c4f90ff76690c18519a6ab13706962"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02torrent__downloader_8cpp_03.html#a52c4f90ff76690c18519a6ab13706962">anonymous_namespace{torrent_downloader.cpp}::is_iso_base_media_file</a> (const fs::path &amp;path)</td></tr>
 <tr class="memitem:ae8bab3be66b56178549bcdfa35c5c09f" id="r_ae8bab3be66b56178549bcdfa35c5c09f"><td class="memItemLeft" align="right" valign="top">std::ofstream &amp;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae8bab3be66b56178549bcdfa35c5c09f">log_suspect</a> (const std::string odir)</td></tr>
 <tr class="memdesc:ae8bab3be66b56178549bcdfa35c5c09f"><td class="mdescLeft">&#160;</td><td class="mdescRight">Log if no peers, no downloads to file. Output log is intended to be filesystem adjacent to download.cache.  <br /></td></tr>
+<tr class="memitem:a8be30f65b2125e697d8ab6f9e0b9061d" id="r_a8be30f65b2125e697d8ab6f9e0b9061d"><td class="memItemLeft" align="right" valign="top">std::vector&lt; <a class="el" href="structanonymous__namespace_02torrent__downloader_8cpp_03_1_1byte__range.html">byte_range</a> &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02torrent__downloader_8cpp_03.html#a8be30f65b2125e697d8ab6f9e0b9061d">anonymous_namespace{torrent_downloader.cpp}::make_probe_ranges</a> (const lt::torrent_info &amp;torrent, const lt::file_index_t file_index, const std::uint64_t prefix_bytes, const std::uint64_t tail_bytes)</td></tr>
 <tr class="memitem:a717eb3b02ec5c2010a560e8acd595b5c" id="r_a717eb3b02ec5c2010a560e8acd595b5c"><td class="memItemLeft" align="right" valign="top">lt::settings_pack&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a717eb3b02ec5c2010a560e8acd595b5c">make_settings_pack</a> ()</td></tr>
 <tr class="memdesc:a717eb3b02ec5c2010a560e8acd595b5c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Configure torrent session.  <br /></td></tr>
+<tr class="memitem:a1622d2fb5cc3304a742c2090b1497813" id="r_a1622d2fb5cc3304a742c2090b1497813"><td class="memItemLeft" align="right" valign="top">std::pair&lt; int, int &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02torrent__downloader_8cpp_03.html#a1622d2fb5cc3304a742c2090b1497813">anonymous_namespace{torrent_downloader.cpp}::piece_span</a> (const lt::torrent_info &amp;torrent, const lt::file_index_t file_index, const <a class="el" href="structanonymous__namespace_02torrent__downloader_8cpp_03_1_1byte__range.html">byte_range</a> &amp;range)</td></tr>
+<tr class="memitem:a6868a4c586a50bc9202ea75e924c2eea" id="r_a6868a4c586a50bc9202ea75e924c2eea"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02torrent__downloader_8cpp_03.html#a6868a4c586a50bc9202ea75e924c2eea">anonymous_namespace{torrent_downloader.cpp}::prioritize_probe_ranges</a> (lt::torrent_handle &amp;handle, const lt::torrent_info &amp;torrent, const lt::file_index_t file_index, const std::uint64_t prefix_bytes, const std::uint64_t tail_bytes)</td></tr>
+<tr class="memitem:a5bbe5f33e131969e79c7a518d5b784ea" id="r_a5bbe5f33e131969e79c7a518d5b784ea"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02torrent__downloader_8cpp_03.html#a5bbe5f33e131969e79c7a518d5b784ea">anonymous_namespace{torrent_downloader.cpp}::probe_ranges_complete</a> (const lt::torrent_handle &amp;handle, const lt::torrent_info &amp;torrent, const lt::file_index_t file_index, const std::uint64_t prefix_bytes, const std::uint64_t tail_bytes)</td></tr>
 <tr class="memitem:a23f8aa97621ae2c2d228424f531a69e6" id="r_a23f8aa97621ae2c2d228424f531a69e6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a23f8aa97621ae2c2d228424f531a69e6">verify_data_on_disk</a> (const fs::path &amp;file_path, const std::uint64_t min_size, const std::size_t bytes_to_check=1024)</td></tr>
+</table><table class="memberdecls">
+<tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
+Variables</h2></td></tr>
+<tr class="memitem:aaa3aed7797bd63e12ab7c2639357db62" id="r_aaa3aed7797bd63e12ab7c2639357db62"><td class="memItemLeft" align="right" valign="top">constexpr std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02torrent__downloader_8cpp_03.html#aaa3aed7797bd63e12ab7c2639357db62">anonymous_namespace{torrent_downloader.cpp}::bytes_per_megabyte</a> = 1024ULL * 1024ULL</td></tr>
+<tr class="memitem:ab76686e762904c1bbbc877c3d92b5ea2" id="r_ab76686e762904c1bbbc877c3d92b5ea2"><td class="memItemLeft" align="right" valign="top">constexpr std::uint64_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="namespaceanonymous__namespace_02torrent__downloader_8cpp_03.html#ab76686e762904c1bbbc877c3d92b5ea2">anonymous_namespace{torrent_downloader.cpp}::iso_base_media_tail_megabytes</a> = 32ULL</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
 <a id="adeec561a28c4839fd081dc17a1a198c1" name="adeec561a28c4839fd081dc17a1a198c1"></a>
@@ -129,7 +157,7 @@ Functions</h2></td></tr>
 
 <p>Copy the first N bytes from source file to destination file. </p>
 
-<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00135">135</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00245">245</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
 
 </div>
 </div>
@@ -150,7 +178,7 @@ Functions</h2></td></tr>
 
 <p>Log if no peers, no downloads to file. Output log is intended to be filesystem adjacent to download.cache. </p>
 
-<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00251">251</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00361">361</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
 
 </div>
 </div>
@@ -171,7 +199,7 @@ Functions</h2></td></tr>
 
 <p>Configure torrent session. </p>
 
-<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00007">7</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00117">117</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
 
 </div>
 </div>
@@ -208,7 +236,7 @@ Functions</h2></td></tr>
 </dl>
 <dl class="section return"><dt>Returns</dt><dd>true if file exists, size &gt;= min_size, and first bytes_to_check are non-zero </dd></dl>
 
-<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00208">208</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="torrent__downloader_8cpp_source.html#l00318">318</a> of file <a class="el" href="torrent__downloader_8cpp_source.html">torrent_downloader.cpp</a>.</p>
 
 </div>
 </div>

@@ -6,11 +6,14 @@ var searchData=
   ['parse_5fsingle_5ftorrent_3',['parse_single_torrent',['../classtorrent__parser.html#aec5c787f4d2a5c6efc06a3d427bb3ca1',1,'torrent_parser']]],
   ['parse_5ftorrents_4',['parse_torrents',['../main_8cpp.html#a8ce214f98c52417b1f027e4a1984c46b',1,'main.cpp']]],
   ['pclose_5fdeleter_5',['pclose_deleter',['../structpclose__deleter.html',1,'']]],
-  ['pipeline_5fmetrics_6',['pipeline_metrics',['../structpipeline__metrics.html',1,'']]],
-  ['print_5fsummary_7',['print_summary',['../main_8cpp.html#a0539dad57e64785cf96620870b5a067e',1,'main.cpp']]],
-  ['print_5fusage_8',['print_usage',['../main_8cpp.html#ab41181064ad9a71318e850451efa6720',1,'main.cpp']]],
-  ['probe_20documentation_9',['Alpha60 Swarm Media Probe Documentation',['../md__2home_2bkoz_2src_2alpha60-swarm-media-probe_2index.html',1,'']]],
-  ['probe_5fsize_10',['probe_size',['../torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e',1,'torrent_downloader.hpp']]],
-  ['process_5fall_5ftorrents_11',['process_all_torrents',['../main_8cpp.html#acc4dec2197b42d6d4d2699054fd67d60',1,'main.cpp']]],
-  ['process_5fresult_12',['process_result',['../structprocess__result.html',1,'']]]
+  ['piece_5fspan_6',['piece_span',['../namespaceanonymous__namespace_02torrent__downloader_8cpp_03.html#a1622d2fb5cc3304a742c2090b1497813',1,'anonymous_namespace{torrent_downloader.cpp}']]],
+  ['pipeline_5fmetrics_7',['pipeline_metrics',['../structpipeline__metrics.html',1,'']]],
+  ['print_5fsummary_8',['print_summary',['../main_8cpp.html#a0539dad57e64785cf96620870b5a067e',1,'main.cpp']]],
+  ['print_5fusage_9',['print_usage',['../main_8cpp.html#ab41181064ad9a71318e850451efa6720',1,'main.cpp']]],
+  ['prioritize_5fprobe_5franges_10',['prioritize_probe_ranges',['../namespaceanonymous__namespace_02torrent__downloader_8cpp_03.html#a6868a4c586a50bc9202ea75e924c2eea',1,'anonymous_namespace{torrent_downloader.cpp}']]],
+  ['probe_20documentation_11',['Alpha60 Swarm Media Probe Documentation',['../md__2home_2bkoz_2src_2alpha60-swarm-media-probe_2index.html',1,'']]],
+  ['probe_5franges_5fcomplete_12',['probe_ranges_complete',['../namespaceanonymous__namespace_02torrent__downloader_8cpp_03.html#a5bbe5f33e131969e79c7a518d5b784ea',1,'anonymous_namespace{torrent_downloader.cpp}']]],
+  ['probe_5fsize_13',['probe_size',['../torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e',1,'torrent_downloader.hpp']]],
+  ['process_5fall_5ftorrents_14',['process_all_torrents',['../main_8cpp.html#ad9cc4c2d8c3f5707100ea72eccf29671',1,'main.cpp']]],
+  ['process_5fresult_15',['process_result',['../structanonymous__namespace_02media__redux_8cpp_03_1_1process__result.html',1,'anonymous_namespace{media_redux.cpp}::process_result'],['../structprocess__result.html',1,'process_result']]]
 ];

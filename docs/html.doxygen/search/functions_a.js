@@ -1,6 +1,5 @@
 var searchData=
 [
-  ['main_0',['main',['../main_8cpp.html#a0ddf1224851353fc92bfbff6f499fa97',1,'main.cpp']]],
-  ['make_5fsettings_5fpack_1',['make_settings_pack',['../torrent__downloader_8cpp.html#a717eb3b02ec5c2010a560e8acd595b5c',1,'torrent_downloader.cpp']]],
-  ['media_5finfo_5fextractor_2',['media_info_extractor',['../classmedia__info__extractor.html#a0d70e655426b1e72d520b96b1acf37b0',1,'media_info_extractor']]]
+  ['log_5fsuspect_0',['log_suspect',['../torrent__downloader_8cpp.html#ae8bab3be66b56178549bcdfa35c5c09f',1,'torrent_downloader.cpp']]],
+  ['lower_5fcopy_1',['lower_copy',['../namespaceanonymous__namespace_02media__cache__survey_8cpp_03.html#a352787bcecb9004bcbd512d4cb219de1',1,'anonymous_namespace{media_cache_survey.cpp}::lower_copy()'],['../namespaceanonymous__namespace_02media__redux_8cpp_03.html#ade70c935f5c4484dba5d46d64c8c6fb2',1,'anonymous_namespace{media_redux.cpp}::lower_copy()']]]
 ];

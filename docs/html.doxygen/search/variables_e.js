@@ -1,5 +1,24 @@
 var searchData=
 [
-  ['torrent_5fpath_0',['torrent_path',['../structtorrent__file.html#a19dbb3de337c02130f86874ea17feb95',1,'torrent_file']]],
-  ['total_5fsize_1',['total_size',['../structtorrent__file.html#a52f07596511ca2051f135ef9b463a947',1,'torrent_file']]]
+  ['sampling_5frate_0',['sampling_rate',['../structaudio__metadata.html#a4183825a89ca81d54994b2e0b6c2bd64',1,'audio_metadata']]],
+  ['schema_1',['schema',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1survey__report.html#a543c6e1b4438a33c6f6e8dac4b691b2a',1,'anonymous_namespace{media_cache_survey.cpp}::survey_report']]],
+  ['season_2',['season',['../structmedia__info__data.html#a2c5c9de64862882b91601ab6fc93e444',1,'media_info_data']]],
+  ['size_3',['size',['../structanonymous__namespace_02torrent__downloader_8cpp_03_1_1byte__range.html#a47c57c45d6cbec8a507898e4d0c8f07e',1,'anonymous_namespace{torrent_downloader.cpp}::byte_range']]],
+  ['sized_5ffiles_4',['sized_files',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1survey__report.html#ad49e4539febcf7f43405275b3f280351',1,'anonymous_namespace{media_cache_survey.cpp}::survey_report']]],
+  ['sized_5fmetadata_5ffail_5',['sized_metadata_fail',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1survey__report.html#ab20537cb08410c096bce63c2bef88b02',1,'anonymous_namespace{media_cache_survey.cpp}::survey_report']]],
+  ['sized_5fmetadata_5fmediainfo_5ffails_6',['sized_metadata_mediainfo_fails',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1survey__report.html#a7a0a3b5fabd2c8f07af9d83c0a1a6392',1,'anonymous_namespace{media_cache_survey.cpp}::survey_report']]],
+  ['sized_5fmetadata_5fmediainfo_5ffails_5fredux_7',['sized_metadata_mediainfo_fails_redux',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1survey__report.html#a7da438c3630b45590ca52caa15994d28',1,'anonymous_namespace{media_cache_survey.cpp}::survey_report']]],
+  ['sized_5fmetadata_5fmediainfo_5fpass_8',['sized_metadata_mediainfo_pass',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1survey__report.html#ad0c5cd454e422e25765f3f3e4484eb5f',1,'anonymous_namespace{media_cache_survey.cpp}::survey_report']]],
+  ['sized_5fmetadata_5fmediainfo_5fpass_5fredux_9',['sized_metadata_mediainfo_pass_redux',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1survey__report.html#a8d2643f569d18c947b75fadd8719c46c',1,'anonymous_namespace{media_cache_survey.cpp}::survey_report']]],
+  ['sized_5fmetadata_5fpass_10',['sized_metadata_pass',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1survey__report.html#aba53ba2129715fc9ecbca15c4c4fa7b9',1,'anonymous_namespace{media_cache_survey.cpp}::survey_report']]],
+  ['source_5fpath_11',['source_path',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1file__observation.html#aaa1c03321f7f915e02c650011dd5efc1',1,'anonymous_namespace{media_cache_survey.cpp}::file_observation']]],
+  ['source_5fsize_12',['source_size',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1file__observation.html#aaa9b5cb4a72244e5cb83a602f3b1e9ac',1,'anonymous_namespace{media_cache_survey.cpp}::file_observation']]],
+  ['standard_5ferror_13',['standard_error',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1command__result.html#aef877969a04d382785d6115928926050',1,'anonymous_namespace{media_cache_survey.cpp}::command_result::standard_error'],['../structanonymous__namespace_02media__redux_8cpp_03_1_1process__result.html#a06f68fcc0a94340502d6572d4323c40c',1,'anonymous_namespace{media_redux.cpp}::process_result::standard_error']]],
+  ['standard_5foutput_14',['standard_output',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1command__result.html#afc1b8883272fed56b8b15697293f3231',1,'anonymous_namespace{media_cache_survey.cpp}::command_result::standard_output'],['../structanonymous__namespace_02media__redux_8cpp_03_1_1process__result.html#a2cebfd3a7cbdc1dd641d22db293a0fb7',1,'anonymous_namespace{media_redux.cpp}::process_result::standard_output']]],
+  ['started_15',['started',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1command__result.html#adf5c6ee68cf92d02bf3600d8a5b1cf54',1,'anonymous_namespace{media_cache_survey.cpp}::command_result::started'],['../structanonymous__namespace_02media__redux_8cpp_03_1_1process__result.html#af21fd119f782a8873fc76d445159eaee',1,'anonymous_namespace{media_redux.cpp}::process_result::started']]],
+  ['started_5fat_16',['started_at',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1survey__report.html#a241d0f6a32fe901c6caf0cbb2fe4c60b',1,'anonymous_namespace{media_cache_survey.cpp}::survey_report']]],
+  ['status_17',['status',['../structmedia__redux__result.html#adc00d019eb95c304f6c41fdf00169d17',1,'media_redux_result']]],
+  ['subtitle_18',['subtitle',['../structmedia__info__data.html#a848b004b4054403ed6bab1d20012af25',1,'media_info_data']]],
+  ['success_19',['success',['../structdownload__result.html#a2c97eed46f988b38888a9dc41cc3625c',1,'download_result::success'],['../structextract__result.html#a391ced90b50ece05a51f88571978ee9d',1,'extract_result::success']]],
+  ['success_5fcount_20',['success_count',['../structprocess__result.html#afd92b294cd472626e26f614e3dfaca16',1,'process_result']]]
 ];

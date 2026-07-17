@@ -1,9 +1,20 @@
 var searchData=
 [
-  ['maximum_0',['maximum',['../structtime__limits.html#aed1c769913cc2fce2de5b8e63b4f5a67',1,'time_limits']]],
-  ['media_5fcache_5ffile_5fsize_1',['media_cache_file_size',['../structpipeline__metrics.html#affe96ad8eeaabfaa428fb2166cd48db2',1,'pipeline_metrics']]],
-  ['media_5fdata_5flist_2',['media_data_list',['../structprocess__result.html#aef822a84d0916049960fcfb3a9a3cf9a',1,'process_result']]],
-  ['media_5ffile_3',['media_file',['../classmedia__info__extractor.html#a88ef5bbc5540dd13f57d7959688ad36b',1,'media_info_extractor']]],
-  ['media_5fpath_4',['media_path',['../structdownload__result.html#aa989f1f2b6ad116cf9009887bd618d2b',1,'download_result']]],
-  ['minimum_5',['minimum',['../structtime__limits.html#a97f1c64f73ef4657a3da928377cd178c',1,'time_limits']]]
+  ['max_5farchive_5fsize_0',['max_archive_size',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1survey__config.html#ac36ded633bfba2d5cf47f5882042c7ed',1,'anonymous_namespace{media_cache_survey.cpp}::survey_config']]],
+  ['max_5fredux_5fattempts_1',['max_redux_attempts',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1survey__config.html#a134835fd863b22b6f0c1fc9e44525807',1,'anonymous_namespace{media_cache_survey.cpp}::survey_config']]],
+  ['maximum_2',['maximum',['../structtime__limits.html#aed1c769913cc2fce2de5b8e63b4f5a67',1,'time_limits']]],
+  ['maximum_5foutput_5fsize_3',['maximum_output_size',['../structmedia__redux__options.html#aaf924314dcb4df37684c7b6fa4480353',1,'media_redux_options']]],
+  ['media_5fcache_5ffile_5fsize_4',['media_cache_file_size',['../structpipeline__metrics.html#affe96ad8eeaabfaa428fb2166cd48db2',1,'pipeline_metrics']]],
+  ['media_5fdata_5flist_5',['media_data_list',['../structprocess__result.html#aef822a84d0916049960fcfb3a9a3cf9a',1,'process_result']]],
+  ['media_5ffile_6',['media_file',['../classmedia__info__extractor.html#a88ef5bbc5540dd13f57d7959688ad36b',1,'media_info_extractor']]],
+  ['media_5fpath_7',['media_path',['../structdownload__result.html#aa989f1f2b6ad116cf9009887bd618d2b',1,'download_result']]],
+  ['mediainfo_5felapsed_8',['mediainfo_elapsed',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1file__observation.html#a4240f8f959151445d0e2cc1c4912b861',1,'anonymous_namespace{media_cache_survey.cpp}::file_observation']]],
+  ['mediainfo_5ferror_9',['mediainfo_error',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1file__observation.html#a729079fafb186494b4240204979a01de',1,'anonymous_namespace{media_cache_survey.cpp}::file_observation']]],
+  ['mediainfo_5fexit_5fcode_10',['mediainfo_exit_code',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1file__observation.html#a67577dd1a19bdeae2babc8444cb20940',1,'anonymous_namespace{media_cache_survey.cpp}::file_observation']]],
+  ['mediainfo_5fpassed_11',['mediainfo_passed',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1file__observation.html#a8683c7fb58a78508e46f5fea0a7e9bd1',1,'anonymous_namespace{media_cache_survey.cpp}::file_observation']]],
+  ['mediainfo_5ftimed_5fout_12',['mediainfo_timed_out',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1file__observation.html#aa6e0570932ba516d042bf1524a447bd5',1,'anonymous_namespace{media_cache_survey.cpp}::file_observation']]],
+  ['mediainfo_5ftimeout_13',['mediainfo_timeout',['../structanonymous__namespace_02media__cache__survey_8cpp_03_1_1survey__config.html#a4b901674cf3ea3621f18fc65102c8d45',1,'anonymous_namespace{media_cache_survey.cpp}::survey_config']]],
+  ['minimum_14',['minimum',['../structtime__limits.html#a97f1c64f73ef4657a3da928377cd178c',1,'time_limits']]],
+  ['minimum_5foutput_5fsize_15',['minimum_output_size',['../structmedia__redux__options.html#ae7465ee950a87e7c9be26fef8565c27f',1,'media_redux_options']]],
+  ['muxer_16',['muxer',['../structanonymous__namespace_02media__redux_8cpp_03_1_1redux__format.html#a96432af2a901be81ea77a04511b08069',1,'anonymous_namespace{media_redux.cpp}::redux_format']]]
 ];

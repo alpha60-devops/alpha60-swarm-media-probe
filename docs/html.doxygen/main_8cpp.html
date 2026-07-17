@@ -112,11 +112,13 @@ Classes</h2></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-func-members" class="groupheader"><a id="func-members" name="func-members"></a>
 Functions</h2></td></tr>
-<tr class="memitem:a2dbd69276f1e2ff2087daa8756894e9b" id="r_a2dbd69276f1e2ff2087daa8756894e9b"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdownload__result.html">download_result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a2dbd69276f1e2ff2087daa8756894e9b">download_torrent_media</a> (const <a class="el" href="structtorrent__file.html">torrent_file</a> &amp;tf, const fs::path &amp;cache_dir, <a class="el" href="torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e">probe_size</a> psize)</td></tr>
-<tr class="memdesc:a2dbd69276f1e2ff2087daa8756894e9b"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toplevel download function.  <br /></td></tr>
+<tr class="memitem:a9e7d96a9336e5d74a16aa0a410862a0e" id="r_a9e7d96a9336e5d74a16aa0a410862a0e"><td class="memItemLeft" align="right" valign="top">std::size_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a9e7d96a9336e5d74a16aa0a410862a0e">count_cached_files</a> (const fs::path &amp;root, const std::string fsuffix=&quot;.sized&quot;)</td></tr>
+<tr class="memitem:ae904d139795a4ddc9ca8fa21b645da2a" id="r_ae904d139795a4ddc9ca8fa21b645da2a"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structdownload__result.html">download_result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae904d139795a4ddc9ca8fa21b645da2a">download_torrent_media</a> (const <a class="el" href="structtorrent__file.html">torrent_file</a> &amp;tf, const fs::path &amp;cache_dir, const <a class="el" href="torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e">probe_size</a> psize, const bool delete_p)</td></tr>
+<tr class="memdesc:ae904d139795a4ddc9ca8fa21b645da2a"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toplevel download function.  <br /></td></tr>
 <tr class="memitem:aee7b82000c4ee696564b5de40056b1a5" id="r_aee7b82000c4ee696564b5de40056b1a5"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structextract__result.html">extract_result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aee7b82000c4ee696564b5de40056b1a5">extract_media_info</a> (const fs::path &amp;media_path)</td></tr>
 <tr class="memdesc:aee7b82000c4ee696564b5de40056b1a5"><td class="mdescLeft">&#160;</td><td class="mdescRight">Toplevel extract function.  <br /></td></tr>
 <tr class="memitem:add21ae2bcf13ef5ca558ed098c0d0b9d" id="r_add21ae2bcf13ef5ca558ed098c0d0b9d"><td class="memItemLeft" align="right" valign="top">fs::path&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#add21ae2bcf13ef5ca558ed098c0d0b9d">find_cache_file</a> (const fs::path &amp;tdir)</td></tr>
+<tr class="memdesc:add21ae2bcf13ef5ca558ed098c0d0b9d"><td class="mdescLeft">&#160;</td><td class="mdescRight">Locate path for cache.  <br /></td></tr>
 <tr class="memitem:ae0f9fdc1db42123a23f4b07b9879ab7c" id="r_ae0f9fdc1db42123a23f4b07b9879ab7c"><td class="memItemLeft" align="right" valign="top">std::string&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ae0f9fdc1db42123a23f4b07b9879ab7c">get_collection_key</a> (const fs::path &amp;input_dir)</td></tr>
 <tr class="memdesc:ae0f9fdc1db42123a23f4b07b9879ab7c"><td class="mdescLeft">&#160;</td><td class="mdescRight">Helper to get collection_key. NB this is the filesystem key id used for all Alpha60 workflows. Usually this would be computed per the member a60::collection.collection_key.  <br /></td></tr>
 <tr class="memitem:acc103913179d7f5a598e80eac576ce99" id="r_acc103913179d7f5a598e80eac576ce99"><td class="memItemLeft" align="right" valign="top">uintmax_t&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acc103913179d7f5a598e80eac576ce99">get_collection_size_mb</a> (const std::vector&lt; <a class="el" href="structtorrent__file.html">torrent_file</a> &gt; &amp;torrents)</td></tr>
@@ -129,19 +131,51 @@ Functions</h2></td></tr>
 <tr class="memitem:a0539dad57e64785cf96620870b5a067e" id="r_a0539dad57e64785cf96620870b5a067e"><td class="memItemLeft" align="right" valign="top">void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a0539dad57e64785cf96620870b5a067e">print_summary</a> (size_t total_torrents, const <a class="el" href="structprocess__result.html">process_result</a> &amp;<a class="el" href="structprocess__result.html">process_result</a>)</td></tr>
 <tr class="memdesc:a0539dad57e64785cf96620870b5a067e"><td class="mdescLeft">&#160;</td><td class="mdescRight">Summarize.  <br /></td></tr>
 <tr class="memitem:ab41181064ad9a71318e850451efa6720" id="r_ab41181064ad9a71318e850451efa6720"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ab41181064ad9a71318e850451efa6720">print_usage</a> (const char *prog_name)</td></tr>
-<tr class="memitem:acc4dec2197b42d6d4d2699054fd67d60" id="r_acc4dec2197b42d6d4d2699054fd67d60"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structprocess__result.html">process_result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#acc4dec2197b42d6d4d2699054fd67d60">process_all_torrents</a> (const vector&lt; <a class="el" href="structtorrent__file.html">torrent_file</a> &gt; &amp;torrents, const fs::path &amp;cache_dir, const <a class="el" href="torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e">probe_size</a> psize, const bool download_p)</td></tr>
-<tr class="memdesc:acc4dec2197b42d6d4d2699054fd67d60"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loop per element of btiha.  <br /></td></tr>
+<tr class="memitem:ad9cc4c2d8c3f5707100ea72eccf29671" id="r_ad9cc4c2d8c3f5707100ea72eccf29671"><td class="memItemLeft" align="right" valign="top"><a class="el" href="structprocess__result.html">process_result</a>&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#ad9cc4c2d8c3f5707100ea72eccf29671">process_all_torrents</a> (const vector&lt; <a class="el" href="structtorrent__file.html">torrent_file</a> &gt; &amp;torrents, const fs::path &amp;cache_dir, const <a class="el" href="torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e">probe_size</a> psize, const bool download_p, const bool delete_p)</td></tr>
+<tr class="memdesc:ad9cc4c2d8c3f5707100ea72eccf29671"><td class="mdescLeft">&#160;</td><td class="mdescRight">Loop per element of btiha.  <br /></td></tr>
 <tr class="memitem:a10ff19356f5e5c82507c7f889e064ef6" id="r_a10ff19356f5e5c82507c7f889e064ef6"><td class="memItemLeft" align="right" valign="top">static void&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a10ff19356f5e5c82507c7f889e064ef6">signal_handler</a> (int)</td></tr>
-<tr class="memitem:af5c7599d03351ff72e3e5da6002d15b3" id="r_af5c7599d03351ff72e3e5da6002d15b3"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#af5c7599d03351ff72e3e5da6002d15b3">write_enriched_output</a> (const fs::path &amp;output_file, const vector&lt; <a class="el" href="structtorrent__file.html">torrent_file</a> &gt; &amp;torrents, const <a class="el" href="structprocess__result.html">process_result</a> &amp;presult, const std::string &amp;collection_key, size_t min_fsize, uintmax_t cache_dir_size_mb, uintmax_t torrent_total_size_mb)</td></tr>
-<tr class="memdesc:af5c7599d03351ff72e3e5da6002d15b3"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write enriched JSON output.  <br /></td></tr>
+<tr class="memitem:aa582fd0ee7046a0ad612de9d2dff28c6" id="r_aa582fd0ee7046a0ad612de9d2dff28c6"><td class="memItemLeft" align="right" valign="top">bool&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#aa582fd0ee7046a0ad612de9d2dff28c6">write_enriched_output</a> (const fs::path &amp;output_file, const vector&lt; <a class="el" href="structtorrent__file.html">torrent_file</a> &gt; &amp;torrents, const <a class="el" href="structprocess__result.html">process_result</a> &amp;presult, const std::string &amp;collection_key, const size_t min_fsize, uintmax_t cache_dir_size_mb, uintmax_t torrent_total_size_mb, const size_t ccount)</td></tr>
+<tr class="memdesc:aa582fd0ee7046a0ad612de9d2dff28c6"><td class="mdescLeft">&#160;</td><td class="mdescRight">Write enriched JSON output.  <br /></td></tr>
 </table><table class="memberdecls">
 <tr class="heading"><td colspan="2"><h2 id="header-var-members" class="groupheader"><a id="var-members" name="var-members"></a>
 Variables</h2></td></tr>
 <tr class="memitem:a89f503e92e7842c423342399c4c8cb1b" id="r_a89f503e92e7842c423342399c4c8cb1b"><td class="memItemLeft" align="right" valign="top">atomic&lt; bool &gt;&#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="#a89f503e92e7842c423342399c4c8cb1b">g_interrupted</a> {false}</td></tr>
 </table>
 <a name="doc-func-members" id="doc-func-members"></a><h2 id="header-doc-func-members" class="groupheader">Function Documentation</h2>
-<a id="a2dbd69276f1e2ff2087daa8756894e9b" name="a2dbd69276f1e2ff2087daa8756894e9b"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#a2dbd69276f1e2ff2087daa8756894e9b">&#9670;&#160;</a></span>download_torrent_media()</h2>
+<a id="a9e7d96a9336e5d74a16aa0a410862a0e" name="a9e7d96a9336e5d74a16aa0a410862a0e"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#a9e7d96a9336e5d74a16aa0a410862a0e">&#9670;&#160;</a></span>count_cached_files()</h2>
+
+<div class="memitem">
+<div class="memproto">
+      <table class="memname">
+        <tr>
+          <td class="memname">std::size_t count_cached_files </td>
+          <td>(</td>
+          <td class="paramtype">const fs::path &amp;</td>          <td class="paramname"><span class="paramname"><em>root</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const std::string</td>          <td class="paramname"><span class="paramname"><em>fsuffix</em></span><span class="paramdefsep"> = </span><span class="paramdefval">&quot;.sized&quot;</span>&#160;)</td>
+        </tr>
+      </table>
+</div><div class="memdoc">
+<p>Count all regular files with extension ".sized" inside the given root directory.</p>
+<dl class="params"><dt>Parameters</dt><dd>
+  <table class="params">
+    <tr><td class="paramname">root</td><td>The directory to search (defaults to the current working directory). </td></tr>
+    <tr><td class="paramname">fsuffix</td><td>count files matching this suffix, defaults to 'sized' </td></tr>
+  </table>
+  </dd>
+</dl>
+<dl class="section return"><dt>Returns</dt><dd>Number of cache files. </dd></dl>
+
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00140">140</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+
+</div>
+</div>
+<a id="ae904d139795a4ddc9ca8fa21b645da2a" name="ae904d139795a4ddc9ca8fa21b645da2a"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ae904d139795a4ddc9ca8fa21b645da2a">&#9670;&#160;</a></span>download_torrent_media()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -159,14 +193,19 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype"><a class="el" href="torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e">probe_size</a></td>          <td class="paramname"><span class="paramname"><em>psize</em></span>&#160;)</td>
+          <td class="paramtype">const <a class="el" href="torrent__downloader_8hpp.html#aa0f9b824a451ab6b7de3858ac14acd4e">probe_size</a></td>          <td class="paramname"><span class="paramname"><em>psize</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>delete_p</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Toplevel download function. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00167">167</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00211">211</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -187,7 +226,7 @@ Variables</h2></td></tr>
 
 <p>Toplevel extract function. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00213">213</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00257">257</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -206,7 +245,9 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00133">133</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p>Locate path for cache. </p>
+
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00176">176</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -298,7 +339,7 @@ Variables</h2></td></tr>
       </table>
 </div><div class="memdoc">
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00381">381</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00429">429</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -344,7 +385,7 @@ Variables</h2></td></tr>
 
 <p>Summarize. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00364">364</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00412">412</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -375,8 +416,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="acc4dec2197b42d6d4d2699054fd67d60" name="acc4dec2197b42d6d4d2699054fd67d60"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#acc4dec2197b42d6d4d2699054fd67d60">&#9670;&#160;</a></span>process_all_torrents()</h2>
+<a id="ad9cc4c2d8c3f5707100ea72eccf29671" name="ad9cc4c2d8c3f5707100ea72eccf29671"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#ad9cc4c2d8c3f5707100ea72eccf29671">&#9670;&#160;</a></span>process_all_torrents()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -399,14 +440,19 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>download_p</em></span>&#160;)</td>
+          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>download_p</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const bool</td>          <td class="paramname"><span class="paramname"><em>delete_p</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Loop per element of btiha. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00241">241</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00285">285</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>
@@ -437,8 +483,8 @@ Variables</h2></td></tr>
 
 </div>
 </div>
-<a id="af5c7599d03351ff72e3e5da6002d15b3" name="af5c7599d03351ff72e3e5da6002d15b3"></a>
-<h2 class="memtitle"><span class="permalink"><a href="#af5c7599d03351ff72e3e5da6002d15b3">&#9670;&#160;</a></span>write_enriched_output()</h2>
+<a id="aa582fd0ee7046a0ad612de9d2dff28c6" name="aa582fd0ee7046a0ad612de9d2dff28c6"></a>
+<h2 class="memtitle"><span class="permalink"><a href="#aa582fd0ee7046a0ad612de9d2dff28c6">&#9670;&#160;</a></span>write_enriched_output()</h2>
 
 <div class="memitem">
 <div class="memproto">
@@ -466,7 +512,7 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">size_t</td>          <td class="paramname"><span class="paramname"><em>min_fsize</em></span>, </td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>min_fsize</em></span>, </td>
         </tr>
         <tr>
           <td class="paramkey"></td>
@@ -476,14 +522,19 @@ Variables</h2></td></tr>
         <tr>
           <td class="paramkey"></td>
           <td></td>
-          <td class="paramtype">uintmax_t</td>          <td class="paramname"><span class="paramname"><em>torrent_total_size_mb</em></span>&#160;)</td>
+          <td class="paramtype">uintmax_t</td>          <td class="paramname"><span class="paramname"><em>torrent_total_size_mb</em></span>, </td>
+        </tr>
+        <tr>
+          <td class="paramkey"></td>
+          <td></td>
+          <td class="paramtype">const size_t</td>          <td class="paramname"><span class="paramname"><em>ccount</em></span>&#160;)</td>
         </tr>
       </table>
 </div><div class="memdoc">
 
 <p>Write enriched JSON output. </p>
 
-<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00330">330</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
+<p class="definition">Definition at line <a class="el" href="main_8cpp_source.html#l00377">377</a> of file <a class="el" href="main_8cpp_source.html">main.cpp</a>.</p>
 
 </div>
 </div>

@@ -1,5 +1,5 @@
 # Install dependencies on Fedora 43
-sudo dnf install -y mediainfo cmake gcc-c++ pkgconfig libtorrent-rasterbar-devel rapidjson-devel
+sudo dnf install -y mediainfo ffmpeg cmake gcc-c++ pkgconfig libtorrent-rasterbar-devel rapidjson-devel
 
 # Clone or create the project structure
 mkdir -p media_enrichment/src media_enrichment/scripts media_enrichment/output

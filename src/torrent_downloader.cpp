@@ -1,6 +1,116 @@
 #include "torrent_downloader.hpp"
+#include "media_redux.hpp"
+
+#include <algorithm>
+#include <cctype>
+#include <cstdint>
+#include <memory>
+#include <utility>
+#include <vector>
 
 namespace lt = libtorrent;
+
+namespace
+{
+
+constexpr std::uint64_t bytes_per_megabyte = 1024ULL * 1024ULL;
+constexpr std::uint64_t iso_base_media_tail_megabytes = 32ULL;
+
+struct byte_range
+{
+  std::uint64_t offset{0};
+  std::uint64_t size{0};
+};
+
+bool
+is_iso_base_media_file(const fs::path& path)
+{
+  std::string extension = path.extension().string();
+  std::transform(extension.begin(), extension.end(), extension.begin(),
+    [](unsigned char character)
+    { return static_cast<char>(std::tolower(character)); });
+  const bool result = extension == ".mp4" || extension == ".m4v" ||
+    extension == ".mov";
+  return result;
+}
+
+std::vector<byte_range>
+make_probe_ranges(const lt::torrent_info& torrent,
+                  const lt::file_index_t file_index,
+                  const std::uint64_t prefix_bytes,
+                  const std::uint64_t tail_bytes)
+{
+  const auto& files = torrent.files();
+  const auto file_size = static_cast<std::uint64_t>(files.file_size(file_index));
+  const std::uint64_t prefix_size = std::min(prefix_bytes, file_size);
+  const std::uint64_t tail_size = std::min(tail_bytes, file_size - prefix_size);
+  std::vector<byte_range> result;
+  if (prefix_size > 0)
+    result.push_back({0, prefix_size});
+  if (tail_size > 0)
+    result.push_back({file_size - tail_size, tail_size});
+  return result;
+}
+
+std::pair<int, int>
+piece_span(const lt::torrent_info& torrent,
+           const lt::file_index_t file_index,
+           const byte_range& range)
+{
+  const auto& files = torrent.files();
+  const auto first = files.map_file(
+    file_index, static_cast<std::int64_t>(range.offset), 1);
+  const auto last = files.map_file(
+    file_index,
+    static_cast<std::int64_t>(range.offset + range.size - 1),
+    1);
+  const std::pair<int, int> result{
+    static_cast<int>(first.piece),
+    static_cast<int>(last.piece)};
+  return result;
+}
+
+void
+prioritize_probe_ranges(lt::torrent_handle& handle,
+                        const lt::torrent_info& torrent,
+                        const lt::file_index_t file_index,
+                        const std::uint64_t prefix_bytes,
+                        const std::uint64_t tail_bytes)
+{
+  std::vector<lt::download_priority_t> priorities(
+    static_cast<std::size_t>(torrent.num_pieces()),
+    lt::download_priority_t{0});
+  const std::vector<byte_range> ranges = make_probe_ranges(
+    torrent, file_index, prefix_bytes, tail_bytes);
+  for (const byte_range& range : ranges)
+    {
+      const auto [first_piece, last_piece] = piece_span(torrent, file_index, range);
+      for (int piece = first_piece; piece <= last_piece; ++piece)
+        priorities[static_cast<std::size_t>(piece)] = lt::download_priority_t{7};
+    }
+  handle.prioritize_pieces(priorities);
+}
+
+bool
+probe_ranges_complete(const lt::torrent_handle& handle,
+                      const lt::torrent_info& torrent,
+                      const lt::file_index_t file_index,
+                      const std::uint64_t prefix_bytes,
+                      const std::uint64_t tail_bytes)
+{
+  const std::vector<byte_range> ranges = make_probe_ranges(
+    torrent, file_index, prefix_bytes, tail_bytes);
+  bool result{!ranges.empty()};
+  for (const byte_range& range : ranges)
+    {
+      const auto [first_piece, last_piece] = piece_span(torrent, file_index, range);
+      for (int piece = first_piece; piece <= last_piece && result; ++piece)
+        result = handle.have_piece(lt::piece_index_t{piece});
+    }
+  return result;
+}
+
+} // namespace
 
 /// Configure torrent session.
 lt::settings_pack
@@ -430,6 +540,8 @@ media_downloader::almost_nothing(const std::string& ifile,
 
   fs::path prime_file_path;
   fs::path sized_file_path;
+  bool prefix_verifiedp(false);
+  bool redux_createdp(false);
   try
     {
       fs::create_directories(output_dir);
@@ -453,6 +565,7 @@ media_downloader::almost_nothing(const std::string& ifile,
 	}
       const double max_mb = to_mb(max_size);
       const double target_mb = to_mb(min_fsize);
+      const uint max_download_mb = to_mb(max_dlsize);
 
       auto target_file_path = files.file_path(largest_file_index);
       prime_file_path = fs::path(output_dir) / target_file_path;
@@ -474,7 +587,7 @@ media_downloader::almost_nothing(const std::string& ifile,
       // Set up download priorities.
       vector<lt::download_priority_t> priorities;
       priorities.resize(ti->num_files(), lt::download_priority_t{0});
-      priorities[static_cast<int>(largest_file_index)] = lt::download_priority_t{7};
+      priorities[static_cast<int>(largest_file_index)] = lt::download_priority_t{0};
       params.file_priorities = priorities;
 
       // Start BTIH in session...
@@ -501,12 +614,29 @@ media_downloader::almost_nothing(const std::string& ifile,
 	  // 16, 32, 64, 128, 256, 512 (aka exponential).
 	  bool serializedp(false);
 	  bool stalledp(false);
-	  for (uint index = 0; index < 6 && !serializedp && !stalledp; index++)
+	  bool exhaustedp(false);
+	  for (uint index = 0;
+	       index < 6 && !serializedp && !stalledp && !exhaustedp;
+	       index++)
 	    {
-	      uint power_of_two = 1u << index;
-	      uint dl_target_mb = target_mb * power_of_two;
+	      const uint power_of_two = 1u << index;
+	      const uint dl_target_mb = std::min<uint>(
+		max_download_mb, static_cast<uint>(target_mb) * power_of_two);
+	      const uint tail_target_mb =
+		is_iso_base_media_file(target_file_path) && max_download_mb > dl_target_mb
+		? std::min<uint>(iso_base_media_tail_megabytes,
+				 max_download_mb - dl_target_mb)
+		: 0;
+	      const uint probe_target_mb = dl_target_mb + tail_target_mb;
+	      const std::uint64_t requested_prefix =
+		static_cast<std::uint64_t>(dl_target_mb) * bytes_per_megabyte;
+	      const std::uint64_t requested_tail =
+		static_cast<std::uint64_t>(tail_target_mb) * bytes_per_megabyte;
+
+	      prioritize_probe_ranges(handle, *ti, largest_file_index,
+			      requested_prefix, requested_tail);
 	      just_a_bit(sesh, handle, dtlimits, largest_file_index,
-			 { dl_target_mb, to_mb(max_dlsize) });
+			 { probe_target_mb, probe_target_mb });
 	      is_enough(sesh, handle);
 
 	      // Sync
@@ -519,18 +649,40 @@ media_downloader::almost_nothing(const std::string& ifile,
 		}
 
 	      auto status = handle.status();
-	      if (verify_data_on_disk(prime_file_path, min_fsize))
-		serializedp = true;
-	      else
+	      const bool prefix_complete = probe_ranges_complete(
+		handle, *ti, largest_file_index, requested_prefix, 0);
+	      prefix_verifiedp = prefix_verifiedp || prefix_complete;
+	      const bool ranges_complete = probe_ranges_complete(
+		handle, *ti, largest_file_index, requested_prefix, requested_tail);
+
+	      if (ranges_complete && verify_data_on_disk(prime_file_path, min_fsize))
+		{
+		  media_redux_options redux_options;
+		  redux_options.minimum_output_size = min_fsize;
+		  const media_redux_result redux = create_media_redux(
+		    prime_file_path, sized_file_path, redux_options);
+		  redux_createdp = redux.success();
+		  serializedp = redux_createdp;
+		  if (redux_createdp)
+		    cout << "redux created: " << sized_file_path << " ("
+			 << to_mb(redux.output_size) << " MB)" << endl;
+		  else
+		    cerr << "redux attempt failed after " << probe_target_mb
+			 << " MB of verified ranges: " << redux.error << endl;
+		}
+
+	      if (!serializedp)
 		{
 		  if (status.total_done == 0 && status.download_rate == 0)
 		    stalledp = true;
+		  else if (dl_target_mb >= max_download_mb)
+		    exhaustedp = true;
 		  else
 		    {
 		      uint pfile_mb = to_mb(fs::file_size(prime_file_path));
 		      cout << "try (" << index << ", "
-			   << pfile_mb << " of " << dl_target_mb
-			   << ") complete" << endl;
+			   << pfile_mb << " logical MB, " << probe_target_mb
+			   << " MB planned) complete" << endl;
 
 		      // Restart torrent: set auto_managed flag and resume
 		      handle.set_flags(lt::torrent_flags::auto_managed, lt::torrent_flags::auto_managed);
@@ -601,15 +753,18 @@ media_downloader::almost_nothing(const std::string& ifile,
   const bool ff_created = fs::exists(prime_file_path);
   const auto ff_size = ff_created ? fs::file_size(prime_file_path) : 0;
   const bool ff_size_targetp = ff_size >= ulong(min_fsize);
-  if (ff_created && ff_size_targetp)
+  if (!redux_createdp && ff_created && ff_size_targetp)
     {
-      if (verify_data_on_disk(prime_file_path, min_fsize))
+      if (prefix_verifiedp && verify_data_on_disk(prime_file_path, min_fsize))
 	{
 	  if (!copy_first_n_bytes(prime_file_path, sized_file_path,
 				  min_fsize))
 	    cerr << "fail: sized file not copied from prime file " << endl
 		 << prime_file_path.string() << endl;
 	}
+      else if (!prefix_verifiedp)
+	cerr << "fail: no verified contiguous prefix in " << endl
+	     << prime_file_path.string() << endl;
       else
 	cerr << "fail: verification failed ("
 	     << to_mb(ff_size) << ") in " << endl

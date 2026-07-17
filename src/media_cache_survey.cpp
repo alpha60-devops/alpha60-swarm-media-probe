@@ -290,6 +290,18 @@ has_ebml_header(const std::vector<std::uint8_t>& data)
 }
 
 
+bool
+has_avi_header(const std::vector<std::uint8_t>& data)
+{
+  const std::array<std::uint8_t, 4> riff{'R', 'I', 'F', 'F'};
+  const std::array<std::uint8_t, 4> avi{'A', 'V', 'I', ' '};
+  const bool result = data.size() >= 12 &&
+    std::equal(riff.begin(), riff.end(), data.begin()) &&
+    std::equal(avi.begin(), avi.end(), data.begin() + 8);
+  return result;
+}
+
+
 std::string
 classify_container(const fs::path& sized_path,
 		   const std::vector<std::uint8_t>& data)
@@ -337,6 +349,8 @@ has_container_metadata(const std::string& container,
     result = contains_bytes(data, "moof");
   else if (container == "matroska" || container == "webm")
     result = has_ebml_header(data);
+  else if (container == "avi")
+    result = has_avi_header(data);
   else if (container == "mpeg-ts")
     result = !data.empty() && data.front() == 0x47;
 
@@ -787,6 +801,223 @@ create_redux(file_observation& observation, const fs::path& download_cache_root,
 }
 
 
+std::optional<std::string>
+redux_muxer_v2(const std::string& container)
+{
+  std::optional<std::string> result;
+  if (container == "matroska")
+    result = "matroska";
+  else if (container == "webm")
+    result = "webm";
+  else if (container == "mp4" || container == "fragmented-mp4")
+    result = "mp4";
+  else if (container == "mov")
+    result = "mov";
+  else if (container == "avi")
+    result = "avi";
+  else if (container == "mpeg-ts")
+    result = "mpegts";
+  return result;
+}
+
+
+fs::path
+redux_temporary_path_v2(const fs::path& destination)
+{
+  const fs::path parent = destination.parent_path();
+  const std::string filename = destination.stem().string() +
+    ".partial" + destination.extension().string();
+  return parent / filename;
+}
+
+
+std::vector<std::string>
+make_ffmpeg_arguments_v2(const fs::path& input, const fs::path& output,
+                         const std::string& container,
+                         const double target_seconds,
+                         const std::uintmax_t target_size,
+                         const bool include_subtitles)
+{
+  std::vector<std::string> result{
+    "ffmpeg",
+    "-nostdin",
+    "-hide_banner",
+    "-loglevel", "error",
+    "-fflags", "+genpts+discardcorrupt",
+    "-err_detect", "ignore_err",
+    "-i", input.string(),
+    "-map", "0:v:0?",
+    "-map", "0:a?"};
+
+  if (include_subtitles)
+    {
+      result.emplace_back("-map");
+      result.emplace_back("0:s?");
+    }
+
+  result.emplace_back("-dn");
+  result.emplace_back("-c");
+  result.emplace_back("copy");
+
+  if (target_seconds > 0.0)
+    {
+      std::ostringstream duration;
+      duration << std::fixed << std::setprecision(3) << target_seconds;
+      result.emplace_back("-t");
+      result.emplace_back(duration.str());
+    }
+
+  if (container == "mp4" || container == "mov")
+    {
+      result.emplace_back("-movflags");
+      result.emplace_back("+faststart");
+    }
+  else if (container == "fragmented-mp4")
+    {
+      result.emplace_back("-movflags");
+      result.emplace_back("+empty_moov+frag_keyframe+default_base_moof");
+    }
+
+  result.emplace_back("-fs");
+  result.emplace_back(std::to_string(target_size));
+  result.emplace_back("-f");
+  result.emplace_back(*redux_muxer_v2(container));
+  result.emplace_back("-y");
+  result.emplace_back(output.string());
+  return result;
+}
+
+
+bool
+create_redux_v2(file_observation& observation,
+                const fs::path& download_cache_root,
+                const survey_config& config,
+                bool verbose)
+{
+  bool result{false};
+  auto log = [&](const std::string& msg) { if (verbose) std::cout << msg << std::endl; };
+  const std::optional<std::string> muxer = redux_muxer_v2(observation.detected_container);
+
+  if (!muxer)
+    observation.redux_error = "container is not supported for redux remuxing";
+  else
+    {
+      log("  - Running ffprobe on " + observation.relative_path.generic_string());
+      const media_probe probe = run_ffprobe(
+        observation.source_path, observation.source_size, config);
+
+      if (!probe.command.started || probe.command.timed_out || probe.command.exit_code != 0)
+        observation.redux_error = probe.command.standard_error.empty()
+          ? "ffprobe could not demux the source"
+          : probe.command.standard_error;
+      else
+        {
+          const fs::path redux_directory = download_cache_root /
+            ".survey" / "redux" / stable_path_id(observation.relative_path);
+          std::error_code error;
+          fs::create_directories(redux_directory, error);
+
+          if (error)
+            observation.redux_error = error.message();
+          else
+            {
+              observation.redux_path = redux_directory /
+                original_media_filename(observation.source_path);
+              const fs::path temporary_path =
+                redux_temporary_path_v2(observation.redux_path);
+              const std::uintmax_t target_size = static_cast<std::uintmax_t>(
+                static_cast<double>(config.max_archive_size) *
+                config.archive_size_margin);
+              double target_seconds{0.0};
+              if (probe.duration_seconds > 0.0 &&
+                  probe.bitrate_bits_per_second > 0.0)
+                target_seconds = std::min(
+                  probe.duration_seconds,
+                  static_cast<double>(target_size) * 8.0 /
+                    probe.bitrate_bits_per_second);
+
+              for (std::size_t attempt = 0;
+                   attempt < 2 && !result;
+                   ++attempt)
+                {
+                  fs::remove(temporary_path, error);
+                  error.clear();
+                  const bool include_subtitles = attempt == 0;
+                  const command_result ffmpeg = run_command(
+                    make_ffmpeg_arguments_v2(
+                      observation.source_path,
+                      temporary_path,
+                      observation.detected_container,
+                      target_seconds,
+                      target_size,
+                      include_subtitles),
+                    config.ffmpeg_timeout);
+
+                  if (!ffmpeg.started || ffmpeg.timed_out || ffmpeg.exit_code != 0)
+                    observation.redux_error = ffmpeg.standard_error.empty()
+                      ? "ffmpeg did not create a redux artifact"
+                      : ffmpeg.standard_error;
+                  else if (!fs::is_regular_file(temporary_path, error) || error)
+                    observation.redux_error = error
+                      ? error.message()
+                      : "ffmpeg output is missing";
+                  else
+                    {
+                      const std::uintmax_t output_size =
+                        fs::file_size(temporary_path, error);
+                      if (error || output_size == 0 ||
+                          output_size > config.max_archive_size)
+                        observation.redux_error = error
+                          ? error.message()
+                          : "redux output size is invalid";
+                      else
+                        {
+                          fs::remove(observation.redux_path, error);
+                          error.clear();
+                          fs::rename(temporary_path, observation.redux_path, error);
+                          if (error)
+                            observation.redux_error = error.message();
+                          else
+                            {
+                              observation.redux_created = true;
+                              observation.redux_size = output_size;
+                              const std::vector<std::uint8_t> bytes = read_sampled_bytes(
+                                observation.redux_path,
+                                8ULL * 1024ULL * 1024ULL,
+                                8ULL * 1024ULL * 1024ULL);
+                              observation.redux_container_metadata_present =
+                                has_container_metadata(
+                                  observation.detected_container, bytes);
+                              const command_result mediainfo = run_mediainfo(
+                                observation.redux_path, config);
+                              observation.redux_mediainfo_passed =
+                                mediainfo_succeeded(mediainfo);
+                              observation.redux_mediainfo_timed_out =
+                                mediainfo.timed_out;
+                              observation.redux_mediainfo_exit_code =
+                                mediainfo.exit_code;
+                              observation.redux_error = mediainfo.standard_error;
+                              result = observation.redux_container_metadata_present &&
+                                observation.redux_mediainfo_passed;
+                            }
+                        }
+                    }
+                }
+
+              fs::remove(temporary_path, error);
+            }
+        }
+    }
+
+  if (result)
+    log("  - Redux succeeded for " + observation.relative_path.generic_string());
+  else
+    log("  - Redux failed for " + observation.relative_path.generic_string() +
+        ": " + observation.redux_error);
+  return result;
+}
+
+
 file_observation
 inspect_file(const fs::path& path, const fs::path& download_cache_root,
 	     const survey_config& config, bool verbose)
@@ -833,7 +1064,7 @@ inspect_file(const fs::path& path, const fs::path& download_cache_root,
       if (result.redux_required)
 	{
 	  log("  - Redux required (oversized)");
-	  create_redux(result, download_cache_root, config, verbose);
+	  create_redux_v2(result, download_cache_root, config, verbose);
 	}
       else
 	{

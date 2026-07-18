@@ -1,9 +1,11 @@
 #include "torrent_downloader.hpp"
 #include "media_redux.hpp"
+#include "mediainfo_extractor.hpp"
 
 #include <algorithm>
 #include <cctype>
 #include <cstdint>
+#include <exception>
 #include <memory>
 #include <utility>
 #include <vector>
@@ -128,7 +130,112 @@ probe_ranges_complete(const lt::torrent_handle& handle,
   return result;
 }
 
+struct media_extraction_assessment
+{
+  bool has_video_metadata{false};
+  bool has_audio_metadata{false};
+  bool has_format_metadata{false};
+
+  [[nodiscard]]
+  bool
+  full() const noexcept
+  {
+    return has_video_metadata &&
+      has_audio_metadata &&
+      has_format_metadata;
+  }
+
+  [[nodiscard]]
+  std::string
+  missing_summary() const
+  {
+    std::string result;
+    auto append = [&result](const std::string& value)
+    {
+      if (!result.empty())
+	result += ", ";
+      result += value;
+    };
+
+    if (!has_video_metadata)
+      append("video");
+    if (!has_audio_metadata)
+      append("audio");
+    if (!has_format_metadata)
+      append("format");
+
+    return result.empty() ? "none" : result;
+  }
+};
+
+media_extraction_assessment
+assess_media_info(const media_info_data& data)
+{
+  media_extraction_assessment result;
+  result.has_video_metadata =
+    (data.video.width > 0 && data.video.height > 0) ||
+    !data.video.frame_rate.empty();
+  result.has_audio_metadata =
+    data.audio.bitrate > 0 || data.audio.sampling_rate > 0;
+  result.has_format_metadata = data.duration > 0 || data.file_size > 0;
+  return result;
+}
+
+media_extraction_assessment
+assess_media_file(const fs::path& media_file)
+{
+  media_extraction_assessment result;
+  try
+    {
+      media_info_extractor extractor(media_file);
+      const std::optional<media_info_data> data = extractor.extract();
+      if (data.has_value())
+	result = assess_media_info(data.value());
+    }
+  catch (const std::exception&)
+    {
+      result = media_extraction_assessment{};
+    }
+  return result;
+}
+
 } // namespace
+
+bool
+media_cache_file_complete(const fs::path& media_file,
+			  const std::size_t minimum_size,
+			  std::string* reason)
+{
+  bool result{false};
+  if (reason != nullptr)
+    reason->clear();
+
+  std::error_code error;
+  const bool regular_file = fs::is_regular_file(media_file, error);
+  if (!regular_file || error)
+    {
+      if (reason != nullptr)
+	*reason = error ? error.message() : "not a regular file";
+    }
+  else
+    {
+      const std::uintmax_t file_size = fs::file_size(media_file, error);
+      if (error || file_size < minimum_size)
+	{
+	  if (reason != nullptr)
+	    *reason = error ? error.message() : "cache artifact is undersized";
+	}
+      else
+	{
+	  const media_extraction_assessment assessment =
+	    assess_media_file(media_file);
+	  result = assessment.full();
+	  if (!result && reason != nullptr)
+	    *reason = assessment.missing_summary() + " metadata missing";
+	}
+    }
+  return result;
+}
 
 /// Configure torrent session.
 lt::settings_pack
@@ -573,7 +680,7 @@ media_downloader::almost_nothing(const std::string& ifile,
   fs::path prime_file_path;
   fs::path sized_file_path;
   bool prefix_verifiedp(false);
-  bool redux_createdp(false);
+  bool artifact_completep(false);
   try
     {
       fs::create_directories(output_dir);
@@ -697,11 +804,29 @@ media_downloader::almost_nothing(const std::string& ifile,
 		  redux_options.minimum_output_size = min_fsize;
 		  const media_redux_result redux = create_media_redux(
 		    prime_file_path, sized_file_path, redux_options);
-		  redux_createdp = redux.success();
-		  serializedp = redux_createdp;
-		  if (redux_createdp)
-		    cout << "redux created: " << sized_file_path << " ("
-			 << to_mb(redux.output_size) << " MB)" << endl;
+		  if (redux.success())
+		    {
+		      const media_extraction_assessment assessment =
+			assess_media_file(sized_file_path);
+		      artifact_completep = assessment.full();
+		      serializedp = artifact_completep;
+		      if (artifact_completep)
+			cout << "redux created with full metadata: "
+			     << sized_file_path << " ("
+			     << to_mb(redux.output_size) << " MB)" << endl;
+		      else
+			{
+			  cerr << "redux metadata incomplete after "
+			       << probe_target_mb << " MB of verified ranges; "
+			       << assessment.missing_summary()
+			       << " metadata missing" << endl;
+			  std::error_code remove_error;
+			  fs::remove(sized_file_path, remove_error);
+			  if (remove_error)
+			    cerr << "failed to remove incomplete redux: "
+				 << remove_error.message() << endl;
+			}
+		    }
 		  else
 		    cerr << "redux attempt failed after " << probe_target_mb
 			 << " MB of verified ranges: " << redux.error << endl;
@@ -819,7 +944,7 @@ media_downloader::almost_nothing(const std::string& ifile,
       prime_error.clear();
     }
   const bool ff_size_targetp = ff_size >= ulong(min_fsize);
-  if (!redux_createdp && ff_created && ff_size_targetp)
+  if (!artifact_completep && ff_created && ff_size_targetp)
     {
       if (prefix_verifiedp && verify_data_on_disk(prime_file_path, min_fsize))
 	{
@@ -827,6 +952,23 @@ media_downloader::almost_nothing(const std::string& ifile,
 				  min_fsize))
 	    cerr << "fail: sized file not copied from prime file " << endl
 		 << prime_file_path.string() << endl;
+	  else
+	    {
+	      const media_extraction_assessment assessment =
+		assess_media_file(sized_file_path);
+	      artifact_completep = assessment.full();
+	      if (!artifact_completep)
+		{
+		  cerr << "fallback prefix metadata incomplete; "
+		       << assessment.missing_summary()
+		       << " metadata missing" << endl;
+		  std::error_code remove_error;
+		  fs::remove(sized_file_path, remove_error);
+		  if (remove_error)
+		    cerr << "failed to remove incomplete fallback: "
+			 << remove_error.message() << endl;
+		}
+	    }
 	}
       else if (!prefix_verifiedp)
 	cerr << "fail: no verified contiguous prefix in " << endl
@@ -846,7 +988,7 @@ media_downloader::almost_nothing(const std::string& ifile,
 	cout << "error: failed to remove file: " << ec.message() << endl;
     }
 
-  if (verify_data_on_disk(sized_file_path, min_fsize))
+  if (artifact_completep && verify_data_on_disk(sized_file_path, min_fsize))
     return sized_file_path;
   else
     {

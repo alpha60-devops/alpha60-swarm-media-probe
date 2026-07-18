@@ -209,7 +209,8 @@ find_cache_file(const fs::path& tdir)
 /// Toplevel download function.
 download_result
 download_torrent_media(const torrent_file& tf, const fs::path& cache_dir,
-		       const probe_size psize, const bool delete_p)
+		       const probe_size psize, const bool delete_p,
+		       const bool force_download = false)
 {
   // Create unique subdirectory for this torrent using its BTIH, if it
   // doesn't exist already.
@@ -217,9 +218,10 @@ download_torrent_media(const torrent_file& tf, const fs::path& cache_dir,
   fs::path torrent_cache_dir = cache_dir / tf.btih;
   ret.media_path = find_cache_file(torrent_cache_dir);
 
-  // Use cache if it meets the minimum file size specified.
+  // Use cache only when it meets the minimum size and produces the full
+  // video, audio, and format metadata required by pipeline_metrics.
   auto [ min_fsize, max_dlsize ] = psize;
-  if (fs::exists(ret.media_path) && fs::file_size(ret.media_path) >= min_fsize)
+  if (!force_download && media_cache_file_complete(ret.media_path, min_fsize))
     {
       cout << "    Using cached download: " << ret.media_path << endl;
       ret.success = true;
@@ -299,7 +301,13 @@ process_all_torrents(const vector<torrent_file>& torrents,
       fs::path torrent_cache_dir = cache_dir / tf.btih;
       fs::path cached_file = find_cache_file(torrent_cache_dir);
 
-      bool cache_existsp = fs::exists(cached_file) && fs::file_size(cached_file) >= min_fsize;
+      string cache_reason;
+      bool cache_existsp = media_cache_file_complete(
+	 cached_file, min_fsize, &cache_reason);
+      if (!cache_existsp && !cached_file.empty())
+	cerr << "    Ignoring incomplete cached artifact: "
+	     << cache_reason << endl;
+
       if (cache_existsp)
 	{
 	  cout << "    Using cached download: " << cached_file << endl;
@@ -318,7 +326,8 @@ process_all_torrents(const vector<torrent_file>& torrents,
 	    }
 
 	  // Download
-	  download_result dlr = download_torrent_media(tf, cache_dir, psize, delete_p);
+	  download_result dlr = download_torrent_media(
+	    tf, cache_dir, psize, delete_p, true);
 	  if (!dlr.success)
 	    {
 	      cerr << "    ✗ " << dlr.error_msg << endl;

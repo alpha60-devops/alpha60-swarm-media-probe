@@ -81,6 +81,14 @@ struct probe_wait_result
 constexpr time_limits dtlimits { 30, 10, 300 };
 
 
+/// Validate that a cache artifact meets the minimum size and contains the
+/// complete video, audio, and format metadata required by pipeline_metrics.
+bool
+media_cache_file_complete(const fs::path& media_file,
+			  const std::size_t minimum_size,
+			  std::string* reason = nullptr);
+
+
 /// Downloader encapsulation.
 struct media_downloader
 {

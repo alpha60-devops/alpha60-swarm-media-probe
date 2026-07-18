@@ -83,7 +83,7 @@ enrichment::build_output(const std::vector<torrent_file>& torrents,
 
   std::stringstream ss;
   ss << "{\n";
-  ss << "  \"api_version\": \"1.4\",\n";
+  ss << "  \"api_version\": \"1.5\",\n";
   ss << "  \"datestamp\": \"" << time_ss.str() << "\",\n";
   ss << "  \"collection_key\": \"" << escape_json_string(collection_key) << "\",\n";
   ss << "  \"collection_media_cache_size_mb\": " << cache_dir_size_mb << ",\n";
@@ -140,6 +140,7 @@ enrichment::build_output(const std::vector<torrent_file>& torrents,
     ss << "        \"video_frame_rate\": " << json_string(md.video.frame_rate) << ",\n";
     ss << "        \"video_color_primaries\": " << json_string(md.video.color_primaries) << ",\n";
     ss << "        \"video_color_space\": " << json_string(md.video.color_space) << ",\n";
+    ss << "        \"chroma_classification\": " << json_string(md.video.chroma_classification) << ",\n";
     ss << "        \"video_width\": " << (md.video.width > 0 ? std::to_string(md.video.width) : "null") << ",\n";
     ss << "        \"video_height\": " << (md.video.height > 0 ? std::to_string(md.video.height) : "null") << ",\n";
     ss << "        \"video_creation_metadata\": " << json_string(md.video_creation_metadata) << ",\n";

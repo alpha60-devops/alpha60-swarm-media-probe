@@ -19,6 +19,7 @@ struct video_metadata
     int height{0};
     std::string frame_rate;
     std::string color_primaries;   // BT.709, BT.2020, BT.470 M (B&W), etc.
+    std::string chroma_classification;
 };
 
 struct audio_metadata
@@ -84,6 +85,7 @@ private:
 
     std::string exec_mediainfo();
     std::string exec_ffprobe();
+    std::string exec_chroma_classification(double startsec = 10.0);
     bool parse_json_output(const std::string& json_output, media_info_data& data);
     bool parse_ffprobe_output(const std::string& json_output, media_info_data& data);
 

@@ -6,6 +6,7 @@
 #include <array>
 #include <memory>
 #include <sstream>
+#include <iomanip>
 #include <cstdio>
 #include <algorithm>
 #include <iostream>
@@ -16,6 +17,47 @@ struct pclose_deleter {
 	if (f) pclose(f);
     }
 };
+
+namespace {
+
+std::string shell_quote(const std::string& value)
+{
+    std::string quoted("'");
+    for (const char c : value) {
+	if (c == '\'') {
+	    quoted += "'\\''";
+	} else {
+	    quoted += c;
+	}
+    }
+    quoted += '\'';
+    return quoted;
+}
+
+std::string escape_lavfi_option_value(const std::string& value)
+{
+    // The movie filename is parsed once as a filter option and again as part
+    // of the complete filtergraph, so it needs two levels of escaping.
+    std::string option_escaped;
+    for (const char c : value) {
+	if (c == '\\' || c == '\'' || c == ':' || c == ' ' || c == '\t') {
+	    option_escaped += '\\';
+	}
+	option_escaped += c;
+    }
+
+    std::string graph_escaped;
+    for (const char c : option_escaped) {
+	if (c == '\\' || c == '\'' || c == '[' || c == ']' ||
+	    c == ',' || c == ';' || c == ' ' || c == '\t') {
+	    graph_escaped += '\\';
+	}
+	graph_escaped += c;
+    }
+    return graph_escaped;
+}
+
+} // namespace
 
 media_info_extractor::media_info_extractor(const fs::path& media_file)
     : media_file(media_file) {}
@@ -44,6 +86,10 @@ std::optional<media_info_data> media_info_extractor::extract() {
     if (!ffprobe_output.empty()) {
 	parse_ffprobe_output(ffprobe_output, data);
     }
+
+    // Inspect one second of decoded video beginning ten seconds into the file.
+    std::cout << "  [FFprobe] Classifying chroma..." << std::endl;
+    data.video.chroma_classification = exec_chroma_classification();
 
     return data;
 }
@@ -87,6 +133,62 @@ media_info_extractor::exec_ffprobe()
       result += buffer.data();
     }
   return result;
+}
+
+std::string
+media_info_extractor::exec_chroma_classification(const double startsec)
+{
+    std::ostringstream filter;
+    filter << std::fixed << std::setprecision(3)
+	   << "movie=filename="
+	   << escape_lavfi_option_value(media_file.string())
+	   << ":seek_point=" << startsec
+	   << ",trim=duration=1.000,signalstats";
+
+    const std::string cmd =
+	"ffprobe -v error -f lavfi -i " + shell_quote(filter.str()) +
+	" -show_frames"
+	" -show_entries frame=pts_time:frame_tags=lavfi.signalstats.SATAVG"
+	" -of default=noprint_wrappers=1:nokey=0 2>/dev/null";
+
+    std::array<char, 256> buffer;
+    FILE* pipe = popen(cmd.c_str(), "r");
+    if (!pipe) {
+	std::cerr << "  [FFprobe] Failed to execute chroma classification" << std::endl;
+	return "";
+    }
+    std::unique_ptr<FILE, pclose_deleter> pipe_ptr(pipe);
+
+    constexpr const char* satavg_prefix =
+	"TAG:lavfi.signalstats.SATAVG=";
+    bool found_saturation = false;
+    bool has_chroma = false;
+
+    while (fgets(buffer.data(), buffer.size(), pipe_ptr.get()) != nullptr) {
+	const std::string line(buffer.data());
+	if (line.compare(0, std::char_traits<char>::length(satavg_prefix),
+			 satavg_prefix) != 0) {
+	    continue;
+	}
+
+	const char* value = line.c_str() +
+	    std::char_traits<char>::length(satavg_prefix);
+	char* end = nullptr;
+	const double saturation = std::strtod(value, &end);
+	if (end == value) {
+	    continue;
+	}
+
+	found_saturation = true;
+	if (saturation > 0.0) {
+	    has_chroma = true;
+	}
+    }
+
+    if (!found_saturation) {
+	return "";
+    }
+    return has_chroma ? "polychromatic" : "achromatic";
 }
 
 bool media_info_extractor::parse_ffprobe_output(const std::string& json_output, media_info_data& data) {
